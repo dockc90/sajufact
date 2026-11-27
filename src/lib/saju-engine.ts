@@ -198,7 +198,7 @@ export function getNext23KstCountdown(now = new Date()): string {
 }
 
 export const BIRTH_HOUR_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: "unknown", label: "태어난 시간 모름 (삼주 분석)" },
+  { value: "unknown", label: "시간 모름 (삼주 분석)" },
   { value: "0", label: "자시 (23:30 ~ 01:29)" },
   { value: "2", label: "축시 (01:30 ~ 03:29)" },
   { value: "4", label: "인시 (03:30 ~ 05:29)" },

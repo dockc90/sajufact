@@ -179,12 +179,12 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
         </button>
       </div>
 
-      {/* PNG 저장 캡처 영역 (몽글몽글 파스텔 오라 카드 · 글자 겹침 0%) */}
+      {/* PNG 저장 캡처 영역 (몽글몽글 파스텔 오라 카드 · 귀여운 달토 주인공 · 글자 겹침 0%) */}
       <div className="flex justify-center">
         <div
           ref={cardRef}
           className={`${
-            ratio === "9:16" ? "w-[324px] h-[576px] p-4" : "w-[340px] h-[425px] p-3.5"
+            ratio === "9:16" ? "w-[324px] h-[576px] p-3.5" : "w-[340px] h-[425px] p-3.5"
           } rounded-[28px] bg-gradient-to-br ${auraStyle.bg} text-[#2b2242] relative overflow-hidden shadow-[0_20px_50px_rgba(139,92,246,0.22)] border-2 border-white flex flex-col justify-between select-none transition-all duration-300`}
         >
           {/* 배경 파스텔 오라 오브 */}
@@ -196,17 +196,10 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
           />
 
           {/* 상단 달토 헤더 바 */}
-          <div className="relative z-10 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 bg-white/85 backdrop-blur-sm border border-white rounded-full pl-1 pr-2.5 py-0.5 shadow-2xs">
-              <img
-                src="/mascot/dalto-rabbit.jpg"
-                alt="달토"
-                className="w-5 h-5 rounded-full object-cover"
-              />
-              <span className="text-[10px] font-extrabold text-[#4b3880] whitespace-nowrap">
-                달토 오라 카드 · {theme.nameKo}
-              </span>
-            </div>
+          <div className="relative z-10 flex items-center justify-between gap-2 shrink-0">
+            <span className="inline-flex items-center gap-1 bg-white/85 backdrop-blur-sm border border-white rounded-full px-2.5 py-0.5 text-[10px] font-extrabold text-[#4b3880] shadow-2xs whitespace-nowrap">
+              🐇 달토 오라 · {theme.nameKo}
+            </span>
             <span
               className={`px-2.5 py-0.5 rounded-full text-[9.5px] font-extrabold whitespace-nowrap shadow-xs ${auraStyle.accentPill}`}
             >
@@ -214,39 +207,104 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
             </span>
           </div>
 
-          {/* 중앙 글래스모피즘 핵심 정보 카드 */}
-          <div className="relative z-10 bg-white/78 backdrop-blur-md border border-white/95 rounded-[24px] p-3.5 sm:p-4 shadow-sm space-y-2.5 my-auto">
-            <div className="flex items-center justify-between gap-2">
-              <span className={`text-[10.5px] font-extrabold truncate ${auraStyle.accentText}`}>
-                {report.input.name} · {dayPillar.hangul}({dayPillar.hanja})일주
-              </span>
-              <span className="text-[9.5px] font-bold text-slate-400 shrink-0">
-                {auraStyle.label}
-              </span>
+          {/* 9:16 스토리 전용 — 중앙 상단 귀여운 달토 히어로 초상화 */}
+          {ratio === "9:16" && (
+            <div className="relative z-10 flex flex-col items-center justify-center my-1 shrink-0">
+              <div className="relative">
+                <div className="w-24 h-24 rounded-[26px] overflow-hidden border-[3px] border-white shadow-[0_12px_28px_rgba(139,92,246,0.25)] bg-[#fdf6f0]">
+                  <img
+                    src="/mascot/dalto-rabbit.jpg"
+                    alt="달토끼 달토"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="absolute -top-1.5 -right-2 rounded-full bg-white border border-orange-200 px-1.5 py-0.5 text-[10px] shadow-xs">
+                  🥕
+                </span>
+                <span className="absolute -bottom-1 -left-2 rounded-full bg-white border border-violet-200 px-1.5 py-0.5 text-[9px] font-extrabold text-violet-700 shadow-xs">
+                  ✨ 달토
+                </span>
+              </div>
             </div>
+          )}
 
-            {/* 4주 미니 파스텔 타일 */}
-            <div className="grid grid-cols-4 gap-1.5 text-center">
-              {report.pillars.map((p) => (
-                <div
-                  key={p.label}
-                  className="rounded-xl bg-[#fdf8ff] border border-violet-100/90 py-1 px-1"
-                >
-                  <span className="block text-[7.5px] font-bold text-slate-400">
-                    {p.label}
-                  </span>
-                  <span className="font-serif text-[12px] font-black text-[#2b2242]">
-                    {p.hanja}
+          {/* 중앙 글래스모피즘 핵심 정보 카드 */}
+          <div
+            className={`relative z-10 bg-white/80 backdrop-blur-md border border-white/95 rounded-[24px] shadow-sm my-auto ${
+              ratio === "9:16" ? "p-3 space-y-2" : "p-3 space-y-2"
+            }`}
+          >
+            {ratio === "4:5" ? (
+              /* 4:5 피드 전용 — 달토 포트레이트 + 일주/4주 컴팩트 상단 블록 */
+              <div className="flex items-center gap-2.5">
+                <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-white shadow-md shrink-0 bg-[#fdf6f0]">
+                  <img
+                    src="/mascot/dalto-rabbit.jpg"
+                    alt="달토끼 달토"
+                    className="w-full h-full object-cover"
+                  />
+                  <span className="absolute bottom-0 inset-x-0 bg-violet-900/65 text-[8px] font-extrabold text-white text-center py-0.5">
+                    🥕 달토
                   </span>
                 </div>
-              ))}
-            </div>
+                <div className="flex-1 min-w-0 space-y-1.5">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className={`text-[10.5px] font-extrabold truncate ${auraStyle.accentText}`}>
+                      {report.input.name} · {dayPillar.hangul}({dayPillar.hanja})일주
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1 text-center">
+                    {report.pillars.map((p) => (
+                      <div
+                        key={p.label}
+                        className="rounded-lg bg-[#fdf8ff] border border-violet-100/90 py-0.5 px-0.5"
+                      >
+                        <span className="block text-[7px] font-bold text-slate-400">
+                          {p.label}
+                        </span>
+                        <span className="font-serif text-[11px] font-black text-[#2b2242]">
+                          {p.hanja}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`text-[10.5px] font-extrabold truncate ${auraStyle.accentText}`}>
+                    {report.input.name} · {dayPillar.hangul}({dayPillar.hanja})일주
+                  </span>
+                  <span className="text-[9.5px] font-bold text-slate-400 shrink-0">
+                    {auraStyle.label}
+                  </span>
+                </div>
+
+                {/* 4주 미니 파스텔 타일 */}
+                <div className="grid grid-cols-4 gap-1.5 text-center">
+                  {report.pillars.map((p) => (
+                    <div
+                      key={p.label}
+                      className="rounded-xl bg-[#fdf8ff] border border-violet-100/90 py-1 px-1"
+                    >
+                      <span className="block text-[7.5px] font-bold text-slate-400">
+                        {p.label}
+                      </span>
+                      <span className="font-serif text-[11.5px] font-black text-[#2b2242]">
+                        {p.hanja}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
 
             {/* 달토 핵심 총평 */}
-            <div className="rounded-2xl bg-gradient-to-br from-[#fffaf5] to-[#f8f0ff] border border-white p-3 text-center">
+            <div className="rounded-2xl bg-gradient-to-br from-[#fffaf5] to-[#f8f0ff] border border-white p-2.5 text-center">
               <h4
                 className={`font-serif font-black leading-snug line-clamp-2 break-keep text-[#2b2242] ${
-                  ratio === "9:16" ? "text-[14px]" : "text-[13px]"
+                  ratio === "9:16" ? "text-[13px]" : "text-[12.5px]"
                 }`}
               >
                 “{shortFact}”
@@ -261,7 +319,7 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
                   {theme.nameKo} 주도 · {report.elements.find((e) => e.key === report.dominantElement)?.percentage}%
                 </span>
               </div>
-              <div className="h-2.5 w-full rounded-full overflow-hidden flex bg-slate-100 border border-white">
+              <div className="h-2 w-full rounded-full overflow-hidden flex bg-slate-100 border border-white">
                 {report.elements.map((el) => (
                   <div
                     key={el.key}
@@ -294,11 +352,11 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
 
             {/* 9:16 스토리 비율 전용 달토 따뜻한 처방 한 줄 */}
             {ratio === "9:16" && (
-              <div className="rounded-xl bg-[#f7f2ff] border border-violet-200/60 px-2.5 py-2 text-left">
-                <span className="text-[8.5px] font-extrabold text-violet-700 block mb-0.5">
+              <div className="rounded-xl bg-[#f7f2ff] border border-violet-200/60 px-2.5 py-1.5 text-left">
+                <span className="text-[8.5px] font-extrabold text-violet-700 block">
                   💌 달토의 따뜻한 개운 처방
                 </span>
-                <p className="text-[10px] font-semibold text-slate-700 leading-snug line-clamp-2 break-keep">
+                <p className="text-[9.5px] font-semibold text-slate-700 leading-snug line-clamp-2 break-keep">
                   {report.talisman.talismanMantra} · 개운 아이템: {report.talisman.luckyItem}
                 </p>
               </div>
@@ -306,7 +364,7 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
           </div>
 
           {/* 하단 워터마크 */}
-          <div className="relative z-10 flex items-center justify-between pt-1 text-[9.5px] text-[#55447a]">
+          <div className="relative z-10 flex items-center justify-between pt-0.5 text-[9.5px] text-[#55447a] shrink-0">
             <span className="flex items-center gap-1 truncate font-bold">
               <Sparkles className="w-2.5 h-2.5 text-orange-500 shrink-0" />
               {report.hashtags.slice(0, 2).join(" ")}

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Calendar,
+  ChevronDown,
   Clock,
   Edit3,
   FolderOpen,
@@ -16,6 +17,7 @@ import {
   Ticket,
   User,
   Users,
+  X,
 } from "lucide-react";
 import {
   BENCHMARK_REVIEWS,
@@ -54,6 +56,35 @@ type ScreenPhase = "home" | "analyzing" | "result";
 const WALLET_STORAGE_KEY = "sajufact_wallet_v1";
 const RECENT_PROFILES_KEY = "sajufact_recent_profiles_v1";
 
+const MENU_ICON_CIRCLE_BG: Partial<Record<MenuCategory, string>> = {
+  lifetime: "bg-gradient-to-br from-[#f3ecff] to-[#fde8f3]",
+  newyear2027: "bg-gradient-to-br from-[#ffede4] to-[#ffe4ef]",
+  love: "bg-gradient-to-br from-[#ffe8f1] to-[#fff0f6]",
+  compatibility: "bg-gradient-to-br from-[#fde7f3] to-[#f3e8ff]",
+  daeun: "bg-gradient-to-br from-[#ede9fe] to-[#e0e7ff]",
+  yeonun: "bg-gradient-to-br from-[#e8f4ff] to-[#ede9fe]",
+  taekil: "bg-gradient-to-br from-[#fff5e4] to-[#ffede4]",
+};
+
+const HOME_FAQ_ITEMS = [
+  {
+    q: "정말 당근 1개(990원)인가요?",
+    a: "네! 사주팩트는 당근 1개(990원)부터 필요한 사주 테마만 골라서 부담 없이 열어볼 수 있으며, 당근 한 다발/바구니/농장 패키지로 충전 시 보너스 당근까지 지급됩니다.",
+  },
+  {
+    q: "태어난 시간을 몰라도 볼 수 있나요?",
+    a: "물론입니다. 태어난 시간 드롭다운 기본값인 '시간 모름 (삼주 분석)' 상태로도 년주·월주·일주 6글자와 2027 정미년 세운, 오행 분포를 정밀하게 계산해 드립니다.",
+  },
+  {
+    q: "무료 수다권은 언제 충전되나요?",
+    a: "매일 밤 11시(23:00 KST)가 되면 달토와 1:1 대화를 나눌 수 있는 무료 수다권이 자동으로 1장씩 채워집니다.",
+  },
+  {
+    q: "환불 규정은 어떻게 되나요?",
+    a: "사용하지 않은 미사용 당근 패키지는 결제일로부터 7일 이내 고객센터(help@sajufact.kr)로 요청 시 전액 환불 가능합니다. 이미 당근을 사용해 열람한 디지털 사주 리포트는 콘텐츠 특성상 환불이 제한됩니다.",
+  },
+];
+
 function buildWalletId(profile: WalletProfile): string {
   const cleanName = (profile.name || "guest").trim().toLowerCase();
   return `w_${cleanName}_${profile.birthDate}_${profile.birthHour}`;
@@ -66,7 +97,7 @@ export default function HomePage() {
   const [birthDate, setBirthDate] = useState("1996-05-14");
   const [birthQuickInput, setBirthQuickInput] = useState("19960514");
   const [calendarType, setCalendarType] = useState<CalendarType>("solar");
-  const [birthHour, setBirthHour] = useState<string>("10");
+  const [birthHour, setBirthHour] = useState<string>("unknown");
 
   // 프로필 저장 여부 (저장 시 콤팩트 카드로 접혀서 대시보드 7종 메뉴를 원클릭 실행 가능)
   const [profileConfirmed, setProfileConfirmed] = useState(false);
@@ -82,13 +113,13 @@ export default function HomePage() {
 
   // 지갑 상태 (당근 코인 + 매일 밤 11시 무료수다권 1장)
   const [wallet, setWallet] = useState<WalletState>({
-    walletId: "w_guest_1996-05-14_10",
+    walletId: "w_guest_1996-05-14_unknown",
     profile: {
       name: "",
       gender: "female",
       birthDate: "1996-05-14",
       calendarType: "solar",
-      birthHour: "10",
+      birthHour: "unknown",
     },
     coins: 0, // 기본 당근 0개 (충전소에서 1개 990원부터 충전)
     freeChatTickets: 1, // 매일 밤 11시 리셋 무료수다권 1장
@@ -112,6 +143,8 @@ export default function HomePage() {
   // 파스텔 오라 인스타 카드 쇼케이스 프리뷰 상태
   const [showcaseMood, setShowcaseMood] = useState<PastelAuraMood>("lavender");
   const [showcaseRatio, setShowcaseRatio] = useState<"9:16" | "4:5">("9:16");
+  const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
+  const [policyModal, setPolicyModal] = useState<"terms" | "privacy" | null>(null);
 
   const applyBirthDate = (isoDate: string) => {
     setBirthDate(isoDate);
@@ -290,6 +323,8 @@ export default function HomePage() {
     try {
       localStorage.setItem(RECENT_PROFILES_KEY, JSON.stringify(nextProfiles));
     } catch {}
+    setChatContext(undefined);
+    setChatOpen(true);
   };
 
   const runAnalysis = async (menu: MenuCategory) => {
@@ -459,10 +494,14 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={() => setChargeOpen(true)}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full hover:bg-orange-100/80 text-orange-800 transition whitespace-nowrap"
+                aria-label="당근 충전하기"
+                title="클릭해서 당근 충전하기"
+                className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-full hover:bg-orange-100/80 text-orange-800 transition whitespace-nowrap"
               >
                 <span>🥕 당근 {wallet.coins}</span>
-                <Plus className="w-3 h-3 text-orange-600" />
+                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-orange-500 text-white shadow-2xs">
+                  <Plus className="w-2.5 h-2.5 stroke-[3]" />
+                </span>
               </button>
               <span className="text-violet-200 select-none px-0.5">|</span>
               <button
@@ -721,16 +760,16 @@ export default function HomePage() {
                   <p className="text-xs font-bold text-rose-600">{formError}</p>
                 )}
 
-                <div className="flex items-center justify-between gap-2 pt-0.5">
-                  <span className="text-[11px] text-slate-500">
-                    프로필 저장 시 7종 메뉴와 수다방을 바로 이용할 수 있어요.
-                  </span>
+                <div className="pt-1 space-y-1.5">
                   <button
                     type="submit"
-                    className="shrink-0 rounded-2xl bg-gradient-to-r from-[#5c489b] to-[#d96b8a] hover:brightness-105 text-white px-4 py-2 text-xs font-extrabold transition shadow-sm"
+                    className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#5c489b] via-[#c96a8b] to-[#f97316] hover:brightness-105 text-white text-sm font-black shadow-lg transition flex items-center justify-center gap-1.5"
                   >
-                    프로필 저장 →
+                    <span>내 사주 스캔하고 무료 수다권 쓰기 →</span>
                   </button>
+                  <p className="text-[11px] text-slate-500 text-center">
+                    프로필 저장 시 7종 메뉴와 달토 수다방을 바로 이용할 수 있어요.
+                  </p>
                 </div>
               </form>
             )}
@@ -876,42 +915,74 @@ export default function HomePage() {
             )}
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {sevenGridMenus.map((item) => (
-                <motion.button
-                  key={item.id}
-                  type="button"
-                  whileHover={{ y: -3, scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => void runAnalysis(item.id)}
-                  className={`text-left glass-card rounded-3xl p-3.5 sm:p-4 transition hover:shadow-lg flex flex-col justify-between gap-2 border ${
-                    item.highlight
-                      ? "border-rose-200 bg-gradient-to-br from-[#fff5f5]/95 to-white"
-                      : "border-white/90"
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="text-2xl">{item.emoji}</span>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[9.5px] font-extrabold whitespace-nowrap ${item.badgeStyle}`}
-                    >
-                      🥕 {item.coinCost}당근
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug">
-                      {item.title}
-                    </h3>
-                    <p className="text-[10.5px] text-slate-500 mt-0.5 line-clamp-2 leading-snug">
-                      {item.subtitle}
-                    </p>
-                  </div>
-                </motion.button>
-              ))}
+              {sevenGridMenus.map((item) => {
+                const isBest = item.id === "lifetime";
+                const isNew = item.id === "newyear2027";
+                const pricePillClass =
+                  item.coinCost >= 2
+                    ? "bg-gradient-to-r from-violet-100 to-purple-100 text-violet-700 border border-violet-200/90"
+                    : "bg-gradient-to-r from-orange-100 to-rose-100 text-orange-700 border border-orange-200/90";
+                const iconCircleBg =
+                  MENU_ICON_CIRCLE_BG[item.id] ?? "bg-violet-50";
+
+                return (
+                  <motion.button
+                    key={item.id}
+                    type="button"
+                    whileHover={{ y: -3, scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => void runAnalysis(item.id)}
+                    className={`relative text-left glass-card rounded-3xl p-3.5 sm:p-4 transition hover:shadow-lg flex flex-col justify-between gap-2.5 border ${
+                      isNew
+                        ? "border-rose-200 bg-gradient-to-br from-[#fff5f5]/95 to-white"
+                        : isBest
+                        ? "border-violet-200 bg-gradient-to-br from-[#f8f3ff]/95 to-white"
+                        : "border-white/90"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-1">
+                      <span
+                        className={`w-11 h-11 rounded-full flex items-center justify-center text-xl border border-white shadow-2xs shrink-0 ${iconCircleBg}`}
+                      >
+                        {item.emoji}
+                      </span>
+                      <div className="flex flex-col items-end gap-1">
+                        {(isBest || isNew) && (
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[9px] font-black tracking-wide text-white shadow-2xs ${
+                              isBest
+                                ? "bg-rose-500"
+                                : "bg-gradient-to-r from-violet-500 to-fuchsia-500"
+                            }`}
+                          >
+                            {isBest ? "BEST" : "NEW"}
+                          </span>
+                        )}
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold whitespace-nowrap ${pricePillClass}`}
+                        >
+                          🥕 {item.coinCost}당근
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug">
+                        {item.title}
+                      </h3>
+                      <p className="text-[10.5px] text-slate-500 mt-0.5 line-clamp-2 leading-snug">
+                        {item.subtitle}
+                      </p>
+                    </div>
+                  </motion.button>
+                );
+              })}
 
               {/* Coming Soon 카드 */}
-              <div className="text-left rounded-3xl p-3.5 sm:p-4 border border-dashed border-violet-200 bg-white/55 flex flex-col justify-between gap-2 opacity-80">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl">🎓</span>
+              <div className="text-left rounded-3xl p-3.5 sm:p-4 border border-dashed border-violet-200 bg-white/55 flex flex-col justify-between gap-2.5 opacity-80">
+                <div className="flex items-start justify-between">
+                  <span className="w-11 h-11 rounded-full bg-slate-100 border border-white flex items-center justify-center text-xl shadow-2xs">
+                    🎓
+                  </span>
                   <span className="rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-[9.5px] font-bold flex items-center gap-0.5">
                     <Lock className="w-2.5 h-2.5" />
                     SOON
@@ -931,10 +1002,15 @@ export default function HomePage() {
 
           {/* ④ 실제 감성 찐후기 롤링 배너 */}
           <section className="space-y-2.5 overflow-hidden">
-            <div className="flex items-center justify-between px-1">
-              <span className="text-xs font-extrabold text-slate-800">
-                💬 사주팩트 유저들의 솔직한 찐후기
-              </span>
+            <div className="flex items-center justify-between gap-2 px-1 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs sm:text-sm font-extrabold text-slate-900">
+                  💬 사주팩트 유저들의 솔직한 찐후기
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 border border-amber-200 text-amber-800 px-2.5 py-0.5 text-[10.5px] font-extrabold">
+                  ⭐ 만족도 4.9/5.0
+                </span>
+              </div>
               <span className="text-[11px] text-slate-500">
                 실시간 누적 스캔 148,200+
               </span>
@@ -947,12 +1023,17 @@ export default function HomePage() {
                     key={`${rev.user}-${idx}`}
                     className="w-[270px] sm:w-[300px] shrink-0 glass-card rounded-3xl p-3.5 text-left space-y-1.5 border border-white/90"
                   >
-                    <div className="flex items-center justify-between gap-1 text-[10px]">
-                      <span className="font-extrabold text-slate-900">{rev.user}</span>
-                      <span className="rounded-full bg-orange-100 text-orange-800 px-2 py-0.5 font-bold">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-amber-400 text-xs tracking-tight leading-none">
+                        ★★★★★
+                      </span>
+                      <span className="rounded-full bg-orange-100 text-orange-800 px-2 py-0.5 text-[10px] font-bold">
                         {rev.tag}
                       </span>
                     </div>
+                    <p className="text-[10.5px] font-extrabold text-slate-900">
+                      {rev.user}
+                    </p>
                     <p className="text-[11.5px] text-slate-700 leading-relaxed line-clamp-3">
                       “{rev.text}”
                     </p>
@@ -1028,8 +1109,8 @@ export default function HomePage() {
               <div className="sm:col-span-6 flex justify-center">
                 <div
                   className={`${
-                    showcaseRatio === "9:16" ? "w-[235px] h-[340px]" : "w-[250px] h-[300px]"
-                  } rounded-[26px] p-3.5 relative overflow-hidden border-2 border-white shadow-xl flex flex-col justify-between text-[#2b2242] transition-all duration-300 ${
+                    showcaseRatio === "9:16" ? "w-[238px] h-[365px]" : "w-[254px] h-[310px]"
+                  } rounded-[26px] p-3 relative overflow-hidden border-2 border-white shadow-xl flex flex-col justify-between text-[#2b2242] transition-all duration-300 ${
                     showcaseMood === "lavender"
                       ? "bg-gradient-to-br from-[#f6e8ff] via-[#fff0eb] to-[#fce7f3]"
                       : showcaseMood === "mooncream"
@@ -1038,45 +1119,82 @@ export default function HomePage() {
                   }`}
                 >
                   <div className="flex items-center justify-between gap-1">
-                    <span className="inline-flex items-center gap-1 bg-white/85 rounded-full pl-1 pr-2 py-0.5 text-[9px] font-extrabold text-[#4b3880] shadow-2xs">
-                      <img
-                        src="/mascot/dalto-rabbit.jpg"
-                        alt="달토"
-                        className="w-4 h-4 rounded-full object-cover"
-                      />
-                      달토 오라 카드
+                    <span className="inline-flex items-center gap-1 bg-white/85 rounded-full px-2 py-0.5 text-[8.5px] font-extrabold text-[#4b3880] shadow-2xs">
+                      🐇 달토 오라 카드
                     </span>
                     <span className="rounded-full bg-gradient-to-r from-[#8b5cf6] to-[#ec4899] text-white px-2 py-0.5 text-[8.5px] font-extrabold">
                       TIER: S · 상위 8%
                     </span>
                   </div>
 
-                  <div className="bg-white/82 backdrop-blur-md rounded-2xl border border-white p-3 space-y-2 shadow-2xs my-auto">
-                    <p className="text-[9.5px] font-extrabold text-violet-700 text-left">
-                      김민지 · 신해(辛亥)일주
-                    </p>
-                    <div className="grid grid-cols-4 gap-1 text-center">
-                      {["庚午", "庚辰", "辛亥", "癸巳"].map((gz) => (
-                        <div
-                          key={gz}
-                          className="rounded-lg bg-[#fdf8ff] border border-violet-100 py-1 text-[10px] font-serif font-black"
-                        >
-                          {gz}
-                        </div>
-                      ))}
+                  {showcaseRatio === "9:16" && (
+                    <div className="flex justify-center my-0.5">
+                      <div className="relative">
+                        <img
+                          src="/mascot/dalto-rabbit.jpg"
+                          alt="달토끼 달토"
+                          className="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow-md"
+                        />
+                        <span className="absolute -top-1 -right-1.5 rounded-full bg-white border border-orange-200 px-1 text-[9px] shadow-xs">
+                          🥕
+                        </span>
+                      </div>
                     </div>
-                    <p className="font-serif text-[11.5px] font-black leading-snug break-keep text-center">
+                  )}
+
+                  <div className="bg-white/82 backdrop-blur-md rounded-2xl border border-white p-2.5 space-y-1.5 shadow-2xs my-auto">
+                    {showcaseRatio === "4:5" ? (
+                      <div className="flex items-center gap-2">
+                        <img
+                          src="/mascot/dalto-rabbit.jpg"
+                          alt="달토끼 달토"
+                          className="w-12 h-12 rounded-xl object-cover border-2 border-white shadow-sm shrink-0"
+                        />
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <p className="text-[9px] font-extrabold text-violet-700 text-left truncate">
+                            김민지 · 신해(辛亥)일주
+                          </p>
+                          <div className="grid grid-cols-4 gap-0.5 text-center">
+                            {["庚午", "庚辰", "辛亥", "癸巳"].map((gz) => (
+                              <div
+                                key={gz}
+                                className="rounded bg-[#fdf8ff] border border-violet-100 py-0.5 text-[9px] font-serif font-black"
+                              >
+                                {gz}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-[9.5px] font-extrabold text-violet-700 text-left">
+                          김민지 · 신해(辛亥)일주
+                        </p>
+                        <div className="grid grid-cols-4 gap-1 text-center">
+                          {["庚午", "庚辰", "辛亥", "癸巳"].map((gz) => (
+                            <div
+                              key={gz}
+                              className="rounded-lg bg-[#fdf8ff] border border-violet-100 py-0.5 text-[10px] font-serif font-black"
+                            >
+                              {gz}
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    <p className="font-serif text-[11px] font-black leading-snug break-keep text-center">
                       “겉은 무덤덤해도 속은 불꽃, 결정타 한 방이 있는 팔자”
                     </p>
-                    <div className="grid grid-cols-2 gap-1 text-[9px] text-left">
+                    <div className="grid grid-cols-2 gap-1 text-[8.5px] text-left">
                       <div className="rounded-lg bg-[#fff7ef] px-2 py-1 border border-orange-100">
-                        <span className="block text-[8px] font-bold text-orange-600">
+                        <span className="block text-[7.5px] font-bold text-orange-600">
                           🥕 횡재 피크
                         </span>
                         <span className="font-extrabold">9월 (94점)</span>
                       </div>
                       <div className="rounded-lg bg-[#fff1f4] px-2 py-1 border border-rose-100">
-                        <span className="block text-[8px] font-bold text-rose-600">
+                        <span className="block text-[7.5px] font-bold text-rose-600">
                           ⚠️ 주의 시기
                         </span>
                         <span className="font-extrabold">2027년 4월</span>
@@ -1099,7 +1217,7 @@ export default function HomePage() {
                     🥕 1. 당근 1개로 리포트 + 파스텔 오라 인스타 카드까지
                   </p>
                   <p className="text-[11px] text-slate-600 leading-relaxed">
-                    몽글몽글한 라벤더·피치·크림 파스텔 오라 카드를 9:16 스토리·릴스와 4:5 피드 비율로 깔끔하게 PNG 저장하세요.
+                    귀여운 달토와 몽글몽글한 라벤더·피치·크림 파스텔 오라 카드를 9:16 스토리·4:5 피드로 PNG 저장하세요.
                   </p>
                 </div>
                 <div className="rounded-2xl bg-white/85 border border-white p-3.5 space-y-1 shadow-2xs">
@@ -1114,11 +1232,84 @@ export default function HomePage() {
             </div>
           </section>
 
-          <footer className="pt-4 border-t border-violet-200/50 text-center text-[11px] text-slate-500 space-y-1">
+          {/* ⑥ 자주 묻는 질문 (FAQ 아코디언) */}
+          <section className="glass-card rounded-3xl p-4 sm:p-5 space-y-3 border border-white/95 text-left">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-extrabold tracking-widest text-violet-600 uppercase">
+                  FAQ
+                </span>
+                <h2 className="font-serif text-sm sm:text-base font-black text-[#2b2242]">
+                  자주 묻는 질문
+                </h2>
+              </div>
+              <span className="text-[11px] font-bold text-slate-500">
+                달토 이용 안내 🐇
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              {HOME_FAQ_ITEMS.map((item, idx) => {
+                const isOpen = openFaqIdx === idx;
+                return (
+                  <div
+                    key={item.q}
+                    className="rounded-2xl bg-white/85 border border-violet-100/80 overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
+                      aria-expanded={isOpen}
+                      className="w-full px-4 py-3 flex items-center justify-between gap-2 text-left text-xs sm:text-sm font-extrabold text-slate-900 hover:bg-violet-50/40 transition"
+                    >
+                      <span>Q. {item.q}</span>
+                      <ChevronDown
+                        className={`w-4 h-4 text-violet-500 shrink-0 transition-transform duration-200 ${
+                          isOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    {isOpen && (
+                      <div className="px-4 pb-3.5 pt-0.5 text-xs text-slate-600 leading-relaxed border-t border-violet-100/60">
+                        {item.a}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* 결제 심사용 사업자 정보 & 약관 푸터 */}
+          <footer className="pt-5 pb-4 border-t border-violet-200/60 text-center text-[11px] text-slate-500 space-y-2.5">
+            <div className="flex items-center justify-center gap-3 text-xs font-bold text-slate-600">
+              <button
+                type="button"
+                onClick={() => setPolicyModal("terms")}
+                className="hover:text-violet-700 underline underline-offset-2"
+              >
+                이용약관
+              </button>
+              <span className="text-slate-300">|</span>
+              <button
+                type="button"
+                onClick={() => setPolicyModal("privacy")}
+                className="hover:text-violet-700 underline underline-offset-2 font-extrabold"
+              >
+                개인정보처리방침
+              </button>
+            </div>
+            <div className="text-[10.5px] text-slate-400 leading-relaxed space-y-0.5 max-w-xl mx-auto">
+              <p>
+                상호명: 주식회사 사주팩트 | 대표자: 홍길동 | 사업자등록번호: 000-00-00000
+              </p>
+              <p>
+                통신판매업신고번호: 제 2026-서울강남-00000호 | 고객센터: help@sajufact.kr
+              </p>
+            </div>
             <p className="font-serif tracking-widest text-violet-700 font-bold">
-              🐇 sajufact.kr
+              🐇 sajufact.kr · © SajuFact All rights reserved.
             </p>
-            <p>사주팩트 (SajuFact) · 달토끼 달토 AI 사주 & 수다방 플랫폼</p>
           </footer>
         </div>
       )}
@@ -1185,6 +1376,63 @@ export default function HomePage() {
           setChargeOpen(true);
         }}
       />
+
+      {policyModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-violet-950/35 backdrop-blur-sm p-4"
+        >
+          <div className="w-full max-w-md rounded-3xl bg-white p-5 sm:p-6 shadow-2xl border border-violet-100 space-y-3 text-left">
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-base font-black text-slate-900">
+                {policyModal === "terms" ? "사주팩트 이용약관" : "개인정보처리방침"}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setPolicyModal(null)}
+                className="p-1.5 rounded-full hover:bg-slate-100 text-slate-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="text-xs text-slate-600 leading-relaxed space-y-2 max-h-64 overflow-y-auto pr-1">
+              {policyModal === "terms" ? (
+                <>
+                  <p>
+                    1. 본 서비스(사주팩트)는 입력하신 생년월일시를 바탕으로 만세력 명리 분석 리포트 및 AI 사주 상담을 제공합니다.
+                  </p>
+                  <p>
+                    2. 유료 재화(당근)는 구매일로부터 7일 이내 미사용 잔여 수량에 한해 전액 환불 가능하며, 이미 당근을 사용하여 열람한 디지털 콘텐츠는 청약철회가 제한됩니다.
+                  </p>
+                  <p>
+                    3. 고객센터 문의: help@sajufact.kr
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>
+                    1. 수집 항목: 이름(닉네임), 성별, 생년월일, 태어난 시간, 지갑 식별 키 및 이용 기록.
+                  </p>
+                  <p>
+                    2. 이용 목적: 정밀 만세력 계산, 당근/무료수다권 잔액 동기화, 보관함 리포트 복원 및 고객 문의 응대.
+                  </p>
+                  <p>
+                    3. 보관 및 파기: 이용자의 삭제 요청 또는 서비스 종료 시 지체 없이 파기합니다.
+                  </p>
+                </>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => setPolicyModal(null)}
+              className="w-full py-2.5 rounded-2xl bg-gradient-to-r from-[#5c489b] to-[#d96b8a] text-white text-xs font-extrabold"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
