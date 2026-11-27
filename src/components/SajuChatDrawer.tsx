@@ -178,7 +178,7 @@ export function SajuChatDrawer({
         <div className="bg-white/90 border-b border-violet-100 px-4 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0">
             <img
-              src="/mascot/dalto-rabbit.jpg"
+              src="/mascot/dalto-party.jpg"
               alt="달토끼 달토"
               className="w-10 h-10 rounded-2xl object-cover border-2 border-orange-200 shrink-0 shadow-xs"
             />
@@ -243,7 +243,7 @@ export function SajuChatDrawer({
                 >
                   {!isUser && (
                     <img
-                      src="/mascot/dalto-rabbit.jpg"
+                      src="/mascot/dalto-party.jpg"
                       alt="달토"
                       className="w-7 h-7 rounded-2xl object-cover border border-orange-200 shrink-0"
                     />

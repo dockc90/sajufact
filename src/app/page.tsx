@@ -56,6 +56,16 @@ type ScreenPhase = "home" | "analyzing" | "result";
 const WALLET_STORAGE_KEY = "sajufact_wallet_v1";
 const RECENT_PROFILES_KEY = "sajufact_recent_profiles_v1";
 
+const MENU_BUNNY_IMG: Partial<Record<MenuCategory, string>> = {
+  lifetime: "/mascot/dalto-rabbit.jpg",
+  newyear2027: "/mascot/dalto-party.jpg",
+  love: "/mascot/dalto-party.jpg",
+  compatibility: "/mascot/dalto-rabbit.jpg",
+  daeun: "/mascot/dalto-mortar.jpg",
+  yeonun: "/mascot/dalto-party.jpg",
+  taekil: "/mascot/dalto-mortar.jpg",
+};
+
 const MENU_ICON_CIRCLE_BG: Partial<Record<MenuCategory, string>> = {
   lifetime: "bg-gradient-to-br from-[#f3ecff] to-[#fde8f3]",
   newyear2027: "bg-gradient-to-br from-[#ffede4] to-[#ffe4ef]",
@@ -141,7 +151,7 @@ export default function HomePage() {
   const [formError, setFormError] = useState<string | null>(null);
 
   // 파스텔 오라 인스타 카드 쇼케이스 프리뷰 상태
-  const [showcaseMood, setShowcaseMood] = useState<PastelAuraMood>("lavender");
+  const [showcaseMood, setShowcaseMood] = useState<PastelAuraMood>("party");
   const [showcaseRatio, setShowcaseRatio] = useState<"9:16" | "4:5">("9:16");
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [policyModal, setPolicyModal] = useState<"terms" | "privacy" | null>(null);
@@ -477,7 +487,7 @@ export default function HomePage() {
             className="flex items-center gap-1.5 text-left shrink-0"
           >
             <img
-              src="/mascot/dalto-rabbit.jpg"
+              src="/mascot/dalto-party.jpg"
               alt="달토끼 달토"
               className="w-8 h-8 rounded-2xl object-cover border border-orange-200 shadow-2xs"
             />
@@ -567,23 +577,28 @@ export default function HomePage() {
 
       {phase === "home" && (
         <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pt-5 pb-16 space-y-6">
-          {/* ① 달토끼 달토 환영 히어로 + 3초 간편 프로필 */}
-          <section className="glass-card rounded-3xl p-4 sm:p-6 border border-white/95 bg-gradient-to-br from-[#fffaf6]/95 via-[#fdf5fc]/90 to-[#fff2ea]/90 space-y-4">
-            <div className="flex items-center gap-3.5 sm:gap-5">
-              <img
-                src="/mascot/dalto-rabbit.jpg"
-                alt="달토끼 달토"
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl object-cover border-2 border-orange-200 shadow-md shrink-0 animate-dalto-float"
-              />
-              <div className="text-left space-y-1">
-                <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-orange-100 to-rose-100 text-orange-800 px-2.5 py-0.5 text-[10px] font-extrabold">
-                  🥕 당근 주면 채찍 + 따뜻한 처방전 · 매일 밤 11시 무료수다권 1장
+          {/* ① 심플 비주얼 달토 히어로 배너 + 3초 간편 프로필 */}
+          <section className="glass-card rounded-3xl p-4 sm:p-5 border border-white/95 bg-gradient-to-br from-[#fffaf6]/95 via-[#fdf5fc]/90 to-[#fff2ea]/90 space-y-4">
+            <div className="rounded-3xl overflow-hidden bg-gradient-to-r from-[#fce7f3] via-[#fff2ea] to-[#f4ecff] border border-white p-3.5 sm:p-4 flex items-center gap-3.5 sm:gap-5 shadow-2xs">
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl overflow-hidden border-2 border-white shadow-md shrink-0">
+                <img
+                  src="/mascot/dalto-party.jpg"
+                  alt="파티 달토끼 달토"
+                  className="w-full h-full object-cover animate-dalto-float"
+                />
+                <span className="absolute bottom-1 right-1 rounded-full bg-white/95 px-1.5 py-0.5 text-[10px] shadow-xs">
+                  🥕
+                </span>
+              </div>
+              <div className="text-left space-y-1.5 min-w-0">
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/90 text-rose-600 px-2.5 py-0.5 text-[10px] font-extrabold shadow-2xs">
+                  🥕 당근 1개 990원 · 밤 11시 무료수다권 1장
                 </span>
                 <h1 className="font-serif text-lg sm:text-2xl font-black text-[#2b2242] leading-snug break-keep">
-                  “빈말은 사절! 당근 주면 뼈 때리는 채찍과 따뜻한 처방전을 주는 달토끼, 달토예요 🐇”
+                  990원 당근 1개로 여는 2027 사주 🐇
                 </h1>
-                <p className="text-xs text-slate-600">
-                  아닌 건 솔직히 짚고, 내 편에서 현실 처방전까지 주는 달빛 사주 상담소
+                <p className="text-xs font-semibold text-slate-600">
+                  빈말 없는 채찍 + 따뜻한 처방전을 주는 달토끼 상담소
                 </p>
               </div>
             </div>
@@ -782,26 +797,33 @@ export default function HomePage() {
               whileHover={{ y: -2, scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
               onClick={() => handleOpenChat()}
-              className="sm:col-span-7 text-left rounded-3xl p-5 bg-gradient-to-br from-[#5c489b] via-[#8b5fbf] to-[#e6849c] text-white shadow-xl border border-white/40 transition flex items-center justify-between gap-3"
+              className="sm:col-span-7 text-left rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-[#5c489b] via-[#8b5fbf] to-[#e6849c] text-white shadow-xl border border-white/40 transition flex items-center justify-between gap-3"
             >
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-white/25 backdrop-blur-xs px-2.5 py-0.5 text-[10px] font-extrabold text-white">
-                    매일 밤 11시 무료 1장
-                  </span>
-                  <span className="text-[10px] font-bold text-amber-100">
-                    {countdownLabel}
-                  </span>
+              <div className="flex items-center gap-3 min-w-0">
+                <img
+                  src="/mascot/dalto-party.jpg"
+                  alt="달토"
+                  className="w-12 h-12 rounded-2xl object-cover border-2 border-white/80 shrink-0 shadow-md"
+                />
+                <div className="space-y-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="rounded-full bg-white/25 backdrop-blur-xs px-2.5 py-0.5 text-[10px] font-extrabold text-white">
+                      매일 밤 11시 무료 1장
+                    </span>
+                    <span className="text-[10px] font-bold text-amber-100">
+                      {countdownLabel}
+                    </span>
+                  </div>
+                  <h2 className="font-serif text-base sm:text-lg font-black text-white truncate">
+                    💬 달토에게 무엇이든 물어보세요
+                  </h2>
+                  <p className="text-xs text-white/90 truncate">
+                    1:1 사주 수다방 (무료수다권{" "}
+                    <strong className="text-amber-200">{wallet.freeChatTickets}장</strong>)
+                  </p>
                 </div>
-                <h2 className="font-serif text-base sm:text-lg font-black text-white">
-                  💬 달토에게 무엇이든 물어보세요
-                </h2>
-                <p className="text-xs text-white/90 leading-relaxed">
-                  내 만세력을 기억한 달토와 1:1 사주 채팅 (현재 무료수다권{" "}
-                  <strong className="text-amber-200">{wallet.freeChatTickets}장</strong>)
-                </p>
               </div>
-              <MessageCircleHeart className="w-9 h-9 text-amber-200 shrink-0" />
+              <MessageCircleHeart className="w-7 h-7 text-amber-200 shrink-0 hidden sm:block" />
             </motion.button>
 
             <div className="sm:col-span-5 grid grid-cols-2 gap-2.5">
@@ -925,6 +947,9 @@ export default function HomePage() {
                 const iconCircleBg =
                   MENU_ICON_CIRCLE_BG[item.id] ?? "bg-violet-50";
 
+                const bunnyImg =
+                  MENU_BUNNY_IMG[item.id] ?? "/mascot/dalto-party.jpg";
+
                 return (
                   <motion.button
                     key={item.id}
@@ -941,11 +966,20 @@ export default function HomePage() {
                     }`}
                   >
                     <div className="flex items-start justify-between gap-1">
-                      <span
-                        className={`w-11 h-11 rounded-full flex items-center justify-center text-xl border border-white shadow-2xs shrink-0 ${iconCircleBg}`}
-                      >
-                        {item.emoji}
-                      </span>
+                      <div className="relative shrink-0">
+                        <div
+                          className={`w-12 h-12 rounded-2xl overflow-hidden border-2 border-white shadow-sm ${iconCircleBg}`}
+                        >
+                          <img
+                            src={bunnyImg}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white border border-violet-100 shadow-xs flex items-center justify-center text-[11px]">
+                          {item.emoji}
+                        </span>
+                      </div>
                       <div className="flex flex-col items-end gap-1">
                         {(isBest || isNew) && (
                           <span
@@ -969,7 +1003,7 @@ export default function HomePage() {
                       <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug">
                         {item.title}
                       </h3>
-                      <p className="text-[10.5px] text-slate-500 mt-0.5 line-clamp-2 leading-snug">
+                      <p className="text-[10.5px] text-slate-500 mt-0.5 line-clamp-1 leading-snug">
                         {item.subtitle}
                       </p>
                     </div>
@@ -980,9 +1014,18 @@ export default function HomePage() {
               {/* Coming Soon 카드 */}
               <div className="text-left rounded-3xl p-3.5 sm:p-4 border border-dashed border-violet-200 bg-white/55 flex flex-col justify-between gap-2.5 opacity-80">
                 <div className="flex items-start justify-between">
-                  <span className="w-11 h-11 rounded-full bg-slate-100 border border-white flex items-center justify-center text-xl shadow-2xs">
-                    🎓
-                  </span>
+                  <div className="relative shrink-0">
+                    <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white shadow-sm">
+                      <img
+                        src="/mascot/dalto-mortar.jpg"
+                        alt="시험·합격 달토"
+                        className="w-full h-full object-cover opacity-80"
+                      />
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[11px]">
+                      🎓
+                    </span>
+                  </div>
                   <span className="rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-[9.5px] font-bold flex items-center gap-0.5">
                     <Lock className="w-2.5 h-2.5" />
                     SOON
@@ -993,7 +1036,7 @@ export default function HomePage() {
                     시험·합격·작명운
                   </h3>
                   <p className="text-[10.5px] text-slate-500 mt-0.5 leading-snug">
-                    12월 신규 오픈 예정
+                    12월 오픈 예정
                   </p>
                 </div>
               </div>
@@ -1043,7 +1086,7 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* ⑤ 사주팩트만의 무기: 파스텔 오라 스타일 인스타그램 공유 카드 쇼케이스 */}
+          {/* ⑤ 풀블리드 달토 파스텔 오라 인스타그램 공유 카드 쇼케이스 */}
           <section className="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5 border border-white/95">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div className="text-left">
@@ -1051,15 +1094,15 @@ export default function HomePage() {
                   PASTEL AURA CARD
                 </span>
                 <h2 className="font-serif text-sm sm:text-base font-black text-[#2b2242]">
-                  리포트마다 함께 받는 파스텔 오라 인스타그램 공유 카드
+                  왕큰 달토 사진이 담긴 파스텔 오라 인스타 공유 카드
                 </h2>
               </div>
               <div className="flex items-center gap-1 bg-violet-100/70 p-1 rounded-2xl">
                 {(
                   [
-                    { id: "lavender", label: "🌸 라벤더 피치" },
-                    { id: "mooncream", label: "🌙 달빛 크림" },
-                    { id: "element", label: "✨ 오행 맞춤" },
+                    { id: "party", label: "🎀 실사 파티 달토" },
+                    { id: "carrot", label: "🥕 당근 달토" },
+                    { id: "moon", label: "🌕 절구 달토" },
                   ] as const
                 ).map((tab) => (
                   <button
@@ -1101,108 +1144,75 @@ export default function HomePage() {
                 ))}
               </div>
               <span className="text-[11px] font-bold text-slate-500">
-                글자 겹침 0% · 고화질 PNG 1클릭 저장
+                얼굴 가림 0% · 고화질 PNG 1클릭 저장
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
-              <div className="sm:col-span-6 flex justify-center">
-                <div
-                  className={`${
-                    showcaseRatio === "9:16" ? "w-[238px] h-[365px]" : "w-[254px] h-[310px]"
-                  } rounded-[26px] p-3 relative overflow-hidden border-2 border-white shadow-xl flex flex-col justify-between text-[#2b2242] transition-all duration-300 ${
-                    showcaseMood === "lavender"
-                      ? "bg-gradient-to-br from-[#f6e8ff] via-[#fff0eb] to-[#fce7f3]"
-                      : showcaseMood === "mooncream"
-                      ? "bg-gradient-to-br from-[#fff6e5] via-[#fff2ec] to-[#f4ecff]"
-                      : "bg-gradient-to-br from-[#eef7ff] via-[#f7ecff] to-[#fff1ee]"
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="inline-flex items-center gap-1 bg-white/85 rounded-full px-2 py-0.5 text-[8.5px] font-extrabold text-[#4b3880] shadow-2xs">
-                      🐇 달토 오라 카드
+            <div className="flex flex-col items-center gap-3">
+              <div
+                className={`${
+                  showcaseRatio === "9:16" ? "w-[260px] h-[440px]" : "w-[276px] h-[345px]"
+                } rounded-[26px] relative overflow-hidden border-2 border-white shadow-xl flex flex-col text-[#2b2242] transition-all duration-300 bg-[#fff8fc]`}
+              >
+                {/* 상단 풀블리드 달토 사진 */}
+                <div className="relative flex-1 min-h-0 overflow-hidden">
+                  <img
+                    src={
+                      showcaseMood === "party"
+                        ? "/mascot/dalto-party.jpg"
+                        : showcaseMood === "carrot"
+                        ? "/mascot/dalto-rabbit.jpg"
+                        : "/mascot/dalto-mortar.jpg"
+                    }
+                    alt="달토끼 달토"
+                    className="w-full h-full object-cover object-center"
+                  />
+                  <div className="absolute inset-x-0 top-0 px-2.5 pt-2.5 flex items-center justify-between gap-1 pointer-events-none">
+                    <span className="inline-flex items-center gap-1 bg-white/88 rounded-full px-2 py-0.5 text-[9px] font-extrabold text-[#4b3880] shadow-2xs">
+                      🐇 달토 오라
                     </span>
-                    <span className="rounded-full bg-gradient-to-r from-[#8b5cf6] to-[#ec4899] text-white px-2 py-0.5 text-[8.5px] font-extrabold">
+                    <span className="rounded-full bg-gradient-to-r from-[#ec4899] to-[#8b5cf6] text-white px-2 py-0.5 text-[8.5px] font-extrabold shadow-2xs">
                       TIER: S · 상위 8%
                     </span>
                   </div>
+                  <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[#fff8fc] to-transparent pointer-events-none" />
+                </div>
 
-                  {showcaseRatio === "9:16" && (
-                    <div className="flex justify-center my-0.5">
-                      <div className="relative">
-                        <img
-                          src="/mascot/dalto-rabbit.jpg"
-                          alt="달토끼 달토"
-                          className="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow-md"
-                        />
-                        <span className="absolute -top-1 -right-1.5 rounded-full bg-white border border-orange-200 px-1 text-[9px] shadow-xs">
-                          🥕
+                {/* 하단 컴팩트 파스텔 정보 패널 */}
+                <div className="shrink-0 px-3 py-2.5 space-y-1.5 bg-gradient-to-b from-[#fff8fc] to-[#fdf4ff] border-t border-white">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-[9.5px] font-extrabold text-[#832d68]">
+                      김민지 · 신해(辛亥)일주
+                    </span>
+                    <div className="flex gap-0.5">
+                      {["庚午", "庚辰", "辛亥", "癸巳"].map((gz) => (
+                        <span
+                          key={gz}
+                          className="px-1 py-0.5 rounded bg-white border border-violet-100 text-[8px] font-serif font-black"
+                        >
+                          {gz}
                         </span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="bg-white/82 backdrop-blur-md rounded-2xl border border-white p-2.5 space-y-1.5 shadow-2xs my-auto">
-                    {showcaseRatio === "4:5" ? (
-                      <div className="flex items-center gap-2">
-                        <img
-                          src="/mascot/dalto-rabbit.jpg"
-                          alt="달토끼 달토"
-                          className="w-12 h-12 rounded-xl object-cover border-2 border-white shadow-sm shrink-0"
-                        />
-                        <div className="flex-1 min-w-0 space-y-1">
-                          <p className="text-[9px] font-extrabold text-violet-700 text-left truncate">
-                            김민지 · 신해(辛亥)일주
-                          </p>
-                          <div className="grid grid-cols-4 gap-0.5 text-center">
-                            {["庚午", "庚辰", "辛亥", "癸巳"].map((gz) => (
-                              <div
-                                key={gz}
-                                className="rounded bg-[#fdf8ff] border border-violet-100 py-0.5 text-[9px] font-serif font-black"
-                              >
-                                {gz}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <p className="text-[9.5px] font-extrabold text-violet-700 text-left">
-                          김민지 · 신해(辛亥)일주
-                        </p>
-                        <div className="grid grid-cols-4 gap-1 text-center">
-                          {["庚午", "庚辰", "辛亥", "癸巳"].map((gz) => (
-                            <div
-                              key={gz}
-                              className="rounded-lg bg-[#fdf8ff] border border-violet-100 py-0.5 text-[10px] font-serif font-black"
-                            >
-                              {gz}
-                            </div>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                    <p className="font-serif text-[11px] font-black leading-snug break-keep text-center">
-                      “겉은 무덤덤해도 속은 불꽃, 결정타 한 방이 있는 팔자”
-                    </p>
-                    <div className="grid grid-cols-2 gap-1 text-[8.5px] text-left">
-                      <div className="rounded-lg bg-[#fff7ef] px-2 py-1 border border-orange-100">
-                        <span className="block text-[7.5px] font-bold text-orange-600">
-                          🥕 횡재 피크
-                        </span>
-                        <span className="font-extrabold">9월 (94점)</span>
-                      </div>
-                      <div className="rounded-lg bg-[#fff1f4] px-2 py-1 border border-rose-100">
-                        <span className="block text-[7.5px] font-bold text-rose-600">
-                          ⚠️ 주의 시기
-                        </span>
-                        <span className="font-extrabold">2027년 4월</span>
-                      </div>
+                      ))}
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between text-[9px] font-bold text-[#55447a]">
+                  <p className="rounded-xl bg-white/90 border border-white px-2.5 py-1.5 font-serif text-[11px] font-black leading-snug break-keep text-center">
+                    “겉은 무덤덤해도 속은 불꽃, 결정타 한 방이 있는 팔자”
+                  </p>
+                  <div className="grid grid-cols-2 gap-1 text-[8.5px] text-left">
+                    <div className="rounded-lg bg-[#fff7ef] px-2 py-1 border border-orange-100">
+                      <span className="block text-[7.5px] font-bold text-orange-600">
+                        🥕 횡재 피크
+                      </span>
+                      <span className="font-extrabold">9월 (94점)</span>
+                    </div>
+                    <div className="rounded-lg bg-[#fff1f4] px-2 py-1 border border-rose-100">
+                      <span className="block text-[7.5px] font-bold text-rose-600">
+                        ⚠️ 주의 시기
+                      </span>
+                      <span className="font-extrabold">2027년 4월</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-[8.5px] font-bold text-[#55447a]">
                     <span>#파스텔오라 #달토처방</span>
                     <span className="font-serif font-black tracking-widest">
                       🐇 sajufact.kr
@@ -1210,25 +1220,9 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-
-              <div className="sm:col-span-6 space-y-2.5 text-left">
-                <div className="rounded-2xl bg-white/85 border border-white p-3.5 space-y-1 shadow-2xs">
-                  <p className="text-xs font-extrabold text-slate-900">
-                    🥕 1. 당근 1개로 리포트 + 파스텔 오라 인스타 카드까지
-                  </p>
-                  <p className="text-[11px] text-slate-600 leading-relaxed">
-                    귀여운 달토와 몽글몽글한 라벤더·피치·크림 파스텔 오라 카드를 9:16 스토리·4:5 피드로 PNG 저장하세요.
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-white/85 border border-white p-3.5 space-y-1 shadow-2xs">
-                  <p className="text-xs font-extrabold text-slate-900">
-                    🐇 2. 당근 주면 뼈 때리는 채찍 + 따뜻한 처방전까지
-                  </p>
-                  <p className="text-[11px] text-slate-600 leading-relaxed">
-                    리포트에 담긴 내 원국을 기억한 채로 달토 수다방에서 연애·이직·재물 꼬리 질문에 끝까지 답해줍니다.
-                  </p>
-                </div>
-              </div>
+              <p className="text-xs text-slate-600 font-semibold">
+                🥕 당근 1개로 사주 풀이 열면 위 9:16 · 4:5 고화질 PNG 카드를 바로 저장할 수 있어요!
+              </p>
             </div>
           </section>
 

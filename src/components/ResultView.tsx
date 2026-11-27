@@ -291,30 +291,26 @@ export function ResultView({
         </span>
       </div>
 
-      <div className="rounded-3xl overflow-hidden border-2 border-white bg-gradient-to-br from-[#f6e8ff] via-[#fff0eb] to-[#fce7f3] text-[#2b2242] shadow-lg">
-        <div className="relative h-52 overflow-hidden flex flex-col items-center justify-center p-4 text-center">
-          <div className="absolute -top-8 -left-6 w-32 h-32 rounded-full bg-[#f8b4a0]/55 blur-xl" />
-          <div className="absolute -bottom-8 -right-6 w-36 h-36 rounded-full bg-[#c8b2fa]/55 blur-xl" />
-          <div className="relative z-10 flex flex-col items-center">
-            <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-white shadow-md mb-2">
-              <img
-                src="/mascot/dalto-rabbit.jpg"
-                alt="달토끼 달토"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-0.5 text-[10px] font-extrabold text-violet-700 mb-1 shadow-2xs">
+      <div className="rounded-3xl overflow-hidden border-2 border-white bg-gradient-to-br from-[#fce7f3] via-[#fff2ea] to-[#f4ecff] text-[#2b2242] shadow-lg">
+        <div className="relative h-56 overflow-hidden">
+          <img
+            src="/mascot/dalto-party.jpg"
+            alt="달토끼 달토"
+            className="w-full h-full object-cover blur-[2.5px] scale-105 opacity-90"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-violet-950/25 via-violet-950/35 to-[#fff8fc]/90 flex flex-col items-center justify-center p-4 text-center">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-[10.5px] font-extrabold text-violet-700 mb-1.5 shadow">
               <Lock className="w-3 h-3" />
               파스텔 오라 공유 카드 잠금됨
             </span>
-            <p className="font-serif text-sm font-black">
+            <p className="font-serif text-sm font-black text-white drop-shadow">
               {report.input.name}님 · {theme.nameKo} 파스텔 오라 카드
             </p>
           </div>
         </div>
-        <div className="p-3.5 bg-white/85 backdrop-blur-sm border-t border-white text-center space-y-2.5">
+        <div className="p-3.5 bg-white/90 backdrop-blur-sm border-t border-white text-center space-y-2.5">
           <p className="text-xs text-slate-600 font-semibold">
-            🌸 라벤더 피치 · 🌙 달빛 크림 · ✨ 오행 맞춤 (9:16 & 4:5 저장)
+            🎀 실사 파티 달토 · 🥕 당근 달토 · 🌕 절구 달토 (9:16 & 4:5 저장)
           </p>
           <button
             type="button"
@@ -390,7 +386,7 @@ export function ResultView({
             <div className="flex items-center gap-3.5">
               <div className="relative w-16 h-20 sm:w-20 sm:h-24 rounded-2xl overflow-hidden border-2 border-orange-200/90 shrink-0 shadow-md bg-[#fdf6f0]">
                 <img
-                  src="/mascot/dalto-rabbit.jpg"
+                  src="/mascot/dalto-party.jpg"
                   alt="달토끼 달토"
                   className="w-full h-full object-cover"
                 />
@@ -446,7 +442,7 @@ export function ResultView({
               >
                 <div className="flex items-center gap-2 min-w-0 text-left">
                   <img
-                    src="/mascot/dalto-rabbit.jpg"
+                    src="/mascot/dalto-party.jpg"
                     alt="달토"
                     className="w-8 h-8 rounded-2xl object-cover border border-orange-300 shrink-0"
                   />
