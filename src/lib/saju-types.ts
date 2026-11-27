@@ -170,7 +170,7 @@ export interface WalletState {
   profile: WalletProfile;
   coins: number; // 당근 개수
   freeChatTickets: number; // 매일 밤 11시 리셋 무료 수다권
-  chatFollowUpCredits?: number; // 1회권/당근 1개당 부여되는 무료 꼬리질문 잔여 횟수 (최대 4회)
+  chatFollowUpCredits?: number; // 1회권/당근 1개당 부여되는 무료 꼬리질문 잔여 횟수 (최대 3회)
   lastFreeResetKey: string;
   unlockedReportIds: string[];
 }

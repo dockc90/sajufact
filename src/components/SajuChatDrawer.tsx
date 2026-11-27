@@ -426,6 +426,15 @@ export function SajuChatDrawer({
           </button>
         </div>
 
+        {/* 당근 1개 = 꼬리질문 3개 안내 칸 */}
+        <div className="bg-white/90 border-b border-violet-100/80 px-4 py-1.5 text-[11px] font-bold text-[#4c3787] flex items-center justify-center gap-1.5 text-center break-keep shrink-0">
+          <span>🥕 당근 1개(또는 무료수다권 1장)</span>
+          <span className="text-slate-400">=</span>
+          <span className="text-rose-600 font-extrabold">
+            기본 질문 1회 + 무료 꼬리질문 3개
+          </span>
+        </div>
+
         {/* STEP 1: 수다 상담사 모델 선택 */}
         {step === "select-model" && (
           <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-left">
@@ -644,11 +653,11 @@ export function SajuChatDrawer({
                 <span>
                   {activePersona.shortName}에게 상담 시작하기 (
                   {followUpCredits > 0
-                    ? `무료 꼬리질문 ${followUpCredits}회 남음`
+                    ? `무료 꼬리질문 ${followUpCredits}개 남음`
                     : freeChatTickets > 0
-                    ? "무료수다권 1장 · 5회 대화"
+                    ? "무료수다권 1장 · 꼬리질문 3개 포함"
                     : coins > 0
-                    ? "당근 1개 · 5회 대화"
+                    ? "당근 1개 · 꼬리질문 3개 포함"
                     : "당근 충전"}
                   )
                 </span>
@@ -758,11 +767,11 @@ export function SajuChatDrawer({
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={
                   followUpCredits > 0
-                    ? `무료 꼬리질문 ${followUpCredits}회 남음 · 더 구체적으로 물어보세요`
+                    ? `무료 꼬리질문 ${followUpCredits}개 남음 · 더 구체적으로 물어보세요`
                     : freeChatTickets > 0
-                    ? `무료수다권 1장(총 5회 대화) · ${activePersona.shortName}에게 질문하기`
+                    ? `무료수다권 1장(꼬리질문 3개 포함) · ${activePersona.shortName}에게 질문하기`
                     : coins > 0
-                    ? `당근 1개(총 5회 대화) · ${activePersona.shortName}에게 질문하기`
+                    ? `당근 1개(꼬리질문 3개 포함) · ${activePersona.shortName}에게 질문하기`
                     : "무료수다권 또는 당근을 충전하고 물어보세요"
                 }
                 className="flex-1 rounded-2xl bg-[#fdf6f0] border border-violet-100 px-3.5 py-2.5 text-xs sm:text-sm font-medium text-slate-900 outline-none focus:border-violet-400 focus:bg-white"

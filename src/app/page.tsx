@@ -148,7 +148,7 @@ const HOME_FAQ_ITEMS = [
   },
   {
     q: "무료 수다권은 언제 충전되나요?",
-    a: "매일 밤 11시(23:00 KST)가 되면 무료 수다권이 자동으로 1장씩 채워집니다. 무료 수다권 1장 또는 당근 1개를 사용하면 기본 질문 1회 + 무료 꼬리질문 4회(총 5회)까지 깊게 상담할 수 있어요.",
+    a: "매일 밤 11시(23:00 KST)가 되면 무료 수다권이 자동으로 1장씩 채워집니다. 당근 1개(또는 무료수다권 1장)를 사용하면 기본 질문 1회 + 무료 꼬리질문 3개(총 4회)까지 깊게 상담할 수 있어요.",
   },
   {
     q: "환불 규정은 어떻게 되나요?",
@@ -661,7 +661,7 @@ export default function HomePage() {
       syncWallet({
         ...wallet,
         freeChatTickets: wallet.freeChatTickets - 1,
-        chatFollowUpCredits: 4,
+        chatFollowUpCredits: 3,
       });
       return true;
     }
@@ -669,7 +669,7 @@ export default function HomePage() {
       syncWallet({
         ...wallet,
         coins: wallet.coins - 1,
-        chatFollowUpCredits: 4,
+        chatFollowUpCredits: 3,
       });
       return true;
     }
@@ -960,16 +960,18 @@ export default function HomePage() {
                     &ldquo;{currentProfileDraw.quote}&rdquo;
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="rounded-full bg-white/95 border border-white px-2.5 py-1 text-[11px] font-extrabold text-slate-700 shadow-2xs">
-                      # {currentProfileDraw.luckyNumber}
+                  <div className="space-y-1">
+                    <span className="block text-[10.5px] font-extrabold text-[#6b4f8c]">
+                      ✨ 오늘의 행운 컬러 · 아이템
                     </span>
-                    <span className="rounded-full bg-white/95 border border-white px-2.5 py-1 text-[11px] font-extrabold text-slate-700 shadow-2xs">
-                      🎨 {currentProfileDraw.luckyColor.split(/[·&,]/)[0].trim()}
-                    </span>
-                    <span className="rounded-full bg-white/95 border border-white px-2.5 py-1 text-[11px] font-extrabold text-slate-700 shadow-2xs">
-                      🍀 {currentProfileDraw.luckyItem.split(/[·&,]/)[0].trim()}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="rounded-full bg-white/95 border border-white px-2.5 py-1 text-[11px] font-extrabold text-slate-700 shadow-2xs">
+                        🎨 {currentProfileDraw.luckyColor.split(/[·&,]/)[0].trim()}
+                      </span>
+                      <span className="rounded-full bg-white/95 border border-white px-2.5 py-1 text-[11px] font-extrabold text-slate-700 shadow-2xs">
+                        🍀 {currentProfileDraw.luckyItem.split(/[·&,]/)[0].trim()}
+                      </span>
+                    </div>
                   </div>
 
                   <div>
