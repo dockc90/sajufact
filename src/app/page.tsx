@@ -74,7 +74,7 @@ const CHUNKY_MENU_CARDS: Array<{
     coinCost: 1,
     badge: "BEST",
     cardBg: "bg-[#fff8d2]",
-    image: "/mascot/dalto-rabbit.jpg",
+    image: "/mascot/dalto-basic.jpg",
   },
   {
     id: "newyear2027",
