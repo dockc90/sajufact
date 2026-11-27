@@ -52,7 +52,10 @@ import { SajuChatDrawer } from "@/components/SajuChatDrawer";
 import { SocialLoginModal } from "@/components/SocialLoginModal";
 import { TarotModal } from "@/components/TarotModal";
 import { WalletChargeModal } from "@/components/WalletChargeModal";
-import type { PastelAuraMood } from "@/components/ShareCardStudio";
+import {
+  TIER_CARD_THEMES,
+  type CardTierKey,
+} from "@/components/ShareCardStudio";
 
 type ScreenPhase = "home" | "analyzing" | "result";
 
@@ -218,8 +221,8 @@ export default function HomePage() {
   const [catcherModalOpen, setCatcherModalOpen] = useState(false);
   const [dailyDraw, setDailyDraw] = useState<DailyCatcherDraw | null>(null);
 
-  // 파스텔 오라 인스타 카드 쇼케이스 프리뷰 상태
-  const [showcaseMood, setShowcaseMood] = useState<PastelAuraMood>("party");
+  // 파스텔 오라 인스타 카드 쇼케이스 프리뷰 상태 (티어별 SSR/SR/S/A)
+  const [showcaseTier, setShowcaseTier] = useState<CardTierKey>("SSR");
   const [showcaseRatio, setShowcaseRatio] = useState<"9:16" | "4:5">("9:16");
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [policyModal, setPolicyModal] = useState<"terms" | "privacy" | null>(null);
@@ -1351,24 +1354,18 @@ export default function HomePage() {
                 </h2>
               </div>
               <div className="flex items-center gap-1 bg-violet-100/70 p-1 rounded-2xl">
-                {(
-                  [
-                    { id: "party", label: "🎀 실사 파티 달토" },
-                    { id: "carrot", label: "🥕 당근 달토" },
-                    { id: "moon", label: "🌕 절구 달토" },
-                  ] as const
-                ).map((tab) => (
+                {(["SSR", "SR", "S", "A"] as CardTierKey[]).map((tKey) => (
                   <button
-                    key={tab.id}
+                    key={tKey}
                     type="button"
-                    onClick={() => setShowcaseMood(tab.id)}
+                    onClick={() => setShowcaseTier(tKey)}
                     className={`px-2.5 py-1 rounded-xl text-[10px] sm:text-[11px] font-extrabold transition whitespace-nowrap ${
-                      showcaseMood === tab.id
+                      showcaseTier === tKey
                         ? "bg-white text-[#4c3787] shadow-xs"
                         : "text-slate-600 hover:bg-white/60"
                     }`}
                   >
-                    {tab.label}
+                    {TIER_CARD_THEMES[tKey].tabLabel}
                   </button>
                 ))}
               </div>
@@ -1412,77 +1409,82 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col items-center gap-3">
-              <div
-                className={`${
-                  showcaseRatio === "9:16" ? "w-[260px] h-[440px]" : "w-[276px] h-[345px]"
-                } rounded-[26px] relative overflow-hidden border-2 border-white shadow-xl flex flex-col text-[#2b2242] transition-all duration-300 bg-[#fff8fc]`}
-              >
-                {/* 상단 풀블리드 달토 사진 */}
-                <div className="relative flex-1 min-h-0 overflow-hidden">
-                  <img
-                    src={
-                      showcaseMood === "party"
-                        ? "/mascot/dalto-party.jpg"
-                        : showcaseMood === "carrot"
-                        ? "/mascot/dalto-rabbit.jpg"
-                        : "/mascot/dalto-mortar.jpg"
-                    }
-                    alt="달토끼 달토"
-                    className="w-full h-full object-cover object-center"
-                  />
-                  <div className="absolute inset-x-0 top-0 px-2.5 pt-2.5 flex items-center justify-between gap-1 pointer-events-none">
-                    <span className="inline-flex items-center gap-1 bg-white/90 rounded-full px-2 py-0.5 text-[9px] font-extrabold text-[#4b3880] shadow-2xs">
-                      🐇 예시 카드 · SAMPLE
-                    </span>
-                    <span className="rounded-full bg-gradient-to-r from-[#ec4899] to-[#8b5cf6] text-white px-2 py-0.5 text-[8.5px] font-extrabold shadow-2xs">
-                      TIER: S · 상위 8%
-                    </span>
-                  </div>
-                  <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[#fff8fc] to-transparent pointer-events-none" />
-                </div>
-
-                {/* 하단 컴팩트 파스텔 정보 패널 */}
-                <div className="shrink-0 px-3 py-2.5 space-y-1.5 bg-gradient-to-b from-[#fff8fc] to-[#fdf4ff] border-t border-white">
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="text-[9.5px] font-extrabold text-[#832d68]">
-                      예시) 김민지 · 신해(辛亥)일주
-                    </span>
-                    <div className="flex gap-0.5">
-                      {["庚午", "庚辰", "辛亥", "癸巳"].map((gz) => (
-                        <span
-                          key={gz}
-                          className="px-1 py-0.5 rounded bg-white border border-violet-100 text-[8px] font-serif font-black"
-                        >
-                          {gz}
+              {(() => {
+                const previewTheme = TIER_CARD_THEMES[showcaseTier];
+                return (
+                  <div
+                    className={`${
+                      showcaseRatio === "9:16" ? "w-[260px] h-[440px]" : "w-[276px] h-[345px]"
+                    } rounded-[26px] relative overflow-hidden border-2 border-white shadow-xl flex flex-col text-[#2b2242] transition-all duration-300 bg-gradient-to-br ${previewTheme.bg}`}
+                  >
+                    {/* 상단 풀블리드 티어별 달토 사진 */}
+                    <div className="relative flex-1 min-h-0 overflow-hidden">
+                      <img
+                        src={previewTheme.image}
+                        alt={`${showcaseTier} 티어 달토 카드`}
+                        className="w-full h-full object-cover object-center"
+                      />
+                      <div className="absolute inset-x-0 top-0 px-2.5 pt-2.5 flex items-center justify-between gap-1 pointer-events-none">
+                        <span className="inline-flex items-center gap-1 bg-white/90 rounded-full px-2 py-0.5 text-[9px] font-extrabold text-[#4b3880] shadow-2xs">
+                          🐇 예시 카드 · SAMPLE
                         </span>
-                      ))}
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[8.5px] font-extrabold shadow-2xs ${previewTheme.accentPill}`}
+                        >
+                          {previewTheme.sampleBadge}
+                        </span>
+                      </div>
+                      <div
+                        className={`absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t ${previewTheme.fadeColor} to-transparent pointer-events-none`}
+                      />
+                    </div>
+
+                    {/* 하단 컴팩트 파스텔 정보 패널 */}
+                    <div
+                      className={`shrink-0 px-3 py-2.5 space-y-1.5 border-t border-white ${previewTheme.panelBg}`}
+                    >
+                      <div className="flex items-center justify-between gap-1">
+                        <span className={`text-[9.5px] font-extrabold ${previewTheme.accentText}`}>
+                          예시) 김민지 · 신해(辛亥)일주
+                        </span>
+                        <div className="flex gap-0.5">
+                          {["庚午", "庚辰", "辛亥", "癸巳"].map((gz) => (
+                            <span
+                              key={gz}
+                              className="px-1 py-0.5 rounded bg-white border border-violet-100 text-[8px] font-serif font-black"
+                            >
+                              {gz}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="rounded-xl bg-white/90 border border-white px-2.5 py-1.5 font-serif text-[11px] font-black leading-snug break-keep text-center">
+                        “겉은 무덤덤해도 속은 불꽃, 결정타 한 방이 있는 팔자”
+                      </p>
+                      <div className="grid grid-cols-2 gap-1 text-[8.5px] text-left">
+                        <div className="rounded-lg bg-[#fff7ef] px-2 py-1 border border-orange-100">
+                          <span className="block text-[7.5px] font-bold text-orange-600">
+                            🥕 횡재 피크
+                          </span>
+                          <span className="font-extrabold">9월 (94점)</span>
+                        </div>
+                        <div className="rounded-lg bg-[#fff1f4] px-2 py-1 border border-rose-100">
+                          <span className="block text-[7.5px] font-bold text-rose-600">
+                            ⚠️ 주의 시기
+                          </span>
+                          <span className="font-extrabold">2027년 4월</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-[8.5px] font-bold text-[#55447a]">
+                        <span>#파스텔오라 #달토처방</span>
+                        <span className="font-serif font-black tracking-widest">
+                          🐇 sajufact.kr
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <p className="rounded-xl bg-white/90 border border-white px-2.5 py-1.5 font-serif text-[11px] font-black leading-snug break-keep text-center">
-                    “겉은 무덤덤해도 속은 불꽃, 결정타 한 방이 있는 팔자”
-                  </p>
-                  <div className="grid grid-cols-2 gap-1 text-[8.5px] text-left">
-                    <div className="rounded-lg bg-[#fff7ef] px-2 py-1 border border-orange-100">
-                      <span className="block text-[7.5px] font-bold text-orange-600">
-                        🥕 횡재 피크
-                      </span>
-                      <span className="font-extrabold">9월 (94점)</span>
-                    </div>
-                    <div className="rounded-lg bg-[#fff1f4] px-2 py-1 border border-rose-100">
-                      <span className="block text-[7.5px] font-bold text-rose-600">
-                        ⚠️ 주의 시기
-                      </span>
-                      <span className="font-extrabold">2027년 4월</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between text-[8.5px] font-bold text-[#55447a]">
-                    <span>#파스텔오라 #달토처방</span>
-                    <span className="font-serif font-black tracking-widest">
-                      🐇 sajufact.kr
-                    </span>
-                  </div>
-                </div>
-              </div>
+                );
+              })()}
               <button
                 type="button"
                 onClick={() => void runAnalysis("lifetime")}

@@ -686,9 +686,9 @@ const ONE_LINE_FACTS: Record<ElementKey, Record<WorryTopic, string[]>> = {
 
 const TIER_LIST = [
   { tier: "TIER: SSR · 상위 3%", desc: "2027 정미년 대운 정중앙 적중" },
-  { tier: "TIER: SSR · 상위 4%", desc: "타고난 역전 잠재력 최상위권" },
-  { tier: "TIER: SR+ · 상위 7%", desc: "한 번 터지면 판을 뒤집는 기질" },
-  { tier: "TIER: S · 상위 11%", desc: "실리와 타이밍만 잡으면 급상승" },
+  { tier: "TIER: SR · 상위 8%", desc: "한 번 터지면 판을 뒤집는 기질" },
+  { tier: "TIER: S · 상위 18%", desc: "실리와 타이밍만 잡으면 급상승" },
+  { tier: "TIER: A · 상위 32%", desc: "든든한 내실과 대기만성 잠재력" },
 ];
 
 const TALISMAN_MAP: Record<ElementKey, Omit<SajuReport["talisman"], "missingElement" | "missingElementKo">> = {

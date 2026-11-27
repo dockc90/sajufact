@@ -11,48 +11,77 @@ interface ShareCardStudioProps {
 }
 
 type CardRatio = "9:16" | "4:5";
-export type PastelAuraMood = "party" | "carrot" | "moon";
+export type CardTierKey = "SSR" | "SR" | "S" | "A";
 
-const AURA_MOODS: Record<
-  PastelAuraMood,
-  {
-    label: string;
-    image: string;
-    bg: string;
-    panelBg: string;
-    accentPill: string;
-    accentText: string;
-    fadeColor: string;
-  }
-> = {
-  party: {
-    label: "🎀 실사 파티 달토",
-    image: "/mascot/dalto-party.jpg",
+export interface TierCardTheme {
+  key: CardTierKey;
+  tabLabel: string;
+  sampleBadge: string;
+  image: string;
+  bg: string;
+  panelBg: string;
+  accentPill: string;
+  accentText: string;
+  fadeColor: string;
+}
+
+export const TIER_CARD_THEMES: Record<CardTierKey, TierCardTheme> = {
+  SSR: {
+    key: "SSR",
+    tabLabel: "👑 SSR",
+    sampleBadge: "TIER: SSR · 상위 3%",
+    image: "/cards/tier-ssr.jpg",
+    bg: "from-[#fef3c7] via-[#fff5eb] to-[#f3e8ff]",
+    panelBg: "bg-gradient-to-b from-[#fffaf0] via-[#fff6ec] to-[#faf5ff]",
+    accentPill:
+      "bg-gradient-to-r from-[#d97706] via-[#f59e0b] to-[#7c3aed] text-white",
+    accentText: "text-[#8a4b08]",
+    fadeColor: "from-[#fffaf0]",
+  },
+  SR: {
+    key: "SR",
+    tabLabel: "💎 SR",
+    sampleBadge: "TIER: SR · 상위 8%",
+    image: "/cards/tier-sr.jpg",
+    bg: "from-[#ede9fe] via-[#fdf2f8] to-[#fff7ed]",
+    panelBg: "bg-gradient-to-b from-[#faf7ff] via-[#fdf5fb] to-[#fff9f3]",
+    accentPill:
+      "bg-gradient-to-r from-[#7c3aed] via-[#a855f7] to-[#ec4899] text-white",
+    accentText: "text-[#5b21b6]",
+    fadeColor: "from-[#faf7ff]",
+  },
+  S: {
+    key: "S",
+    tabLabel: "🎀 S",
+    sampleBadge: "TIER: S · 상위 18%",
+    image: "/cards/tier-s.jpg",
     bg: "from-[#fce7f3] via-[#fff2ea] to-[#f4ecff]",
     panelBg: "bg-gradient-to-b from-[#fff8fc] via-[#fff5fa] to-[#fdf6ff]",
-    accentPill: "bg-gradient-to-r from-[#ec4899] to-[#8b5cf6] text-white",
-    accentText: "text-[#832d68]",
+    accentPill: "bg-gradient-to-r from-[#ec4899] to-[#f97316] text-white",
+    accentText: "text-[#9d174d]",
     fadeColor: "from-[#fff8fc]",
   },
-  carrot: {
-    label: "🥕 당근 달토",
-    image: "/mascot/dalto-rabbit.jpg",
-    bg: "from-[#ffeef5] via-[#fff2ec] to-[#f6ecff]",
-    panelBg: "bg-gradient-to-b from-[#fff9fb] via-[#fff4f8] to-[#fdf7ff]",
-    accentPill: "bg-gradient-to-r from-[#f97316] to-[#ec4899] text-white",
-    accentText: "text-[#9a4616]",
-    fadeColor: "from-[#fff9fb]",
-  },
-  moon: {
-    label: "🌕 절구 달토",
-    image: "/mascot/dalto-mortar.jpg",
-    bg: "from-[#f3eaff] via-[#fff3eb] to-[#fff7e8]",
-    panelBg: "bg-gradient-to-b from-[#faf6ff] via-[#fff7f2] to-[#fff9f0]",
-    accentPill: "bg-gradient-to-r from-[#6366f1] to-[#d946ef] text-white",
-    accentText: "text-[#4c3787]",
-    fadeColor: "from-[#faf6ff]",
+  A: {
+    key: "A",
+    tabLabel: "🌙 A",
+    sampleBadge: "TIER: A · 상위 32%",
+    image: "/cards/tier-a.jpg",
+    bg: "from-[#e0e7ff] via-[#f5f3ff] to-[#fff7ed]",
+    panelBg: "bg-gradient-to-b from-[#f8f9ff] via-[#faf6ff] to-[#fffaf4]",
+    accentPill: "bg-gradient-to-r from-[#4f46e5] to-[#8b5cf6] text-white",
+    accentText: "text-[#3730a3]",
+    fadeColor: "from-[#f8f9ff]",
   },
 };
+
+export function resolveCardTier(tierBadge?: string): CardTierKey {
+  const upper = (tierBadge || "").toUpperCase();
+  if (upper.includes("SSR")) return "SSR";
+  if (upper.includes("SR")) return "SR";
+  if (/\bS\b/.test(upper)) return "S";
+  if (/\bA\b/.test(upper)) return "A";
+  return "S";
+}
 
 const ELEMENT_PASTEL_BARS: Record<ElementKey, string> = {
   wood: "bg-[#8fd9a8]",
@@ -64,13 +93,14 @@ const ELEMENT_PASTEL_BARS: Record<ElementKey, string> = {
 
 export function ShareCardStudio({ report }: ShareCardStudioProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [mood, setMood] = useState<PastelAuraMood>("party");
   const [ratio, setRatio] = useState<CardRatio>("9:16");
   const [downloading, setDownloading] = useState<CardRatio | null>(null);
   const [savedToast, setSavedToast] = useState<string | null>(null);
 
   const theme = ELEMENT_THEMES[report.dominantElement];
-  const auraStyle = AURA_MOODS[mood];
+  const cardTier = resolveCardTier(report.tierBadge);
+  const tierTheme = TIER_CARD_THEMES[cardTier];
+
   const dayPillar =
     report.pillars.find((p) => p.label === "일주") ?? report.pillars[1];
   const bestMonth = [...report.monthlyFlow].sort((a, b) => b.score - a.score)[0];
@@ -90,7 +120,7 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
       return;
     }
 
-    const fileName = `sajufact_${report.input.name}_dalto_${mood}_${targetRatio.replace(":", "x")}.png`;
+    const fileName = `daltosaju_${report.input.name}_tier_${cardTier.toLowerCase()}_${targetRatio.replace(":", "x")}.png`;
 
     try {
       let dataUrl: string;
@@ -112,7 +142,7 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
       link.href = dataUrl;
       link.click();
 
-      setSavedToast(`${targetRatio} 파스텔 오라 카드가 고화질 PNG로 저장되었습니다!`);
+      setSavedToast(`${targetRatio} ${cardTier} 티어 오라 카드가 고화질 PNG로 저장되었습니다!`);
       setTimeout(() => setSavedToast(null), 3000);
     } catch {
       setSavedToast("이미지 생성 중 잠시 오류가 발생했습니다. 다시 시도해 주세요.");
@@ -128,10 +158,10 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
         <div>
           <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-violet-700 bg-violet-100/80 px-2.5 py-0.5 rounded-full">
             <Camera className="w-3 h-3" />
-            파스텔 오라 인스타그램 공유 카드
+            티어별 달토 오라 인스타그램 카드
           </span>
           <h3 className="font-serif text-base sm:text-lg font-black text-slate-900 mt-1">
-            {report.input.name}님의 달토 오라 카드 · {theme.nameKo}
+            {report.input.name}님의 {cardTier} 티어 카드 · {theme.nameKo}
           </h3>
         </div>
         <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">
@@ -139,22 +169,24 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
         </span>
       </div>
 
-      {/* 3종 달토 컨셉 선택 */}
-      <div className="grid grid-cols-3 gap-1.5 p-1 bg-violet-100/70 rounded-2xl">
-        {(Object.keys(AURA_MOODS) as PastelAuraMood[]).map((mKey) => (
-          <button
-            key={mKey}
-            type="button"
-            onClick={() => setMood(mKey)}
-            className={`py-2 px-1 rounded-xl text-[10.5px] sm:text-[11px] font-extrabold transition whitespace-nowrap ${
-              mood === mKey
-                ? "bg-white text-[#4c3787] shadow-sm"
-                : "text-slate-600 hover:bg-white/60"
-            }`}
-          >
-            {AURA_MOODS[mKey].label}
-          </button>
-        ))}
+      {/* 4단계 티어 희귀도 표시 바 (사주 결과 티어 자동 매칭) */}
+      <div className="grid grid-cols-4 gap-1.5 p-1 bg-violet-100/70 rounded-2xl">
+        {(["SSR", "SR", "S", "A"] as CardTierKey[]).map((tKey) => {
+          const isMine = cardTier === tKey;
+          return (
+            <div
+              key={tKey}
+              className={`py-1.5 px-1 rounded-xl text-[10.5px] sm:text-[11px] font-extrabold text-center transition whitespace-nowrap ${
+                isMine
+                  ? `${TIER_CARD_THEMES[tKey].accentPill} shadow-sm`
+                  : "text-slate-500 bg-white/40"
+              }`}
+            >
+              {TIER_CARD_THEMES[tKey].tabLabel}
+              {isMine ? " · 내 등급" : ""}
+            </div>
+          );
+        })}
       </div>
 
       {/* 9:16 / 4:5 비율 전환 탭 */}
@@ -183,19 +215,19 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
         </button>
       </div>
 
-      {/* PNG 저장 캡처 영역 — 상단 풀블리드 달토 사진 + 하단 파스텔 오라 정보 패널 */}
+      {/* PNG 저장 캡처 영역 — 티어 전용 달토 일러스트 + 하단 파스텔 오라 정보 패널 */}
       <div className="flex justify-center">
         <div
           ref={cardRef}
           className={`${
             ratio === "9:16" ? "w-[324px] h-[576px]" : "w-[340px] h-[425px]"
-          } rounded-[28px] bg-gradient-to-br ${auraStyle.bg} text-[#2b2242] relative overflow-hidden shadow-[0_22px_55px_rgba(139,92,246,0.24)] border-2 border-white flex flex-col select-none transition-all duration-300`}
+          } rounded-[28px] bg-gradient-to-br ${tierTheme.bg} text-[#2b2242] relative overflow-hidden shadow-[0_22px_55px_rgba(139,92,246,0.24)] border-2 border-white flex flex-col select-none transition-all duration-300`}
         >
-          {/* 1) 상단 55~60% 풀블리드 귀여운 달토 사진 (얼굴 가림 0%) */}
+          {/* 1) 상단 풀블리드 티어 전용 달토 사진 */}
           <div className="relative flex-1 min-h-0 overflow-hidden">
             <img
-              src={auraStyle.image}
-              alt={auraStyle.label}
+              src={tierTheme.image}
+              alt={`${cardTier} 티어 달토 카드`}
               className="w-full h-full object-cover object-center"
             />
             {/* 상단 가장자리 작은 배지 2개 */}
@@ -204,24 +236,24 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
                 🐇 달토 오라 · {theme.nameKo}
               </span>
               <span
-                className={`px-2.5 py-0.5 rounded-full text-[9.5px] font-extrabold whitespace-nowrap shadow-xs ${auraStyle.accentPill}`}
+                className={`px-2.5 py-0.5 rounded-full text-[9.5px] font-extrabold whitespace-nowrap shadow-xs ${tierTheme.accentPill}`}
               >
                 {report.tierBadge}
               </span>
             </div>
             {/* 하단 패널과 자연스럽게 이어지는 파스텔 페이드 */}
             <div
-              className={`absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t ${auraStyle.fadeColor} to-transparent pointer-events-none`}
+              className={`absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t ${tierTheme.fadeColor} to-transparent pointer-events-none`}
             />
           </div>
 
           {/* 2) 하단 컴팩트 파스텔 정보 패널 */}
           <div
-            className={`shrink-0 px-3.5 py-2.5 space-y-2 border-t border-white/90 ${auraStyle.panelBg}`}
+            className={`shrink-0 px-3.5 py-2.5 space-y-2 border-t border-white/90 ${tierTheme.panelBg}`}
           >
             {/* 이름 + 일주 + 4주 한자 미니 배지 */}
             <div className="flex items-center justify-between gap-2">
-              <span className={`text-[10.5px] font-extrabold truncate ${auraStyle.accentText}`}>
+              <span className={`text-[10.5px] font-extrabold truncate ${tierTheme.accentText}`}>
                 {report.input.name} · {dayPillar.hangul}({dayPillar.hanja})일주
               </span>
               <div className="flex items-center gap-1 shrink-0">
