@@ -5,6 +5,12 @@
   "functions": {
     "src/app/api/analyze/route.ts": {
       "maxDuration": 30
+    },
+    "src/app/api/saju/analyze/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/saju/chat/route.ts": {
+      "maxDuration": 30
     }
   },
   "headers": [
