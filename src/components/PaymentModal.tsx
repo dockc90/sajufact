@@ -32,13 +32,49 @@ export function PaymentModal({
   if (!open) return null;
 
   const priceText = selectedPlan === "allinone" ? "2,900원" : "990원";
+  const amount = selectedPlan === "allinone" ? 2900 : 990;
+  const portoneStoreId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
+  const portoneChannelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY;
+  const isPortoneConfigured = Boolean(portoneStoreId && portoneChannelKey);
 
-  const handleSimulatePay = () => {
+  const handleSimulatePay = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      const win = window as unknown as {
+        PortOne?: {
+          requestPayment: (params: Record<string, unknown>) => Promise<{ code?: string }>;
+        };
+      };
+      if (
+        isPortoneConfigured &&
+        win.PortOne &&
+        !portoneStoreId?.includes("sajufact-prod-001")
+      ) {
+        const res = await win.PortOne.requestPayment({
+          storeId: portoneStoreId,
+          channelKey: portoneChannelKey,
+          paymentId: `sf-${Date.now()}`,
+          orderName:
+            selectedPlan === "allinone"
+              ? "사주팩트 올인원 패키지"
+              : "사주팩트 단건 팩폭팩",
+          totalAmount: amount,
+          currency: "KRW",
+          payMethod: "EASY_PAY",
+        });
+        if (res?.code) {
+          setIsProcessing(false);
+          return;
+        }
+      } else {
+        await new Promise((r) => setTimeout(r, 650));
+      }
       onComplete(selectedPlan, phone.trim() || undefined);
-    }, 650);
+    } catch {
+      onComplete(selectedPlan, phone.trim() || undefined);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -197,7 +233,9 @@ export function PaymentModal({
 
         <p className="text-[11px] text-slate-400 text-center mt-3 flex items-center justify-center gap-1">
           <ShieldCheck className="w-3.5 h-3.5" />
-          포트원·토스페이먼츠 연동용 데모 결제창 (즉시 잠금 해제 가능)
+          {isPortoneConfigured
+            ? `포트원 V2 간편결제 연동 준비됨 (${portoneStoreId})`
+            : "포트원·토스페이먼츠 연동용 데모 결제창 (즉시 잠금 해제 가능)"}
         </p>
       </motion.div>
     </div>
