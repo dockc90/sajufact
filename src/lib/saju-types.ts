@@ -215,6 +215,8 @@ export interface DailyCatcherDraw {
   luckyItem: string;
 }
 
+export type ChatPersonaId = "fact" | "master" | "warm" | "strategist";
+
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant";
