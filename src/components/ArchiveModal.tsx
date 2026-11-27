@@ -179,7 +179,7 @@ export function ArchiveModal({
     if (plan === "single") {
       return (
         <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-bold text-indigo-700">
-          팩폭팩 해제
+          단건 리포트 해제
         </span>
       );
     }

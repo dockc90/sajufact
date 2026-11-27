@@ -18,12 +18,12 @@ const notoSerifKr = Noto_Serif_KR({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sajufact.kr"),
-  title: "사주팩트 (SajuFact) | 위로 대신 뼈 때리는 AI 사주·타로",
+  title: "사주팩트 (SajuFact) | AI 명리 사주·수호 영물 카드",
   description:
-    "2027 정미년 신년운세, 평생 사주 팩폭, 재물·이직운, 연애·궁합 스캔, 오늘의 무료 타로까지. PC와 모바일 웹에서 오라(Aura) 모던 동양화 운명 카드를 저장하세요.",
+    "2027 정미년 신년운세, 평생 사주 원국 풀이, 재물·이직운, 연애·궁합 스캔, 오늘의 무료 타로까지. 내 오행 수호 영물 화보와 정밀 운세 카드를 소장하세요.",
   openGraph: {
-    title: "사주팩트 (SajuFact) — 위로 빼고 팩트만",
-    description: "내 사주 오행 오라(Aura) 카드와 뼈 때리는 2027 운세 리포트",
+    title: "사주팩트 (SajuFact) — 팩트 기반 AI 사주·수호 영물",
+    description: "내 사주 오행 수호 영물 카드와 정밀 2027 운세 리포트",
     siteName: "사주팩트 (SajuFact)",
   },
 };

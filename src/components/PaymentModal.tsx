@@ -77,7 +77,7 @@ export function PaymentModal({
             ? "사주팩트 올인원 업그레이드 (차액 결제)"
             : resolvedPlan === "allinone"
             ? "사주팩트 올인원 패키지"
-            : "사주팩트 단건 팩폭팩",
+            : "사주팩트 단건 테마 리포트",
           totalAmount: amount,
           currency: "KRW",
           payMethod: "EASY_PAY",
@@ -128,7 +128,7 @@ export function PaymentModal({
         {/* 2단 업셀링 플랜 선택 */}
         {isUpgradeFromSingle && (
           <div className="mb-3 rounded-2xl border border-emerald-200 bg-emerald-50/90 px-3.5 py-2.5 text-xs font-bold text-emerald-900">
-            ✅ 단건 팩폭팩(990원) 기결제가 확인되어{" "}
+            ✅ 단건 테마 리포트(990원) 기결제가 확인되어{" "}
             <span className="underline">차액 1,910원만</span> 결제됩니다.
           </div>
         )}
@@ -167,7 +167,7 @@ export function PaymentModal({
             <ul className="text-xs text-slate-600 space-y-1 mt-1.5">
               <li className="flex items-center gap-1.5">
                 <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                선택 테마 전체 팩폭 + 인스타 오라 카드 (9:16 / 4:5 저장)
+                선택 테마 전체 풀이 + 인스타 수호신 카드 (9:16 / 4:5 저장)
               </li>
               <li className="flex items-center gap-1.5 font-semibold text-slate-800">
                 <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -195,7 +195,7 @@ export function PaymentModal({
             <div className="flex items-center justify-between">
               <div>
                 <span className="font-bold text-slate-900">
-                  단건 팩폭팩 {isUpgradeFromSingle ? "(이미 결제됨)" : ""}
+                  단건 테마 리포트 {isUpgradeFromSingle ? "(이미 결제됨)" : ""}
                 </span>
                 <p className="text-xs text-slate-500 mt-0.5">
                   선택한 테마 1종 전체 리포트 + 인스타 공유 카드 저장

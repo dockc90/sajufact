@@ -16,6 +16,7 @@ import {
 import {
   BIRTH_HOUR_OPTIONS,
   ELEMENT_THEMES,
+  GUARDIAN_BEAST_META,
   MENU_ITEMS,
   WORRY_OPTIONS,
   generateSajuReport,
@@ -41,7 +42,6 @@ import { ResultView } from "@/components/ResultView";
 import { TarotModal } from "@/components/TarotModal";
 import {
   OrientalCardFrameSvg,
-  OrientalElementArt,
   VermilionSealSvg,
 } from "@/components/OrientalArtSvg";
 import type { CardEdition } from "@/components/ShareCardStudio";
@@ -59,7 +59,7 @@ const MENU_SUB_FOCUS: Record<
   }
 > = {
   newyear2027: {
-    sectionTitle: "🔥 2027 정미년에서 가장 팩폭 받고 싶은 분야 (1개)",
+    sectionTitle: "🔥 2027 정미년에서 가장 궁금한 핵심 분야 (1개)",
     options: [
       { value: "wealth", label: "2027 재물·횡재", emoji: "💸" },
       { value: "love", label: "2027 연애·결혼", emoji: "💘" },
@@ -108,7 +108,7 @@ const MENU_SUB_FOCUS: Record<
     options: [{ value: "health", label: "건강·번아웃 전체 스캔", emoji: "🏥" }],
   },
   tarot: {
-    sectionTitle: "지금 가장 팩폭 받고 싶은 고민 (1개)",
+    sectionTitle: "지금 가장 집중해서 볼 고민 (1개)",
     options: WORRY_OPTIONS,
   },
 };
@@ -116,7 +116,7 @@ const MENU_SUB_FOCUS: Record<
 const NAV_LABELS: Record<MenuCategory, string> = {
   newyear2027: "2027 신년운세",
   today: "오늘의 운세",
-  lifetime: "평생 사주 팩폭",
+  lifetime: "평생 사주 풀이",
   wealth: "재물·이직운",
   compatibility: "연애·궁합 스캔",
   health: "건강·번아웃",
@@ -151,6 +151,7 @@ export default function HomePage() {
   const [birthQuickInput, setBirthQuickInput] = useState("19960514");
   const [formError, setFormError] = useState<string | null>(null);
   const [showcaseEdition, setShowcaseEdition] = useState<CardEdition>("aura");
+  const [showcaseElement, setShowcaseElement] = useState<ElementKey>("metal");
 
   const applyBirthDate = (isoDate: string) => {
     setBirthDate(isoDate);
@@ -486,15 +487,15 @@ export default function HomePage() {
                 </div>
 
                 <h1 className="font-serif text-3xl sm:text-4xl font-black tracking-tight text-slate-900 leading-tight break-keep">
-                  위로 대신 뼈 때리는{" "}
+                  빈말 대신 정확히 짚어주는{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-700 via-rose-600 to-indigo-700">
-                    AI 사주·타로 팩트폭격
+                    AI 명리 사주·수호 영물 스캔
                   </span>
                 </h1>
 
                 <p className="text-xs sm:text-sm font-medium text-slate-600 leading-relaxed break-keep">
-                  만세력 사주 원국 기반 정밀 분석부터 인스타그램 공유용{" "}
-                  <strong className="text-slate-900">오행 오라(Aura) 운명 카드</strong>까지 한 번에 확인하세요.
+                  만세력 사주 원국 정밀 분석부터 나를 지켜주는{" "}
+                  <strong className="text-slate-900">오행 수호 영물 화보 카드</strong>까지 한 번에 확인하세요.
                 </p>
               </div>
 
@@ -516,23 +517,26 @@ export default function HomePage() {
                 </motion.div>
               )}
 
-              {/* ① 5대 범용 메뉴 선택 카드 */}
-              {/* 인스타 소장용 3종 결과 카드 쇼케이스 (차별화 비주얼) */}
+              {/* 수호 영물 화보 시그니처 카드 쇼케이스 */}
+              {(() => {
+                const scTheme = ELEMENT_THEMES[showcaseElement];
+                const scGuardian = GUARDIAN_BEAST_META[showcaseElement];
+                return (
               <section className="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5 border border-amber-200/70">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <div>
                     <span className="text-[10px] font-extrabold tracking-widest text-rose-600 uppercase">
-                      SIGNATURE RESULT CARD
+                      SACRED GUARDIAN CARD
                     </span>
                     <h2 className="font-serif text-sm sm:text-base font-black text-slate-900">
-                      스캔 즉시 3가지 컨셉 카드로 소장 & 인스타 공유
+                      내 사주가 부르는 수호 영물 화보 & 3종 결과 카드
                     </h2>
                   </div>
                   <div className="flex items-center gap-1 bg-slate-900/10 p-1 rounded-xl">
                     {[
-                      { id: "aura" as const, label: "✨ 오라 동양화" },
-                      { id: "receipt" as const, label: "🧾 팩폭 영수증" },
-                      { id: "tarot" as const, label: "🌙 홀로그램 타로" },
+                      { id: "aura" as const, label: "🐅 수호 영물 화보" },
+                      { id: "tarot" as const, label: "🌙 신수 아르카나" },
+                      { id: "receipt" as const, label: "📜 천명 감정서" },
                     ].map((tab) => (
                       <button
                         key={tab.id}
@@ -550,65 +554,67 @@ export default function HomePage() {
                   </div>
                 </div>
 
+                {/* 5대 수호 영물 선택 미리보기 칩 */}
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                  {(
+                    [
+                      { key: "metal" as const, emoji: "🐅", label: "백호 · 금(金)" },
+                      { key: "wood" as const, emoji: "🐉", label: "청룡 · 목(木)" },
+                      { key: "fire" as const, emoji: "🦅", label: "주작 · 화(火)" },
+                      { key: "earth" as const, emoji: "🦌", label: "황룡 · 토(土)" },
+                      { key: "water" as const, emoji: "🐺", label: "현무 · 수(水)" },
+                    ] as const
+                  ).map((item) => (
+                    <button
+                      key={item.key}
+                      type="button"
+                      onClick={() => setShowcaseElement(item.key)}
+                      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold border transition ${
+                        showcaseElement === item.key
+                          ? "bg-slate-900 text-amber-200 border-slate-900 shadow-sm"
+                          : "bg-white/80 text-slate-700 border-slate-200 hover:bg-white"
+                      }`}
+                    >
+                      {item.emoji} {item.label}
+                    </button>
+                  ))}
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
-                  {/* 좌측 카드 미니어처 프리뷰 */}
+                  {/* 좌측 수호 영물 카드 프리뷰 */}
                   <div className="sm:col-span-6 flex justify-center">
                     {showcaseEdition === "aura" && (
-                      <div
-                        style={{
-                          background: ELEMENT_THEMES.water.cardBgStyle,
-                          color: ELEMENT_THEMES.water.textOnCard,
-                        }}
-                        className="w-full max-w-[240px] rounded-2xl p-4 relative overflow-hidden shadow-xl flex flex-col items-center text-center"
-                      >
-                        <OrientalCardFrameSvg color="#f0d285" />
-                        <span className="relative z-10 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-300 text-slate-950 mb-1">
-                          TIER: SSR · 상위 4%
-                        </span>
-                        <OrientalElementArt
-                          element="water"
-                          goldPrimary="#f0d285"
-                          goldSecondary="#c49c42"
-                          dayMasterHanja="辛"
-                          className="w-24 h-24 relative z-10"
-                          idPrefix="home-aura"
+                      <div className="w-full max-w-[250px] h-[330px] rounded-2xl bg-slate-950 text-white p-4 relative overflow-hidden shadow-2xl flex flex-col justify-between">
+                        <img
+                          src={scGuardian.image}
+                          alt={scGuardian.nameKo}
+                          className="absolute inset-0 w-full h-full object-cover scale-[1.03]"
                         />
-                        <p className="relative z-10 font-serif text-xs font-black mt-1 leading-snug break-keep">
-                          “머리는 천재급인데 생각이 많아 실행이 늦는 팔자”
-                        </p>
-                        <div className="relative z-10 w-full grid grid-cols-2 gap-1 mt-2 text-[9px]">
-                          <div className="bg-white/10 rounded-lg py-1 px-1.5">💰 8월 횡재</div>
-                          <div className="bg-white/10 rounded-lg py-1 px-1.5">⚠️ 4월 주의</div>
-                        </div>
-                      </div>
-                    )}
+                        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-transparent to-slate-950/95" />
+                        <OrientalCardFrameSvg color={scTheme.goldPrimary} />
 
-                    {showcaseEdition === "receipt" && (
-                      <div className="w-full max-w-[240px] rounded-2xl p-4 bg-[#fdfaf2] text-slate-900 border border-stone-300 shadow-xl relative space-y-2">
-                        <div className="flex justify-between items-center border-b border-dashed border-slate-400 pb-1.5">
-                          <span className="font-serif text-xs font-black">SAJUFACT RECEIPT</span>
-                          <span className="text-[9px] font-mono bg-slate-900 text-amber-300 px-1.5 py-0.5 rounded">
-                            #SSR-04
+                        <div className="relative z-10 flex items-center justify-between">
+                          <span className="text-[9px] font-bold tracking-widest text-amber-200">
+                            {scGuardian.nameKo}({scGuardian.hanja})
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-300 text-slate-950">
+                            TIER: SSR · 상위 4%
                           </span>
                         </div>
-                        <p className="font-serif text-xs font-black leading-snug bg-white p-2 rounded-lg border border-stone-200 break-keep">
-                          “기분 좋으면 지갑 열고 스트레스 받으면 결제부터 누르는 타입”
-                        </p>
-                        <div className="space-y-1 text-[9px] font-mono">
-                          <div className="flex justify-between">
-                            <span>재물·횡재운</span>
-                            <span className="font-bold text-emerald-700">91%</span>
+
+                        <div className="relative z-10 space-y-1.5">
+                          <div className="rounded-xl bg-slate-950/75 backdrop-blur-md border border-amber-200/30 p-2.5 text-center">
+                            <p className="text-[9px] font-bold text-amber-300">
+                              {scGuardian.epithet}
+                            </p>
+                            <p className="font-serif text-[11.5px] font-black text-white mt-0.5 leading-snug break-keep">
+                              “{scGuardian.spiritQuote}”
+                            </p>
                           </div>
-                          <div className="h-1.5 bg-stone-200 rounded-full overflow-hidden">
-                            <div className="h-full bg-emerald-600 w-[91%]" />
+                          <div className="grid grid-cols-2 gap-1 text-[9px] text-center">
+                            <div className="bg-white/10 rounded-lg py-1 px-1.5">💰 8월 횡재 피크</div>
+                            <div className="bg-white/10 rounded-lg py-1 px-1.5">⚠️ 4월 계약 주의</div>
                           </div>
-                          <div className="flex justify-between pt-0.5">
-                            <span>팩폭 적중률</span>
-                            <span className="font-bold">99%</span>
-                          </div>
-                        </div>
-                        <div className="absolute right-2 bottom-2 rotate-[-8deg]">
-                          <VermilionSealSvg label="팩폭印" className="w-8 h-8" />
                         </div>
                       </div>
                     )}
@@ -619,23 +625,67 @@ export default function HomePage() {
                           background:
                             "radial-gradient(circle at 30% 20%, #3b2667 0%, #16112b 55%, #090714 100%)",
                         }}
-                        className="w-full max-w-[240px] rounded-2xl p-4 text-amber-50 border border-amber-300/40 shadow-xl relative overflow-hidden flex flex-col items-center text-center"
+                        className="w-full max-w-[250px] h-[330px] rounded-2xl p-4 text-amber-50 border border-amber-300/45 shadow-2xl relative overflow-hidden flex flex-col items-center justify-between text-center"
                       >
                         <OrientalCardFrameSvg color="#f0d285" />
                         <span className="relative z-10 text-[9px] font-bold tracking-widest text-amber-300">
-                          ARCANA 辛亥 · 2027
+                          ARCANA {scGuardian.hanja} · 2027
                         </span>
-                        <OrientalElementArt
-                          element="fire"
-                          goldPrimary="#f5db94"
-                          goldSecondary="#b8892c"
-                          dayMasterHanja="丙"
-                          className="w-24 h-24 relative z-10 my-1"
-                          idPrefix="home-tarot"
-                        />
-                        <p className="relative z-10 font-serif text-xs font-black leading-snug break-keep">
-                          “눈치 0% 직설 화법, 2027년엔 판을 뒤집는 주작의 해”
+                        <div className="relative z-10 w-32 h-40 rounded-t-full rounded-b-xl overflow-hidden border-2 border-amber-300/75 shadow-[0_0_24px_rgba(245,219,148,0.3)]">
+                          <img
+                            src={scGuardian.image}
+                            alt={scGuardian.nameKo}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <p className="relative z-10 font-serif text-[11.5px] font-black leading-snug break-keep">
+                          “{scGuardian.nameKo}의 수호 — {scGuardian.spiritQuote}”
                         </p>
+                      </div>
+                    )}
+
+                    {showcaseEdition === "receipt" && (
+                      <div className="w-full max-w-[250px] h-[330px] rounded-2xl p-4 bg-[#fdfaf2] text-slate-900 border border-stone-300 shadow-xl relative flex flex-col justify-between">
+                        <div className="flex justify-between items-center border-b border-dashed border-slate-400 pb-1.5">
+                          <span className="font-serif text-xs font-black">천명(天命) 감정서</span>
+                          <span className="text-[9px] font-mono bg-slate-900 text-amber-300 px-1.5 py-0.5 rounded">
+                            #SSR-04
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 bg-stone-100 rounded-xl p-2 border border-stone-200">
+                          <img
+                            src={scGuardian.image}
+                            alt={scGuardian.nameKo}
+                            className="w-12 h-14 rounded-lg object-cover border border-amber-500/50 shrink-0"
+                          />
+                          <div className="text-left min-w-0">
+                            <p className="text-[10px] font-extrabold text-amber-900">
+                              {scGuardian.nameKo}({scGuardian.hanja}) 수호
+                            </p>
+                            <p className="text-[9px] text-slate-600 line-clamp-2 leading-snug">
+                              {scGuardian.epithet}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="font-serif text-[11px] font-black leading-snug bg-white p-2 rounded-lg border border-stone-200 break-keep">
+                          “{scGuardian.spiritQuote}”
+                        </p>
+                        <div className="space-y-1 text-[9px] font-mono">
+                          <div className="flex justify-between">
+                            <span>재물·횡재력</span>
+                            <span className="font-bold text-emerald-700">91%</span>
+                          </div>
+                          <div className="h-1.5 bg-stone-200 rounded-full overflow-hidden">
+                            <div className="h-full bg-emerald-600 w-[91%]" />
+                          </div>
+                          <div className="flex justify-between pt-0.5">
+                            <span>직감·방어력</span>
+                            <span className="font-bold">94%</span>
+                          </div>
+                        </div>
+                        <div className="absolute right-2 bottom-2 rotate-[-8deg]">
+                          <VermilionSealSvg label="천명印" className="w-8 h-8" />
+                        </div>
                       </div>
                     )}
                   </div>
@@ -644,28 +694,30 @@ export default function HomePage() {
                   <div className="sm:col-span-6 space-y-2.5 text-left">
                     <div className="rounded-2xl bg-white/75 border border-white p-3 space-y-1">
                       <p className="text-xs font-extrabold text-slate-900">
-                        🎨 1. 오행 자동 컬러 + 일간 한자 인장
+                        🐅 1. 내 사주 오행 수호 영물 화보 자동 매칭
                       </p>
                       <p className="text-[11px] text-slate-600 leading-relaxed">
-                        내 사주에서 가장 강한 오행에 맞춰 배경 오라와 동양화 금박 일러스트가 자동 생성됩니다.
+                        생년월일시에 담긴 오행에 따라 청룡·주작·황룡·백호·현무 중 나를 수호하는 영물 화보와 천명 인장이 자동 생성됩니다.
                       </p>
                     </div>
                     <div className="rounded-2xl bg-white/75 border border-white p-3 space-y-1">
                       <p className="text-xs font-extrabold text-slate-900">
-                        📊 2. 오행 레이더 + 12개월 흐름 + 건강 처방
+                        📊 2. 사주 원국 + 12개월 흐름 + 체질·궁합·일진
                       </p>
                       <p className="text-[11px] text-slate-600 leading-relaxed">
-                        재물·이직·연애 궁합은 물론, 취약 장기와 2027 번아웃 시기까지 뼈 때리게 짚어줍니다.
+                        인스타 스토리(9:16)와 피드(4:5) 비율에 맞춘 고화질 PNG 저장 및 결과 URL 평생 보관을 지원합니다.
                       </p>
                     </div>
                   </div>
                 </div>
               </section>
+                );
+              })()}
 
               <section className="space-y-3">
                 <div className="flex items-center justify-between px-1">
                   <h2 className="text-xs sm:text-sm font-extrabold text-slate-800 tracking-wide">
-                    1. 어떤 팩폭을 받아볼까요?
+                    1. 어떤 운세를 확인해 볼까요?
                   </h2>
                   <span className="text-[11px] text-slate-500">
                     사계절 범용 운세 플랫폼
@@ -1067,7 +1119,7 @@ export default function HomePage() {
                         className="w-full py-4 rounded-2xl bg-gradient-to-r from-slate-900 via-[#221d3a] to-slate-900 hover:brightness-110 text-white font-extrabold text-sm shadow-[0_14px_30px_rgba(15,23,42,0.28)] flex items-center justify-center gap-2 transition"
                       >
                         <Sparkles className="w-4 h-4 text-amber-300" />
-                        [{activeMenuMeta.title}] 무료 팩폭 스캔하기
+                        [{activeMenuMeta.title}] 무료 사주 스캔하기
                         <ArrowRight className="w-4 h-4" />
                       </button>
                     </>
@@ -1075,7 +1127,7 @@ export default function HomePage() {
                 })()}
 
                 <p className="text-[11px] text-slate-500 text-center">
-                  오행 차트 · 한 줄 팩폭 · 종합 등급(TIER)은 100% 무료로 바로 공개됩니다
+                  오행 차트 · 핵심 한 줄 총평 · 수호 영물 등급(TIER)은 100% 무료로 바로 공개됩니다
                 </p>
               </form>
             </div>

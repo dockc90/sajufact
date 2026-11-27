@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import {
   ELEMENT_THEMES,
+  GUARDIAN_BEAST_META,
   MENU_ITEMS,
   buildCompatibilityReport,
   calculateTodayFortune,
@@ -36,7 +37,6 @@ import { ShareCardStudio } from "./ShareCardStudio";
 import {
   FiveElementRadarSvg,
   OrientalCardFrameSvg,
-  OrientalElementArt,
   TalismanSealSvg,
   VermilionSealSvg,
 } from "./OrientalArtSvg";
@@ -73,6 +73,7 @@ export function ResultView({
   const [extraPartnerBirth, setExtraPartnerBirth] = useState("1995-08-20");
 
   const theme = ELEMENT_THEMES[report.dominantElement];
+  const guardian = GUARDIAN_BEAST_META[report.dominantElement];
   const activeMenuMeta =
     MENU_ITEMS.find((m) => m.id === report.input.menu) ?? MENU_ITEMS[0];
   const liveToday =
@@ -141,7 +142,7 @@ export function ResultView({
         ? "차액 1,910원 결제로 올인원 패키지 업그레이드가 완료되었습니다!"
         : plan === "allinone"
         ? "올인원 패키지 잠금이 해제되었습니다! (12개월 그래프·부적 포함)"
-        : "단건 팩폭팩 잠금이 해제되었습니다!"
+        : "단건 테마 리포트 잠금이 해제되었습니다!"
     );
   };
 
@@ -221,10 +222,10 @@ export function ResultView({
         {/* 섹션 퀵 점프 바 */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
           {[
-            { id: "section-summary", label: "⚡ 핵심 팩폭" },
+            { id: "section-summary", label: "⚡ 핵심 총평" },
             { id: "section-today", label: "☀️ 오늘의 일진" },
-            { id: "section-deep", label: "💣 상세 주의·횡재" },
-            { id: "section-card", label: "📸 공유 카드" },
+            { id: "section-deep", label: "💣 상세 운세·횡재" },
+            { id: "section-card", label: "🐅 수호신 카드" },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -306,10 +307,10 @@ export function ResultView({
               <VermilionSealSvg label="사주印" className="w-9 h-9 shrink-0" />
             </div>
 
-            {/* 한 줄 팩폭 타이틀 */}
+            {/* 핵심 총평 타이틀 */}
             <div>
               <p className="text-xs font-bold text-slate-500 mb-1">
-                {report.input.name}님의 사주 팩트폭격 요약 · {report.dayMasterHangul}({report.dayMasterHanja}) 일간
+                {report.input.name}님의 사주 핵심 총평 · {report.dayMasterHangul}({report.dayMasterHanja}) 일간 · {guardian.nameKo}({guardian.hanja}) 수호
               </p>
               <h1 className="font-serif text-[21px] sm:text-2xl leading-snug font-black text-slate-900 break-keep">
                 “{report.oneLineFact}”
@@ -401,7 +402,7 @@ export function ResultView({
             </div>
           </section>
 
-          {/* ☀️ 오늘의 일진 팩폭 (매일 자동 리셋 무료 데일리 섹션) */}
+          {/* ☀️ 오늘의 일진 운세 (매일 자동 리셋 무료 데일리 섹션) */}
           <section
             id="section-today"
             className="glass-card rounded-3xl p-5 space-y-4 border border-amber-200/80 bg-gradient-to-br from-amber-50/70 via-white/80 to-orange-50/50 scroll-mt-20"
@@ -411,7 +412,7 @@ export function ResultView({
                 <div className="flex items-center gap-1.5">
                   <Sun className="w-4 h-4 text-amber-500" />
                   <span className="text-xs font-extrabold text-amber-700">
-                    오늘의 일진 팩폭 · {liveToday.dateLabel}
+                    오늘의 일진 운세 · {liveToday.dateLabel}
                   </span>
                 </div>
                 <h3 className="font-serif text-base font-black text-slate-900 mt-1">
@@ -539,26 +540,26 @@ export function ResultView({
                     bullets: [
                       `“오늘 ${liveToday.todayGanZhiHangul}일진 10성 기준, 피해야 할 실수 & 승부수 타이밍”`,
                       `“${report.criticalMistake2027.dangerMonth}, 절대 피해야 할 치명적 실수”`,
-                      `“${report.windfallTiming.bestMonth} 횡재수 루트 & 소비 누수 팩폭”`,
-                      "“인스타그램 공유용 ‘나의 오라 운명 카드’ 고화질 저장”",
+                      `“${report.windfallTiming.bestMonth} 횡재수 루트 & 소비 누수 진단”`,
+                      "“내 수호 영물 화보(청룡·주작·황룡·백호·현무) 고화질 저장”",
                     ],
                   },
                   wealth: {
                     headline: `${report.input.name}님의 돈 버는 천직 루트와 횡재수 피크가 숨겨져 있습니다`,
                     bullets: [
                       `“${report.windfallTiming.bestMonth} 뜻밖의 횡재수 & 수익화 루트 정밀 공개”`,
-                      "“통장 잔고가 매달 증발하는 결정적 소비 습관 팩폭”",
+                      "“통장 잔고가 매달 증발하는 결정적 소비 습관 진단”",
                       `“${report.criticalMistake2027.dangerMonth}, 돈·계약 관련 절대 주의보”`,
-                      "“인스타그램 공유용 ‘나의 오라 운명 카드’ 고화질 저장”",
+                      "“내 수호 영물 화보 & 천명 감정서 카드 고화질 저장”",
                     ],
                   },
                   lifetime: {
                     headline: `${report.input.name}님의 타고난 본성과 평생 피해야 할 악연 리스트가 잠겨 있습니다`,
                     bullets: [
                       `“${report.dayMasterHangul}${report.dayBranchHangul ?? ""} 일주의 숨겨진 가면과 진짜 본성”`,
-                      "“돈이 줄줄 새는 고질적 소비 패턴 & 평생 손절해야 할 인간관계”",
+                      "“돈이 줄줄 새는 고질적 소비 패턴 & 평생 조심해야 할 인간관계”",
                       `“${report.criticalMistake2027.dangerMonth} 주의보 & ${report.windfallTiming.bestMonth} 횡재수”`,
-                      "“인스타그램 공유용 ‘나의 오라 운명 카드’ 고화질 저장”",
+                      "“내 수호 영물 화보 & 신수 아르카나 카드 고화질 저장”",
                     ],
                   },
                   compatibility: {
@@ -566,8 +567,8 @@ export function ResultView({
                     bullets: [
                       "“둘 사이의 진짜 갑을 역학 & 상대방이 속으로 뜨끔하는 포인트”",
                       "“절대 건드리면 안 되는 최악의 갈등 지뢰밭 & 해결 1줄 팁”",
-                      "“연애·인간관계에서 독이 되는 상극 유형 팩폭”",
-                      "“인스타그램 공유용 ‘나의 오라 운명 카드’ 고화질 저장”",
+                      "“연애·인간관계에서 독이 되는 상극 유형 정밀 진단”",
+                      "“내 수호 영물 화보 카드 3종 고화질 저장”",
                     ],
                   },
                   health: {
@@ -652,7 +653,7 @@ export function ResultView({
                       className="w-full py-3 px-4 rounded-2xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 flex items-center justify-between transition"
                     >
                       <span className="text-xs font-bold">
-                        단건 팩폭팩 (테마 리포트 + 인스타 카드)
+                        단건 테마 리포트 (전체 풀이 + 수호 영물 카드)
                       </span>
                       <span className="text-sm font-extrabold text-slate-900">
                         990원 →
@@ -770,7 +771,7 @@ export function ResultView({
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <h3 className="font-serif text-base font-black text-slate-900 flex items-center gap-1.5">
                         <ShieldAlert className="w-4 h-4 text-amber-600" />
-                        {report.input.name}님 정밀 팩폭 리포트
+                        {report.input.name}님 정밀 사주 리포트
                       </h3>
                       {menu === "lifetime" && focusBadge}
                     </div>
@@ -805,7 +806,7 @@ export function ResultView({
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <h3 className="font-serif text-base font-black text-slate-900 flex items-center gap-1.5">
                         <Activity className="w-4 h-4 text-teal-600" />
-                        타고난 오행 체질 & 2027 건강·번아웃 팩폭
+                        타고난 오행 체질 & 2027 건강·번아웃 진단
                       </h3>
                       {menu === "health" ? (
                         focusBadge
@@ -1110,47 +1111,36 @@ export function ResultView({
           {paidPlan ? (
             <ShareCardStudio report={report} />
           ) : (
-            /* PC 화면에서 결제 전에도 우측 균형을 잡아주는 오라 카드 블러 티저 */
+            /* PC 화면에서 결제 전에도 우측 균형을 잡아주는 수호 영물 화보 블러 티저 */
             <section className="hidden lg:block glass-card rounded-3xl p-5 space-y-3.5 relative overflow-hidden">
               <div className="flex items-center justify-between">
                 <span className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 bg-rose-100/80 px-2.5 py-0.5 rounded-full">
                   <Camera className="w-3 h-3" />
-                  인스타그램 공유 카드 미리보기
+                  나의 수호 영물 카드 미리보기
                 </span>
                 <span className="text-[11px] font-semibold text-slate-500">
-                  {theme.auraLabel}
+                  {guardian.nameKo}({guardian.hanja}) · {theme.auraLabel}
                 </span>
               </div>
 
-              <div
-                style={{
-                  background: theme.cardBgStyle,
-                  color: theme.textOnCard,
-                }}
-                className="w-full h-[360px] rounded-2xl relative overflow-hidden flex flex-col items-center justify-center p-6 text-center"
-              >
+              <div className="w-full h-[380px] rounded-2xl bg-slate-950 text-white relative overflow-hidden flex flex-col items-center justify-center p-6 text-center">
+                <img
+                  src={guardian.image}
+                  alt={guardian.nameKo}
+                  className="absolute inset-0 w-full h-full object-cover blur-[5px] scale-105 opacity-80 pointer-events-none select-none"
+                />
                 <OrientalCardFrameSvg color={theme.goldPrimary} />
-                <div className="blur-[4px] opacity-85 flex flex-col items-center pointer-events-none select-none">
-                  <OrientalElementArt
-                    element={report.dominantElement}
-                    goldPrimary={theme.goldPrimary}
-                    goldSecondary={theme.goldSecondary}
-                    dayMasterHanja={report.dayMasterHanja}
-                    className="w-36 h-36"
-                    idPrefix="teaser"
-                  />
-                  <p className="font-serif text-base font-black mt-2">
-                    “{report.oneLineFact}”
-                  </p>
-                </div>
 
-                <div className="absolute inset-0 bg-slate-950/35 backdrop-blur-[2px] flex flex-col items-center justify-center p-5 text-white">
+                <div className="absolute inset-0 bg-slate-950/45 backdrop-blur-[1px] flex flex-col items-center justify-center p-5 text-white">
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-300/20 border border-amber-300/50 text-amber-200 text-[10px] font-extrabold mb-2">
+                    내 수호신 · {guardian.nameKo}({guardian.hanja})
+                  </span>
                   <Lock className="w-6 h-6 text-amber-300 mb-2" />
                   <p className="font-serif text-base font-extrabold">
-                    3종 스킨 결과 카드 잠금됨
+                    수호 영물 결과 카드 3종 잠금됨
                   </p>
                   <p className="text-xs text-white/85 mt-1 mb-3">
-                    ✨ 오라 동양화 · 🧾 팩폭 영수증 · 🌙 홀로그램 타로
+                    🐅 수호 영물 화보 · 🌙 신수 아르카나 · 📜 천명 감정서
                   </p>
                   <button
                     type="button"

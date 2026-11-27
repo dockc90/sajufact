@@ -29,7 +29,7 @@ export const MENU_ITEMS: Array<{
     badge: "HOT · 12~2월 폭주",
     badgeStyle: "bg-rose-500/90 text-white",
     title: "2027 정미년 신년운세",
-    subtitle: "월별 재물·이직·절대 피할 시기 팩폭",
+    subtitle: "월별 재물·이직·피해야 할 시기 정밀 분석",
     emoji: "🔥",
     highlight: true,
   },
@@ -37,16 +37,16 @@ export const MENU_ITEMS: Array<{
     id: "today",
     badge: "DAILY · 매일 리셋",
     badgeStyle: "bg-amber-500/95 text-white",
-    title: "오늘의 일진 팩폭",
-    subtitle: "오늘 일진 간지와 시간대별 운세·주의 행동 스캔",
+    title: "오늘의 일진 운세",
+    subtitle: "오늘 일진 간지와 시간대별 흐름·행동 지침",
     emoji: "☀️",
   },
   {
     id: "lifetime",
     badge: "상시 BEST",
     badgeStyle: "bg-slate-900 text-amber-200",
-    title: "평생 사주 팩폭",
-    subtitle: "타고난 기질, 돈 새는 습관, 독이 되는 인연",
+    title: "평생 사주 원국 풀이",
+    subtitle: "타고난 기질, 돈 새는 습관, 피해야 할 인연",
     emoji: "⚡",
   },
   {
@@ -62,14 +62,14 @@ export const MENU_ITEMS: Array<{
     badge: "바이럴 1위",
     badgeStyle: "bg-pink-500/90 text-white",
     title: "연애·궁합 스캔",
-    subtitle: "썸·연인·직장상사 속마음 & 갑을관계 스캔",
+    subtitle: "썸·연인·직장상사 속마음 & 관계 역학 스캔",
     emoji: "💕",
   },
   {
     id: "health",
     badge: "체질·멘탈",
     badgeStyle: "bg-teal-600/90 text-white",
-    title: "건강·체력·번아웃 팩폭",
+    title: "건강·체력·번아웃 진단",
     subtitle: "타고난 취약 장기, 멘탈 번아웃 신호, 개운 루틴",
     emoji: "💪",
   },
@@ -78,7 +78,7 @@ export const MENU_ITEMS: Array<{
     badge: "100% FREE",
     badgeStyle: "bg-indigo-600/90 text-white",
     title: "오늘의 1장 타로",
-    subtitle: "카드 1장으로 뽑는 오늘의 팩트 체크",
+    subtitle: "카드 1장으로 보는 오늘의 핵심 메시지",
     emoji: "🃏",
   },
 ];
@@ -106,6 +106,53 @@ export const WORRY_OPTIONS: Array<{ value: WorryTopic; label: string; emoji: str
   { value: "relationship", label: "인간관계·구설", emoji: "🗡️" },
   { value: "health", label: "건강·번아웃", emoji: "🏥" },
 ];
+
+export const GUARDIAN_BEAST_META: Record<
+  ElementKey,
+  {
+    nameKo: string;
+    hanja: string;
+    epithet: string;
+    image: string;
+    spiritQuote: string;
+  }
+> = {
+  wood: {
+    nameKo: "청룡",
+    hanja: "靑龍",
+    epithet: "비상을 앞둔 푸른 비늘의 수호신",
+    image: "/guardians/wood-guardian.jpg",
+    spiritQuote: "막힌 운을 뚫고 새 판을 여는 성장과 도약의 신수",
+  },
+  fire: {
+    nameKo: "주작",
+    hanja: "朱雀",
+    epithet: "붉은 여명을 가르는 태양의 불사조",
+    image: "/guardians/fire-guardian.jpg",
+    spiritQuote: "시선과 명예를 한 몸에 끌어당기는 압도적 카리스마의 신수",
+  },
+  earth: {
+    nameKo: "황룡 기린",
+    hanja: "黃龍 麒麟",
+    epithet: "만금을 품은 황금 대지의 수호신",
+    image: "/guardians/earth-guardian.jpg",
+    spiritQuote: "흔들리지 않는 부(富)와 인연을 거머쥐는 재고(財庫)의 신수",
+  },
+  metal: {
+    nameKo: "백호",
+    hanja: "白虎",
+    epithet: "서릿발 결단으로 승부하는 은빛 맹호",
+    image: "/guardians/metal-guardian.jpg",
+    spiritQuote: "헛된 인연을 끊어내고 정상의 자리를 쟁취하는 승부의 신수",
+  },
+  water: {
+    nameKo: "현무",
+    hanja: "玄武",
+    epithet: "심연과 별빛을 꿰뚫는 밤의 수호신",
+    image: "/guardians/water-guardian.jpg",
+    spiritQuote: "남들이 보지 못하는 기회와 횡재수를 읽어내는 지혜의 신수",
+  },
+};
 
 export const ELEMENT_THEMES: Record<ElementKey, ElementTheme> = {
   wood: {
@@ -389,7 +436,7 @@ const ONE_LINE_FACTS: Record<ElementKey, Record<WorryTopic, string[]>> = {
       "기획력·추진력은 상위 5%인데 정치질에 휘말려 손해 보는 타입",
     ],
     relationship: [
-      "속으로 다 참다가 한 번 터지면 상대방 뼈도 못 추리게 팩폭하는 스타일",
+      "속으로 다 참다가 한 번 터지면 상대가 꼼짝 못 하게 정곡을 찌르는 스타일",
       "만만한 호구로 보이기 싫어서 괜히 센 척하다 피곤해지는 팔자",
     ],
     health: [
@@ -455,7 +502,7 @@ const ONE_LINE_FACTS: Record<ElementKey, Record<WorryTopic, string[]>> = {
       "전문직·프리랜서·독립 구조로 가야 몸값이 최소 2배 뛰는 칼잡이 사주",
     ],
     relationship: [
-      "맞는 말만 골라 하는데 톤이 너무 차가워서 팩폭러·독설가 소리 듣는 스타일",
+      "맞는 말만 골라 하는데 톤이 너무 차가워서 차도남·차도녀 소리 듣는 스타일",
       "앞뒤 다른 인간 극혐해서 스스로 인간관계 80%를 쳐내는 고독한 완벽주의자",
     ],
     health: [
@@ -938,7 +985,7 @@ export function calculateTodayFortune(
       `움직이는 만큼 바로 숫자로 돌아오는 날! 망설이던 결제·협상을 오늘 끝내는 게 이득입니다.`,
     ],
     push: [
-      `아이디어와 말발이 칼날처럼 서는 날. 단, 참지 못하고 팩폭 던지면 분위기 얼 수 있으니 완급 조절하세요.`,
+      `아이디어와 말발이 칼날처럼 서는 날. 단, 지나치게 직설적으로 말하면 분위기가 얼 수 있으니 완급 조절하세요.`,
       `미뤄둔 일 처리 속도가 평소 2배로 붙는 날! 오전 안에 핵심 메일·제안을 먼저 던지세요.`,
     ],
     support: [
@@ -993,7 +1040,7 @@ export function calculateTodayFortune(
   const luckyTimes = ["오전 10:30 ~ 12:00", "오후 13:30 ~ 15:30", "오후 16:00 ~ 17:30", "저녁 19:30 ~ 21:00"];
   const avoidPool = [
     "기분 탓에 장바구니 결제 버튼 바로 누르기",
-    "단톡방·회의에서 남 실수 즉석 팩폭하기",
+    "단톡방·회의에서 남 실수 즉석 지적하기",
     "확인 안 된 정보만 믿고 바로 약속·계약 잡기",
     "새벽까지 스마트폰 보며 과거 후회 곱씹기",
   ];
@@ -1336,7 +1383,7 @@ export function generateSajuReport(input: SajuInput, targetDate?: Date): SajuRep
     wood: ["#기획력천재", "#호구조심", "#청룡오라"],
     fire: ["#매력부자", "#금사빠주의", "#주작오라"],
     earth: ["#묵직한실세", "#후반역전", "#황룡오라"],
-    metal: ["#팩트폭격기", "#독립체질", "#백호오라"],
+    metal: ["#예리한직관", "#독립체질", "#백호수호"],
     water: ["#뇌섹전략가", "#직감만렙", "#현무오라"],
   };
 

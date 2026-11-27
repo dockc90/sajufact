@@ -70,7 +70,7 @@ export function TarotModal({ open, onClose, onConvertToSaju }: TarotModalProps) 
           {!drawnCard ? (
             <div>
               <p className="text-sm text-slate-600 mb-5">
-                오늘 당신에게 가장 필요한 팩트폭격 카드를 직감으로{" "}
+                오늘 당신에게 가장 필요한 핵심 계시 카드를 직감으로{" "}
                 <strong className="text-slate-900">1장</strong> 골라주세요.
               </p>
 
@@ -135,7 +135,7 @@ export function TarotModal({ open, onClose, onConvertToSaju }: TarotModalProps) 
                 </div>
 
                 <div className="mt-4 pt-3.5 border-t border-black/10 space-y-2 text-sm leading-relaxed">
-                  <p className="font-bold">⚡ 오늘의 팩트폭격</p>
+                  <p className="font-bold">⚡ 오늘의 핵심 리딩</p>
                   <p className="text-[13px] opacity-90">{drawnCard.factSummary}</p>
                   <p className="text-[13px] font-semibold pt-1">
                     👉 행동 지침: {drawnCard.actionAdvice}

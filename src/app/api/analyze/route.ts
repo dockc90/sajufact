@@ -58,21 +58,21 @@ export async function POST(req: NextRequest) {
       partnerGender: body.partnerGender,
     };
 
-    // 1단계: 만세력 0원 계산 + 정밀 팩트폭격 기본 리포트 생성
+    // 1단계: 만세력 0원 계산 + 정밀 사주 분석 기본 리포트 생성
     const baseReport = generateSajuReport(input);
 
-    // 2단계: GEMINI_API_KEY가 설정되어 있을 경우 Gemini Structured JSON Output으로 팩폭 문구 고도화
+    // 2단계: GEMINI_API_KEY가 설정되어 있을 경우 Gemini Structured JSON Output으로 리포트 문구 고도화
     const apiKey = process.env.GEMINI_API_KEY;
     if (apiKey) {
       try {
-        const prompt = `당신은 '사주팩트(SajuFact)'의 뼈 때리는 팩폭 AI 사주 전문가입니다.
+        const prompt = `당신은 '사주팩트(SajuFact)'의 솔직하고 명쾌한 AI 명리학 전문가입니다.
 유저 이름: ${baseReport.input.name}
 일주: ${baseReport.dayMasterHangul}${baseReport.dayBranchHangul ?? ""}(${baseReport.dayMasterHanja}${baseReport.dayBranchHanja ?? ""}), 2027 정미년 관계: ${baseReport.relation2027Label ?? "일반 흐름"}
 최강 오행: ${baseReport.dominantElement}, 부족 오행: ${baseReport.weakestElement}
 주의해야 할 달: ${baseReport.criticalMistake2027.dangerMonth}, 횡재수 달: ${baseReport.windfallTiming.bestMonth}
 선택 메뉴: ${input.menu}, 핵심 고민: ${input.worry}
-다음 6개 필드만 한국어 JSON으로, 위 사람의 일주와 주의월을 반드시 반영해 기존 템플릿과 겹치지 않게 매운맛으로 작성해 주세요:
-{"oneLineFact": "28자 이내 뼈 때리는 한줄 팩폭", "mistakeTitle": "22자 이내 주의보 제목", "dangerDetail": "${baseReport.criticalMistake2027.dangerMonth} 기준 절대 피할 실수 2문장", "moneyDetail": "재물/횡재수 루트 2문장", "healthDetail": "타고난 취약 장기와 번아웃 팩폭 2문장", "todayHeadline": "오늘 일진(${baseReport.todayReport?.todayGanZhiHangul ?? ""}) 기준 한줄 팩트"}`;
+다음 6개 필드만 한국어 JSON으로, 위 사람의 일주와 주의월을 반드시 반영해 기존 템플릿과 겹치지 않게 예리하고 현실적으로 작성해 주세요:
+{"oneLineFact": "28자 이내 정곡을 찌르는 한줄 총평", "mistakeTitle": "22자 이내 주의보 제목", "dangerDetail": "${baseReport.criticalMistake2027.dangerMonth} 기준 절대 피할 실수 2문장", "moneyDetail": "재물/횡재수 루트 2문장", "healthDetail": "타고난 취약 장기와 번아웃 주의점 2문장", "todayHeadline": "오늘 일진(${baseReport.todayReport?.todayGanZhiHangul ?? ""}) 기준 한줄 요약"}`;
 
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
