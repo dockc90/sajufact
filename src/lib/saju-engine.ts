@@ -56,6 +56,14 @@ export const MENU_ITEMS: Array<{
     emoji: "💕",
   },
   {
+    id: "health",
+    badge: "체질·멘탈",
+    badgeStyle: "bg-teal-600/90 text-white",
+    title: "건강·체력·번아웃 팩폭",
+    subtitle: "타고난 취약 장기, 멘탈 번아웃 신호, 개운 루틴",
+    emoji: "💪",
+  },
+  {
     id: "tarot",
     badge: "100% FREE",
     badgeStyle: "bg-indigo-600/90 text-white",
@@ -86,6 +94,7 @@ export const WORRY_OPTIONS: Array<{ value: WorryTopic; label: string; emoji: str
   { value: "love", label: "연애·결혼", emoji: "💘" },
   { value: "career", label: "이직·커리어", emoji: "🚀" },
   { value: "relationship", label: "인간관계·구설", emoji: "🗡️" },
+  { value: "health", label: "건강·번아웃", emoji: "🏥" },
 ];
 
 export const ELEMENT_THEMES: Record<ElementKey, ElementTheme> = {
@@ -368,6 +377,10 @@ const ONE_LINE_FACTS: Record<ElementKey, Record<WorryTopic, string[]>> = {
       "속으로 다 참다가 한 번 터지면 상대방 뼈도 못 추리게 팩폭하는 스타일",
       "만만한 호구로 보이기 싫어서 괜히 센 척하다 피곤해지는 팔자",
     ],
+    health: [
+      "체력은 이미 방전인데 오기와 카페인으로 버티다 한 번에 눕는 팔자",
+      "화병과 눈·어깨 뭉침을 달고 살면서 '아직 괜찮아'로 버티는 고집불통",
+    ],
   },
   fire: {
     wealth: [
@@ -385,6 +398,10 @@ const ONE_LINE_FACTS: Record<ElementKey, Record<WorryTopic, string[]>> = {
     relationship: [
       "표정 관리가 0%라 싫은 사람 앞에서도 얼굴에 다 티 나서 손해 보는 타입",
       "화려한 인맥은 넓은데 막상 새벽 2시에 전화할 진짜 내 편은 두 명뿐",
+    ],
+    health: [
+      "낮엔 텐션 폭발하다가 밤 12시만 넘으면 불면증·과열로 뇌가 안 꺼지는 타입",
+      "심박수·혈압부터 수면 리듬까지 감정 기복에 몸이 그대로 망가지는 체질",
     ],
   },
   earth: {
@@ -404,6 +421,10 @@ const ONE_LINE_FACTS: Record<ElementKey, Record<WorryTopic, string[]>> = {
       "모든 사람 고민 다 들어주는 감정 쓰레기통 역할을 자처해서 병나는 타입",
       "겉으론 온화해 보여도 속으론 이미 손절 리스트 10명쯤 작성해 둔 냉혈한",
     ],
+    health: [
+      "스트레스 받으면 바로 위장·식도염·폭식으로 보복당하는 전형적 소화기 취약형",
+      "생각이 너무 많아 밤에 야식 땡기고, 붓기와 만성 피로가 몸에 쌓이는 사주",
+    ],
   },
   metal: {
     wealth: [
@@ -422,6 +443,10 @@ const ONE_LINE_FACTS: Record<ElementKey, Record<WorryTopic, string[]>> = {
       "맞는 말만 골라 하는데 톤이 너무 차가워서 팩폭러·독설가 소리 듣는 스타일",
       "앞뒤 다른 인간 극혐해서 스스로 인간관계 80%를 쳐내는 고독한 완벽주의자",
     ],
+    health: [
+      "예민함 MAX라 환절기 비염·피부 트러블·기관지염이 제일 먼저 찾아오는 체질",
+      "긴장을 놓지 못해 목·승모근이 돌처럼 굳고 두통·대장 예민증으로 고생하는 타입",
+    ],
   },
   water: {
     wealth: [
@@ -439,6 +464,10 @@ const ONE_LINE_FACTS: Record<ElementKey, Record<WorryTopic, string[]>> = {
     relationship: [
       "적은 안 만드는데 그렇다고 속마음을 100% 여는 상대도 없는 외로운 전략가",
       "사람 마음을 꿰뚫어 봐서 오히려 인간관계에 환멸을 빨리 느끼는 팔자",
+    ],
+    health: [
+      "물·햇빛 부족에 야행성 패턴이 겹쳐 부종·수족냉증·멘탈 방전이 반복되는 체질",
+      "겉은 멀쩡해 보여도 호르몬·신장·생식기 피로가 조용히 누적되는 유리 체력",
     ],
   },
 };
@@ -608,11 +637,63 @@ export function generateSajuReport(input: SajuInput): SajuReport {
   const tierObj = pick(TIER_LIST, seed, 2);
   const oneLineFact = pick(ONE_LINE_FACTS[calc.dominantElement][input.worry], seed, 1);
 
+const HEALTH_PROFILE_MAP: Record<
+  ElementKey,
+  {
+    vulnerableOrgans: string;
+    burnoutPattern: string;
+    cautionSeason2027: string;
+    dailyPrescription: string;
+  }
+> = {
+  wood: {
+    vulnerableOrgans: "간·담낭 · 눈 피로 · 목/어깨 근육 · 자율신경계",
+    burnoutPattern:
+      "할 일을 머릿속에 10개씩 쌓아두고 완벽하게 해내려다 뇌 과부하가 옵니다. 참을성이 바닥나면 갑자기 무기력해지고 시력 저하·편두통·어깨 결림이 한꺼번에 터집니다.",
+    cautionSeason2027: "2027년 3~4월 봄 환절기 & 7월 한여름(화기 과열로 간·신경 피로 급증)",
+    dailyPrescription:
+      "오후 4시 이후 카페인 컷, 하루 20분 초록 숲길 걷기·스트레칭, 녹황색 채소와 충분한 수면(최소 6.5시간)이 보약입니다.",
+  },
+  fire: {
+    vulnerableOrgans: "심혈관 · 수면 리듬 · 두피 열감 · 감정성 화병",
+    burnoutPattern:
+      "텐션이 오를 땐 밥 안 먹고도 밤새 달리지만, 한 번 식으면 침대 밖으로 못 나오는 극단적 에너지 소모형입니다. 억울한 일을 겪으면 가슴이 답답하고 잠을 설치는 증상이 바로 옵니다.",
+    cautionSeason2027: "2027년 5~7월 정미년 화기(火氣) 절정기(심박 항진·수면 부족 주의)",
+    dailyPrescription:
+      "자기 전 1시간 스마트폰 블루라이트 차단, 4-7-8 호흡법 3분, 찬 음료 대신 미지근한 허브티(캐모마일·국화차)로 심열을 식히세요.",
+  },
+  earth: {
+    vulnerableOrgans: "위장·십이지장 · 역류성 식도염 · 비장 · 하체 부종",
+    burnoutPattern:
+      "남들 기분 맞추고 고민 들어주느라 속으로 삭히다 위장부터 탈이 납니다. 스트레스를 매운 음식·단 음식·야식으로 풀려는 습관만 끊어도 체력의 40%가 살아납니다.",
+    cautionSeason2027: "2027년 4월·7월·10월 환절기(소화기 정체 및 급격한 피로 누적)",
+    dailyPrescription:
+      "취침 3시간 전 금식, 식사 시간 20분 이상 천천히 씹기, 점심 식후 15분 햇볕 산책으로 묵직한 습담(濕痰)을 털어내세요.",
+  },
+  metal: {
+    vulnerableOrgans: "호흡기·폐·기관지 · 피부 장벽 · 대장(과민성 장)",
+    burnoutPattern:
+      "스스로 기준이 높고 예민해 작은 변수에도 신경이 날카로워집니다. 겉으로 티를 안 내도 속으로 긴장이 풀리지 않아 건조성 피부 트러블·비염·장 트러블로 신호가 옵니다.",
+    cautionSeason2027: "2027년 6~8월 여름 과열기 & 10~11월 건조한 가을(기관지·피부 주의)",
+    dailyPrescription:
+      "실내 습도 50% 유지, 유산소 호흡 운동(수영·러닝·요가), 도라지·배 등 흰색(백색) 식재료와 유산균 루틴이 필수입니다.",
+  },
+  water: {
+    vulnerableOrgans: "신장·방광 · 수족냉증 · 호르몬 밸런스 · 허리/관절",
+    burnoutPattern:
+      "밤늦게까지 생각이 꼬리를 물고 이어져 낮밤이 바뀌기 쉽습니다. 움직임이 줄어들면 혈액순환이 급격히 막히면서 아침 부종·만성 저체온·멘탈 다운이 연쇄적으로 찾아옵니다.",
+    cautionSeason2027: "2027년 1~2월 한겨울 & 11~12월 연말(면역력 저하 및 냉증 주의)",
+    dailyPrescription:
+      "기상 직후 따뜻한 물 1잔, 주 3회 반신욕 또는 하체 근력 운동(스쿼트), 하루 물 1.5L 수분 섭취로 순환을 강제로 돌려야 합니다.",
+  },
+};
+
   const menuSubHooks: Record<MenuCategory, string> = {
     newyear2027: `2027 정미년(丁未年) 불(火)의 해가 ${cleanName}님의 ${domTheme.nameKo} 원국을 정면으로 자극합니다.`,
     lifetime: `${cleanName}님의 평생 사주 원국(${calc.dayMasterHangul}일간)을 뼈대까지 분해한 냉정한 리포트입니다.`,
     wealth: `${cleanName}님의 재물 창고와 직업적 천직 루트를 돈 되는 기준 100%로 스캔했습니다.`,
     compatibility: `${cleanName}님과 ${input.partnerName?.trim() || "상대방"}님의 사주 기운 충돌과 끌림을 정밀 스캔했습니다.`,
+    health: `${cleanName}님의 오행 과다·결핍 데이터로 취약 장기와 멘탈 번아웃 신호를 정밀 스캔했습니다.`,
     tarot: `오늘의 타로 기운과 ${cleanName}님의 타고난 오행 흐름을 교차 검증한 결과입니다.`,
   };
 
@@ -680,6 +761,12 @@ export function generateSajuReport(input: SajuInput): SajuReport {
       temperament: `${calc.dayMasterHangul}(${calc.dayMasterHanja}) 일간 특유의 자존심과 고집이 겉으로 드러나는 순둥한 가면 뒤에 숨어 있습니다. 남들이 볼 땐 무난해 보이지만, 머릿속에선 이미 수십 번 계산을 끝낸 뒤 움직이는 실리주의자입니다.`,
       moneyLeakHabit: `정작 큰돈을 아끼려고 눈물겨운 절약을 해놓고, '나한테 주는 보상' 또는 '가까운 사람 챙기기' 명목으로 한 번에 몇십만 원씩 시원하게 날리는 소비 패턴이 반복됩니다. 자동이체 강제 저축 없이는 잔고가 제자리를 맴돕니다.`,
       toxicRelationWarning: `은근히 본인의 감정을 떠넘기며 '네가 이해해 줘야지'라고 가스라이팅하는 사람과 가장 상극입니다. ${cleanName}님은 거절을 미안해하다가 에너지가 다 빨리는 편이니, 첫 만남에서 무례한 선을 넘는 사람은 그 자리에서 컷하세요.`,
+    },
+    healthReport: {
+      vulnerableOrgans: `${HEALTH_PROFILE_MAP[calc.weakestElement].vulnerableOrgans} (보완 필요: ${weakTheme.nameKo})`,
+      burnoutPattern: `${cleanName}님은 ${HEALTH_PROFILE_MAP[calc.dominantElement].burnoutPattern}`,
+      cautionSeason2027: HEALTH_PROFILE_MAP[calc.weakestElement].cautionSeason2027,
+      dailyPrescription: HEALTH_PROFILE_MAP[calc.weakestElement].dailyPrescription,
     },
     monthlyFlow,
     talisman: {

@@ -40,6 +40,7 @@ const NAV_LABELS: Record<MenuCategory, string> = {
   lifetime: "평생 사주 팩폭",
   wealth: "재물·이직운",
   compatibility: "연애·궁합 스캔",
+  health: "건강·번아웃",
   tarot: "오늘의 무료 타로",
 };
 
@@ -114,6 +115,8 @@ export default function HomePage() {
       setWorry("love");
     } else if (id === "wealth") {
       setWorry("wealth");
+    } else if (id === "health") {
+      setWorry("health");
     }
   };
 
@@ -579,6 +582,8 @@ export default function HomePage() {
                           type="button"
                           onClick={() => setWorry(opt.value)}
                           className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 ${
+                            opt.value === "health" ? "col-span-2" : ""
+                          } ${
                             active
                               ? "bg-slate-900 text-white border-slate-900 shadow-sm"
                               : "bg-white/75 text-slate-700 border-slate-200 hover:bg-white"

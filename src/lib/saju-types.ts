@@ -3,11 +3,12 @@ export type MenuCategory =
   | "lifetime"
   | "wealth"
   | "compatibility"
+  | "health"
   | "tarot";
 
 export type ElementKey = "wood" | "fire" | "earth" | "metal" | "water";
 
-export type WorryTopic = "wealth" | "love" | "career" | "relationship";
+export type WorryTopic = "wealth" | "love" | "career" | "relationship" | "health";
 
 export type CalendarType = "solar" | "lunar";
 
@@ -123,6 +124,12 @@ export interface SajuReport {
     temperament: string;
     moneyLeakHabit: string;
     toxicRelationWarning: string;
+  };
+  healthReport: {
+    vulnerableOrgans: string;
+    burnoutPattern: string;
+    cautionSeason2027: string;
+    dailyPrescription: string;
   };
   // All-in-one sections
   monthlyFlow: MonthlyScore[];

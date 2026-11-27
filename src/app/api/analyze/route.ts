@@ -69,8 +69,8 @@ export async function POST(req: NextRequest) {
 유저 이름: ${baseReport.input.name}
 일간: ${baseReport.dayMasterHangul}(${baseReport.dayMasterHanja}), 최강 오행: ${baseReport.dominantElement}, 부족 오행: ${baseReport.weakestElement}
 선택 메뉴: ${input.menu}, 핵심 고민: ${input.worry}
-다음 3개 필드만 한국어 JSON으로 간결하고 매운맛 있게 작성해 주세요:
-{"oneLineFact": "25자 이내 뼈 때리는 한줄 팩폭", "dangerDetail": "2027년 4월 절대 피할 실수 2문장", "moneyDetail": "재물/횡재수 루트 2문장"}`;
+다음 4개 필드만 한국어 JSON으로 간결하고 매운맛 있게 작성해 주세요:
+{"oneLineFact": "25자 이내 뼈 때리는 한줄 팩폭", "dangerDetail": "2027년 4월 절대 피할 실수 2문장", "moneyDetail": "재물/횡재수 루트 2문장", "healthDetail": "타고난 취약 장기와 번아웃 팩폭 2문장"}`;
 
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -94,10 +94,12 @@ export async function POST(req: NextRequest) {
               oneLineFact?: string;
               dangerDetail?: string;
               moneyDetail?: string;
+              healthDetail?: string;
             };
             if (parsed.oneLineFact) baseReport.oneLineFact = parsed.oneLineFact;
             if (parsed.dangerDetail) baseReport.criticalMistake2027.detail = parsed.dangerDetail;
             if (parsed.moneyDetail) baseReport.windfallTiming.detail = parsed.moneyDetail;
+            if (parsed.healthDetail) baseReport.healthReport.burnoutPattern = parsed.healthDetail;
           }
         }
       } catch {

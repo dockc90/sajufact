@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
+  Activity,
   AlertTriangle,
   ArrowLeft,
   Camera,
@@ -322,6 +323,10 @@ export function ResultView({
                     </li>
                     <li className="flex items-start gap-2">
                       <span>🔒</span>
+                      <span>“내 사주 오행으로 본 타고난 취약 장기 & 2027 번아웃 주의보”</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span>🔒</span>
                       <span>“인스타그램 공유용 ‘나의 오라 운명 카드’ 고화질 저장”</span>
                     </li>
                   </ul>
@@ -433,6 +438,43 @@ export function ResultView({
                     </p>
                     <p>{report.coreFactReport.toxicRelationWarning}</p>
                   </div>
+                </div>
+              </section>
+
+              {/* 건강 · 체질 · 번아웃 팩폭 */}
+              <section className="glass-card rounded-3xl p-5 border-l-4 border-l-teal-500 space-y-3">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <h3 className="font-serif text-base font-black text-slate-900 flex items-center gap-1.5">
+                    <Activity className="w-4 h-4 text-teal-600" />
+                    타고난 오행 체질 & 2027 건강·번아웃 팩폭
+                  </h3>
+                  <span className="text-[11px] font-bold text-teal-800 bg-teal-100 px-2.5 py-0.5 rounded-full">
+                    건강 스캔
+                  </span>
+                </div>
+
+                <div className="rounded-2xl bg-teal-50/90 border border-teal-200/80 p-3.5 space-y-1">
+                  <p className="text-[11px] font-extrabold text-teal-800">
+                    🩺 가장 취약한 신체 부위
+                  </p>
+                  <p className="text-xs font-bold text-slate-900">
+                    {report.healthReport.vulnerableOrgans}
+                  </p>
+                </div>
+
+                <div className="space-y-2 text-[13px] text-slate-700 leading-relaxed">
+                  <p>
+                    <strong className="text-slate-900">⚡ 번아웃 패턴:</strong>{" "}
+                    {report.healthReport.burnoutPattern}
+                  </p>
+                  <p>
+                    <strong className="text-slate-900">📅 2027 건강 주의 시기:</strong>{" "}
+                    {report.healthReport.cautionSeason2027}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-white/80 border border-teal-200/70 p-3 text-xs font-semibold text-slate-800">
+                  💊 팩트 처방전: {report.healthReport.dailyPrescription}
                 </div>
               </section>
 
