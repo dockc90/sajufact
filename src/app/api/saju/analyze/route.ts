@@ -244,29 +244,12 @@ async function callGeminiWithRetry(
 ): Promise<{ output: GeminiSajuOutput; model: string }> {
   const candidateModels = Array.from(
     new Set([
-      process.env.GEMINI_MODEL || "gemini-2.5-flash",
-      "gemini-2.0-flash",
+      process.env.GEMINI_MODEL || "gemini-4-hydrogen",
+      "gemini-3.8-flash",
     ])
   );
   const responseSchema =
     mode === "free" ? FREE_MODE_RESPONSE_SCHEMA : PAID_MODE_RESPONSE_SCHEMA;
-
-  const payload = {
-    systemInstruction: {
-      parts: [{ text: systemInstruction }],
-    },
-    contents: [
-      {
-        role: "user",
-        parts: [{ text: userPrompt }],
-      },
-    ],
-    generationConfig: {
-      temperature: 0.85,
-      responseMimeType: "application/json",
-      responseSchema,
-    },
-  };
 
   let lastError: unknown = null;
 
@@ -274,6 +257,26 @@ async function callGeminiWithRetry(
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 18000);
+
+    const payload = {
+      systemInstruction: {
+        parts: [{ text: systemInstruction }],
+      },
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: userPrompt }],
+        },
+      ],
+      generationConfig: {
+        temperature: 0.85,
+        ...(model.includes("hydrogen")
+          ? { thinkingConfig: { thinkingLevel: "LOW" } }
+          : {}),
+        responseMimeType: "application/json",
+        responseSchema,
+      },
+    };
 
     try {
       const res = await fetch(endpoint, {
@@ -290,7 +293,13 @@ async function callGeminiWithRetry(
       }
 
       const data = await res.json();
-      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      const parts = (data?.candidates?.[0]?.content?.parts ?? []) as Array<{
+        text?: string;
+        thought?: boolean;
+      }>;
+      const rawText =
+        parts.find((p) => !p.thought && typeof p.text === "string")?.text ??
+        parts[parts.length - 1]?.text;
       if (!rawText || typeof rawText !== "string") {
         throw new Error("Gemini returned empty response text");
       }

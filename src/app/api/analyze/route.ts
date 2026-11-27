@@ -129,8 +129,8 @@ export async function POST(req: NextRequest) {
 
       const candidateModels = Array.from(
         new Set([
-          process.env.GEMINI_MODEL || "gemini-2.5-flash",
-          "gemini-2.0-flash",
+          process.env.GEMINI_MODEL || "gemini-4-hydrogen",
+          "gemini-3.8-flash",
         ])
       );
 
@@ -156,6 +156,9 @@ export async function POST(req: NextRequest) {
                 contents: [{ parts: [{ text: prompt }] }],
                 generationConfig: {
                   temperature: 0.85,
+                  ...(modelName.includes("hydrogen")
+                    ? { thinkingConfig: { thinkingLevel: "LOW" } }
+                    : {}),
                   responseMimeType: "application/json",
                   responseSchema: schema,
                 },
@@ -166,7 +169,13 @@ export async function POST(req: NextRequest) {
 
           if (geminiRes.ok) {
             const data = await geminiRes.json();
-            const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            const parts = (data?.candidates?.[0]?.content?.parts ?? []) as Array<{
+              text?: string;
+              thought?: boolean;
+            }>;
+            const text =
+              parts.find((p) => !p.thought && typeof p.text === "string")?.text ??
+              parts[parts.length - 1]?.text;
             if (text) {
               const parsed = JSON.parse(text) as {
                 oneLineFact?: string;

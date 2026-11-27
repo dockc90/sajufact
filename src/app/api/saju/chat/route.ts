@@ -473,8 +473,8 @@ ${persona.systemPromptStyle}
     if (apiKey) {
       const candidateModels = Array.from(
         new Set([
-          process.env.GEMINI_MODEL || "gemini-2.5-flash",
-          "gemini-2.0-flash",
+          process.env.GEMINI_MODEL || "gemini-4-hydrogen",
+          "gemini-3.8-flash",
         ])
       );
 
@@ -492,6 +492,9 @@ ${persona.systemPromptStyle}
               contents: [{ role: "user", parts: [{ text: prompt }] }],
               generationConfig: {
                 temperature: 0.85,
+                ...(modelName.includes("hydrogen")
+                  ? { thinkingConfig: { thinkingLevel: "LOW" } }
+                  : {}),
                 responseMimeType: "application/json",
                 responseSchema: CHAT_RESPONSE_SCHEMA,
               },
@@ -500,7 +503,13 @@ ${persona.systemPromptStyle}
           clearTimeout(tid);
           if (res.ok) {
             const data = await res.json();
-            const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            const parts = (data?.candidates?.[0]?.content?.parts ?? []) as Array<{
+              text?: string;
+              thought?: boolean;
+            }>;
+            const rawText =
+              parts.find((p) => !p.thought && typeof p.text === "string")?.text ??
+              parts[parts.length - 1]?.text;
             if (rawText) {
               result = JSON.parse(rawText) as GeminiChatOutput;
               engine = modelName;
