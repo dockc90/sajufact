@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { BIRTH_HOUR_OPTIONS, previewFourPillars } from "@/lib/saju-engine";
+import { WheelTimePicker, formatKoreanTimeLabel } from "./WheelTimePicker";
 import type {
   AccountSession,
   CalendarType,
@@ -71,6 +72,25 @@ function mapExactTimeToBirthHour(timeStr: string): string {
   if (h >= 23 || h < 1) return "0";
   const evenHour = Math.floor((h + 1) / 2) * 2;
   return String(Math.min(22, Math.max(0, evenHour)));
+}
+
+function formatBirthDateInput(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 4) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+}
+
+function isValidBirthDate(dateStr: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false;
+  const [y, m, d] = dateStr.split("-").map(Number);
+  if (y < 1900 || y > 2030 || m < 1 || m > 12 || d < 1 || d > 31) return false;
+  const dt = new Date(y, m - 1, d);
+  return (
+    dt.getFullYear() === y &&
+    dt.getMonth() === m - 1 &&
+    dt.getDate() === d
+  );
 }
 
 interface ProfileManagerModalProps {
@@ -149,7 +169,12 @@ export function ProfileManagerModal({
     : birthHour;
 
   const livePillars = useMemo(
-    () => previewFourPillars(birthDate, calendarType, resolvedBirthHour),
+    () =>
+      previewFourPillars(
+        isValidBirthDate(birthDate) ? birthDate : "1996-05-14",
+        calendarType,
+        resolvedBirthHour
+      ),
     [birthDate, calendarType, resolvedBirthHour]
   );
 
@@ -203,8 +228,8 @@ export function ProfileManagerModal({
       setFormError("이름(닉네임)을 입력해 주세요.");
       return;
     }
-    if (!birthDate) {
-      setFormError("생년월일을 입력해 주세요.");
+    if (!isValidBirthDate(birthDate)) {
+      setFormError("생년월일 8자리를 정확히 입력해 주세요. (예: 1996-05-14)");
       return;
     }
     setFormError(null);
@@ -233,7 +258,7 @@ export function ProfileManagerModal({
   const timeDisplayText = !knowsTime
     ? "시간 모름"
     : knowsExactTime
-    ? exactTime
+    ? `${formatKoreanTimeLabel(exactTime)} (${exactTime})`
     : BIRTH_HOUR_OPTIONS.find((o) => o.value === birthHour)?.label.split(" ")[0] ??
       "시간 선택";
 
@@ -549,12 +574,35 @@ export function ProfileManagerModal({
                     </button>
                   ))}
                 </div>
-                <input
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-900 focus:border-amber-400 outline-none"
-                />
+                <div className="space-y-1">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={10}
+                    value={birthDate}
+                    onChange={(e) =>
+                      setBirthDate(formatBirthDateInput(e.target.value))
+                    }
+                    placeholder="예: 1996-05-14 (숫자 8자리 입력)"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-900 tracking-wide focus:border-amber-400 outline-none"
+                  />
+                  <p className="text-[11px] text-slate-400 flex items-center justify-between px-0.5">
+                    <span>
+                      숫자 8자리(YYYYMMDD)를 직접 입력하면 하이픈(-)이 자동으로 들어갑니다.
+                    </span>
+                    {birthDate.length > 0 && (
+                      <span
+                        className={
+                          isValidBirthDate(birthDate)
+                            ? "font-bold text-emerald-600 shrink-0 ml-2"
+                            : "font-bold text-amber-600 shrink-0 ml-2"
+                        }
+                      >
+                        {isValidBirthDate(birthDate) ? "✓ 완료" : "8자리 입력"}
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
 
               {/* 성별 */}
@@ -641,12 +689,7 @@ export function ProfileManagerModal({
                     </div>
 
                     {knowsExactTime ? (
-                      <input
-                        type="time"
-                        value={exactTime}
-                        onChange={(e) => setExactTime(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-900 outline-none focus:border-amber-400"
-                      />
+                      <WheelTimePicker value={exactTime} onChange={setExactTime} />
                     ) : (
                       <select
                         value={birthHour}

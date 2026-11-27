@@ -1027,9 +1027,21 @@ export default function HomePage() {
                     className="px-3 py-2 rounded-xl bg-white border border-pink-200 text-xs font-semibold"
                   />
                   <input
-                    type="date"
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={10}
+                    placeholder="상대방 생년월일 (예: 1995-08-20)"
                     value={partnerBirthDate}
-                    onChange={(e) => setPartnerBirthDate(e.target.value)}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, "").slice(0, 8);
+                      const formatted =
+                        digits.length <= 4
+                          ? digits
+                          : digits.length <= 6
+                          ? `${digits.slice(0, 4)}-${digits.slice(4)}`
+                          : `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+                      setPartnerBirthDate(formatted);
+                    }}
                     className="px-3 py-2 rounded-xl bg-white border border-pink-200 text-xs font-semibold"
                   />
                   <button
