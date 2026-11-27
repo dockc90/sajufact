@@ -40,10 +40,7 @@ import {
 } from "@/components/ArchiveModal";
 import { ResultView } from "@/components/ResultView";
 import { TarotModal } from "@/components/TarotModal";
-import {
-  OrientalCardFrameSvg,
-  VermilionSealSvg,
-} from "@/components/OrientalArtSvg";
+import { VermilionSealSvg } from "@/components/OrientalArtSvg";
 import type { CardEdition } from "@/components/ShareCardStudio";
 
 type ScreenPhase = "home" | "analyzing" | "result";
@@ -521,28 +518,29 @@ export default function HomePage() {
               {(() => {
                 const scTheme = ELEMENT_THEMES[showcaseElement];
                 const scGuardian = GUARDIAN_BEAST_META[showcaseElement];
+                const scIsBaby = showcaseEdition === "baby";
                 return (
-              <section className="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5 border border-amber-200/70">
+              <section className="glass-card rounded-3xl p-4 sm:p-5 space-y-3 border border-amber-200/70">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <div>
+                  <div className="text-left">
                     <span className="text-[10px] font-extrabold tracking-widest text-rose-600 uppercase">
                       SACRED GUARDIAN CARD
                     </span>
                     <h2 className="font-serif text-sm sm:text-base font-black text-slate-900">
-                      내 사주가 부르는 수호 영물 화보 & 3종 결과 카드
+                      영험한 신수 · 아기 신수 결과 카드 미리보기
                     </h2>
                   </div>
                   <div className="flex items-center gap-1 bg-slate-900/10 p-1 rounded-xl">
                     {[
-                      { id: "aura" as const, label: "🐅 수호 영물 화보" },
-                      { id: "tarot" as const, label: "🌙 신수 아르카나" },
+                      { id: "aura" as const, label: "🐅 영험한 신수" },
+                      { id: "baby" as const, label: "🐾 아기 신수" },
                       { id: "receipt" as const, label: "📜 천명 감정서" },
                     ].map((tab) => (
                       <button
                         key={tab.id}
                         type="button"
                         onClick={() => setShowcaseEdition(tab.id)}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-extrabold transition ${
+                        className={`px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-extrabold transition whitespace-nowrap ${
                           showcaseEdition === tab.id
                             ? "bg-slate-900 text-amber-200 shadow-sm"
                             : "text-slate-700 hover:bg-white/60"
@@ -558,94 +556,98 @@ export default function HomePage() {
                 <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
                   {(
                     [
-                      { key: "metal" as const, emoji: "🐅", label: "백호 · 금(金)" },
-                      { key: "wood" as const, emoji: "🐉", label: "청룡 · 목(木)" },
-                      { key: "fire" as const, emoji: "🦅", label: "주작 · 화(火)" },
-                      { key: "earth" as const, emoji: "🦌", label: "황룡 · 토(土)" },
-                      { key: "water" as const, emoji: "🐺", label: "현무 · 수(水)" },
+                      { key: "metal" as const, emoji: "🐅", name: "백호", baby: "아기 백호" },
+                      { key: "wood" as const, emoji: "🐉", name: "청룡", baby: "아기 청룡" },
+                      { key: "fire" as const, emoji: "🦅", name: "주작", baby: "아기 주작" },
+                      { key: "earth" as const, emoji: "🦌", name: "황룡", baby: "아기 황룡" },
+                      { key: "water" as const, emoji: "🐺", name: "현무", baby: "아기 현무" },
                     ] as const
                   ).map((item) => (
                     <button
                       key={item.key}
                       type="button"
                       onClick={() => setShowcaseElement(item.key)}
-                      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold border transition ${
+                      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold border transition whitespace-nowrap ${
                         showcaseElement === item.key
                           ? "bg-slate-900 text-amber-200 border-slate-900 shadow-sm"
                           : "bg-white/80 text-slate-700 border-slate-200 hover:bg-white"
                       }`}
                     >
-                      {item.emoji} {item.label}
+                      {item.emoji} {scIsBaby ? item.baby : item.name}
                     </button>
                   ))}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
-                  {/* 좌측 수호 영물 카드 프리뷰 */}
+                  {/* 좌측 수호 영물 카드 프리뷰 (이미지/텍스트 완벽 분리) */}
                   <div className="sm:col-span-6 flex justify-center">
-                    {showcaseEdition === "aura" && (
-                      <div className="w-full max-w-[250px] h-[330px] rounded-2xl bg-slate-950 text-white p-4 relative overflow-hidden shadow-2xl flex flex-col justify-between">
-                        <img
-                          src={scGuardian.image}
-                          alt={scGuardian.nameKo}
-                          className="absolute inset-0 w-full h-full object-cover scale-[1.03]"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-transparent to-slate-950/95" />
-                        <OrientalCardFrameSvg color={scTheme.goldPrimary} />
-
-                        <div className="relative z-10 flex items-center justify-between">
-                          <span className="text-[9px] font-bold tracking-widest text-amber-200">
-                            {scGuardian.nameKo}({scGuardian.hanja})
-                          </span>
-                          <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-300 text-slate-950">
-                            TIER: SSR · 상위 4%
-                          </span>
-                        </div>
-
-                        <div className="relative z-10 space-y-1.5">
-                          <div className="rounded-xl bg-slate-950/75 backdrop-blur-md border border-amber-200/30 p-2.5 text-center">
-                            <p className="text-[9px] font-bold text-amber-300">
-                              {scGuardian.epithet}
-                            </p>
-                            <p className="font-serif text-[11.5px] font-black text-white mt-0.5 leading-snug break-keep">
-                              “{scGuardian.spiritQuote}”
-                            </p>
-                          </div>
-                          <div className="grid grid-cols-2 gap-1 text-[9px] text-center">
-                            <div className="bg-white/10 rounded-lg py-1 px-1.5">💰 8월 횡재 피크</div>
-                            <div className="bg-white/10 rounded-lg py-1 px-1.5">⚠️ 4월 계약 주의</div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {showcaseEdition === "tarot" && (
+                    {(showcaseEdition === "aura" || showcaseEdition === "baby") && (
                       <div
-                        style={{
-                          background:
-                            "radial-gradient(circle at 30% 20%, #3b2667 0%, #16112b 55%, #090714 100%)",
-                        }}
-                        className="w-full max-w-[250px] h-[330px] rounded-2xl p-4 text-amber-50 border border-amber-300/45 shadow-2xl relative overflow-hidden flex flex-col items-center justify-between text-center"
+                        className={`w-full max-w-[250px] h-[340px] rounded-2xl overflow-hidden shadow-2xl border border-amber-300/45 flex flex-col ${
+                          scIsBaby ? "bg-[#fff9f3] text-slate-900" : "bg-[#0d0c18] text-white"
+                        }`}
                       >
-                        <OrientalCardFrameSvg color="#f0d285" />
-                        <span className="relative z-10 text-[9px] font-bold tracking-widest text-amber-300">
-                          ARCANA {scGuardian.hanja} · 2027
-                        </span>
-                        <div className="relative z-10 w-32 h-40 rounded-t-full rounded-b-xl overflow-hidden border-2 border-amber-300/75 shadow-[0_0_24px_rgba(245,219,148,0.3)]">
+                        <div className="relative flex-1 min-h-0 overflow-hidden">
                           <img
-                            src={scGuardian.image}
-                            alt={scGuardian.nameKo}
-                            className="w-full h-full object-cover"
+                            src={scIsBaby ? scGuardian.babyImage : scGuardian.image}
+                            alt={scIsBaby ? scGuardian.babyNameKo : scGuardian.nameKo}
+                            className="w-full h-full object-cover object-center"
                           />
+                          <div className="absolute inset-x-0 top-0 px-2.5 pt-2 flex items-center justify-between gap-1">
+                            <span className="rounded-full bg-slate-950/65 backdrop-blur-sm border border-amber-200/35 px-2 py-0.5 text-[9px] font-extrabold text-amber-200 whitespace-nowrap">
+                              {scIsBaby ? scGuardian.babyNameKo : scGuardian.nameKo}
+                            </span>
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold whitespace-nowrap ${scTheme.badgeBg}`}
+                            >
+                              TIER: SSR
+                            </span>
+                          </div>
                         </div>
-                        <p className="relative z-10 font-serif text-[11.5px] font-black leading-snug break-keep">
-                          “{scGuardian.nameKo}의 수호 — {scGuardian.spiritQuote}”
-                        </p>
+
+                        <div
+                          className={`shrink-0 px-3 py-2.5 space-y-1.5 border-t ${
+                            scIsBaby
+                              ? "bg-gradient-to-b from-[#fff7ef] to-[#f8effa] border-amber-200/80"
+                              : "bg-[#111020] border-amber-300/30"
+                          }`}
+                        >
+                          <p
+                            className={`text-[9.5px] font-bold text-center ${
+                              scIsBaby ? "text-amber-900" : "text-amber-300"
+                            }`}
+                          >
+                            {scIsBaby ? scGuardian.babyEpithet : scGuardian.epithet}
+                          </p>
+                          <p className="font-serif text-[11.5px] font-black text-center leading-snug line-clamp-2 break-keep">
+                            “{scIsBaby ? scGuardian.babyQuote : scGuardian.spiritQuote}”
+                          </p>
+                          <div className="grid grid-cols-2 gap-1 text-[9px] text-center">
+                            <div
+                              className={`rounded-lg py-1 px-1.5 border ${
+                                scIsBaby
+                                  ? "bg-white border-amber-200/70 text-slate-800"
+                                  : "bg-white/10 border-white/10 text-white"
+                              }`}
+                            >
+                              💰 8월 횡재
+                            </div>
+                            <div
+                              className={`rounded-lg py-1 px-1.5 border ${
+                                scIsBaby
+                                  ? "bg-white border-amber-200/70 text-slate-800"
+                                  : "bg-white/10 border-white/10 text-white"
+                              }`}
+                            >
+                              ⚠️ 4월 주의
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
 
                     {showcaseEdition === "receipt" && (
-                      <div className="w-full max-w-[250px] h-[330px] rounded-2xl p-4 bg-[#fdfaf2] text-slate-900 border border-stone-300 shadow-xl relative flex flex-col justify-between">
+                      <div className="w-full max-w-[250px] h-[340px] rounded-2xl p-3.5 bg-[#fdfaf2] text-slate-900 border border-stone-300 shadow-xl flex flex-col justify-between">
                         <div className="flex justify-between items-center border-b border-dashed border-slate-400 pb-1.5">
                           <span className="font-serif text-xs font-black">천명(天命) 감정서</span>
                           <span className="text-[9px] font-mono bg-slate-900 text-amber-300 px-1.5 py-0.5 rounded">
@@ -660,16 +662,19 @@ export default function HomePage() {
                           />
                           <div className="text-left min-w-0">
                             <p className="text-[10px] font-extrabold text-amber-900">
-                              {scGuardian.nameKo}({scGuardian.hanja}) 수호
+                              {scGuardian.nameKo}({scGuardian.hanja})
                             </p>
                             <p className="text-[9px] text-slate-600 line-clamp-2 leading-snug">
                               {scGuardian.epithet}
                             </p>
                           </div>
                         </div>
-                        <p className="font-serif text-[11px] font-black leading-snug bg-white p-2 rounded-lg border border-stone-200 break-keep">
-                          “{scGuardian.spiritQuote}”
-                        </p>
+                        <div className="bg-white p-2 rounded-lg border border-stone-200 flex items-center justify-between gap-1.5">
+                          <p className="font-serif text-[10.5px] font-black leading-snug line-clamp-2 break-keep">
+                            “{scGuardian.spiritQuote}”
+                          </p>
+                          <VermilionSealSvg label="천명印" className="w-7 h-7 shrink-0" />
+                        </div>
                         <div className="space-y-1 text-[9px] font-mono">
                           <div className="flex justify-between">
                             <span>재물·횡재력</span>
@@ -683,29 +688,26 @@ export default function HomePage() {
                             <span className="font-bold">94%</span>
                           </div>
                         </div>
-                        <div className="absolute right-2 bottom-2 rotate-[-8deg]">
-                          <VermilionSealSvg label="천명印" className="w-8 h-8" />
-                        </div>
                       </div>
                     )}
                   </div>
 
-                  {/* 우측 핵심 차별점 리스트 */}
+                  {/* 우측 핵심 차별점 리스트 (간결화) */}
                   <div className="sm:col-span-6 space-y-2.5 text-left">
-                    <div className="rounded-2xl bg-white/75 border border-white p-3 space-y-1">
+                    <div className="rounded-2xl bg-white/80 border border-white p-3 space-y-1">
                       <p className="text-xs font-extrabold text-slate-900">
-                        🐅 1. 내 사주 오행 수호 영물 화보 자동 매칭
+                        🐅 1. 영험한 신수 & 🐾 귀여운 아기 신수 2종 제공
                       </p>
                       <p className="text-[11px] text-slate-600 leading-relaxed">
-                        생년월일시에 담긴 오행에 따라 청룡·주작·황룡·백호·현무 중 나를 수호하는 영물 화보와 천명 인장이 자동 생성됩니다.
+                        내 사주 오행에 맞는 수호신(청룡·주작·황룡·백호·현무)을 영험한 버전과 아기 버전 모두로 저장하세요.
                       </p>
                     </div>
-                    <div className="rounded-2xl bg-white/75 border border-white p-3 space-y-1">
+                    <div className="rounded-2xl bg-white/80 border border-white p-3 space-y-1">
                       <p className="text-xs font-extrabold text-slate-900">
-                        📊 2. 사주 원국 + 12개월 흐름 + 체질·궁합·일진
+                        ✨ 2. 글자와 겹치지 않는 깔끔한 PNG 카드
                       </p>
                       <p className="text-[11px] text-slate-600 leading-relaxed">
-                        인스타 스토리(9:16)와 피드(4:5) 비율에 맞춘 고화질 PNG 저장 및 결과 URL 평생 보관을 지원합니다.
+                        인스타 스토리(9:16)와 피드(4:5) 비율에 맞춰 이미지와 요약 정보를 깔끔히 분리했습니다.
                       </p>
                     </div>
                   </div>

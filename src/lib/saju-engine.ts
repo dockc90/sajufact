@@ -115,44 +115,77 @@ export const GUARDIAN_BEAST_META: Record<
     epithet: string;
     image: string;
     spiritQuote: string;
+    babyNameKo: string;
+    babyEpithet: string;
+    babyImage: string;
+    babyQuote: string;
   }
 > = {
   wood: {
     nameKo: "청룡",
     hanja: "靑龍",
-    epithet: "비상을 앞둔 푸른 비늘의 수호신",
+    epithet: "새 판을 여는 푸른 수호신",
     image: "/guardians/wood-guardian.jpg",
-    spiritQuote: "막힌 운을 뚫고 새 판을 여는 성장과 도약의 신수",
+    spiritQuote: "막힌 운을 뚫고 도약하는 성장의 신수",
+    babyNameKo: "아기 청룡",
+    babyEpithet: "여의주를 품은 행운 새싹",
+    babyImage: "/guardians/wood-baby.jpg",
+    babyQuote: "작은 시작이 큰 복으로 쑥쑥 자라나는 기운",
   },
   fire: {
     nameKo: "주작",
     hanja: "朱雀",
-    epithet: "붉은 여명을 가르는 태양의 불사조",
+    epithet: "빛과 명예를 부르는 불사조",
     image: "/guardians/fire-guardian.jpg",
-    spiritQuote: "시선과 명예를 한 몸에 끌어당기는 압도적 카리스마의 신수",
+    spiritQuote: "존재감과 인기를 끌어당기는 태양의 신수",
+    babyNameKo: "아기 주작",
+    babyEpithet: "반짝이는 불꽃 애교 요정",
+    babyImage: "/guardians/fire-baby.jpg",
+    babyQuote: "어디서나 사랑받고 주인공이 되는 따뜻한 기운",
   },
   earth: {
     nameKo: "황룡 기린",
     hanja: "黃龍 麒麟",
-    epithet: "만금을 품은 황금 대지의 수호신",
+    epithet: "만금을 품은 황금 대지 수호신",
     image: "/guardians/earth-guardian.jpg",
-    spiritQuote: "흔들리지 않는 부(富)와 인연을 거머쥐는 재고(財庫)의 신수",
+    spiritQuote: "재물과 인연을 지켜주는 재고(財庫)의 신수",
+    babyNameKo: "아기 황룡",
+    babyEpithet: "황금 구름 위 복덩이",
+    babyImage: "/guardians/earth-baby.jpg",
+    babyQuote: "통장과 마음을 든든하게 채워주는 복록의 기운",
   },
   metal: {
     nameKo: "백호",
     hanja: "白虎",
-    epithet: "서릿발 결단으로 승부하는 은빛 맹호",
+    epithet: "결단으로 승부하는 은빛 맹호",
     image: "/guardians/metal-guardian.jpg",
-    spiritQuote: "헛된 인연을 끊어내고 정상의 자리를 쟁취하는 승부의 신수",
+    spiritQuote: "악연을 끊고 정상을 쟁취하는 승부의 신수",
+    babyNameKo: "아기 백호",
+    babyEpithet: "금방울 찬 똑똑한 맹호",
+    babyImage: "/guardians/metal-baby.jpg",
+    babyQuote: "잡음은 막아주고 딱 필요한 행운만 무는 기운",
   },
   water: {
     nameKo: "현무",
     hanja: "玄武",
-    epithet: "심연과 별빛을 꿰뚫는 밤의 수호신",
+    epithet: "심연과 별빛의 지혜 수호신",
     image: "/guardians/water-guardian.jpg",
-    spiritQuote: "남들이 보지 못하는 기회와 횡재수를 읽어내는 지혜의 신수",
+    spiritQuote: "숨은 기회와 횡재수를 읽는 지혜의 신수",
+    babyNameKo: "아기 현무",
+    babyEpithet: "별빛 물방울을 모으는 밤 지킴이",
+    babyImage: "/guardians/water-baby.jpg",
+    babyQuote: "조용히 횡재와 귀인을 끌어당기는 영리한 기운",
   },
 };
+
+export function toShortCardFact(fact: string, maxLen = 40): string {
+  const cleaned = fact
+    .replace(/^\[[^\]]+\]\s*/, "")
+    .replace(/^[^—]+—\s*/, "")
+    .trim();
+  if (cleaned.length <= maxLen) return cleaned;
+  return `${cleaned.slice(0, maxLen - 1).trim()}…`;
+}
 
 export const ELEMENT_THEMES: Record<ElementKey, ElementTheme> = {
   wood: {
