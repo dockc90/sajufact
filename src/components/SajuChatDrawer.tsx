@@ -57,6 +57,20 @@ function createChatMessage(
   };
 }
 
+function renderFormattedContent(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, idx) => {
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+      return (
+        <strong key={idx} className="font-extrabold text-slate-900">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return <span key={idx}>{part}</span>;
+  });
+}
+
 function getStorageKey(walletId: string, personaId: ChatPersonaId): string {
   return `sajufact_chat_${walletId}_${personaId}`;
 }
@@ -400,12 +414,12 @@ export function SajuChatDrawer({
           </div>
         </div>
 
-        {/* 잔여 수다권 / 당근 / 무료 꼬리질문 바 */}
+        {/* 잔여 수다권 / 당근 / 꼬리질문 바 */}
         <div className="bg-gradient-to-r from-orange-50/90 via-rose-50/70 to-violet-50/90 border-b border-violet-100 px-4 py-2 flex items-center justify-between gap-2 text-[11px] shrink-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             {followUpCredits > 0 && (
               <span className="inline-flex items-center gap-1 font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 shadow-2xs">
-                💬 무료 꼬리질문 {followUpCredits}회
+                💬 꼬리질문 {followUpCredits}개
               </span>
             )}
             <span className="inline-flex items-center gap-1 font-extrabold text-rose-700 bg-white px-2.5 py-1 rounded-full border border-rose-200/80 shadow-2xs">
@@ -431,7 +445,7 @@ export function SajuChatDrawer({
           <span>🥕 당근 1개(또는 무료수다권 1장)</span>
           <span className="text-slate-400">=</span>
           <span className="text-rose-600 font-extrabold">
-            기본 질문 1회 + 무료 꼬리질문 3개
+            기본 질문 1회 + 꼬리질문 3개
           </span>
         </div>
 
@@ -653,7 +667,7 @@ export function SajuChatDrawer({
                 <span>
                   {activePersona.shortName}에게 상담 시작하기 (
                   {followUpCredits > 0
-                    ? `무료 꼬리질문 ${followUpCredits}개 남음`
+                    ? `꼬리질문 ${followUpCredits}개 남음`
                     : freeChatTickets > 0
                     ? "무료수다권 1장 · 꼬리질문 3개 포함"
                     : coins > 0
@@ -713,7 +727,7 @@ export function SajuChatDrawer({
                             : "bg-white/95 text-slate-800 border border-violet-100 rounded-bl-sm"
                         }`}
                       >
-                        {msg.content}
+                        {isUser ? msg.content : renderFormattedContent(msg.content)}
                       </div>
                     </div>
 
@@ -767,7 +781,7 @@ export function SajuChatDrawer({
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={
                   followUpCredits > 0
-                    ? `무료 꼬리질문 ${followUpCredits}개 남음 · 더 구체적으로 물어보세요`
+                    ? `꼬리질문 ${followUpCredits}개 남음 · 더 구체적으로 물어보세요`
                     : freeChatTickets > 0
                     ? `무료수다권 1장(꼬리질문 3개 포함) · ${activePersona.shortName}에게 질문하기`
                     : coins > 0
