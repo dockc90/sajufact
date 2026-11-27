@@ -127,6 +127,16 @@ export function SajuChatDrawer({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [pendingExchange, setPendingExchange] = useState<{
+    text: string;
+    clearInput: boolean;
+    overrides?: {
+      personaId?: ChatPersonaId;
+      topicCategory?: string;
+      topicDetail?: string;
+      baseMessages?: ChatMessage[];
+    };
+  } | null>(null);
   const [countdownLabel, setCountdownLabel] = useState("매일 밤 11시 충전");
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -152,6 +162,7 @@ export function SajuChatDrawer({
       setSelectedSubTopics([]);
       setCustomDetail(initialContext ? initialContext : "");
       setInput("");
+      setPendingExchange(null);
       refreshPersonaHistoryFlags();
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -223,10 +234,25 @@ export function SajuChatDrawer({
       topicCategory?: string;
       topicDetail?: string;
       baseMessages?: ChatMessage[];
-    }
+    },
+    skipExchangeConfirm = false
   ) => {
     const clean = (textToSend ?? input).trim();
     if (!clean || isSending) return;
+
+    if (
+      !skipExchangeConfirm &&
+      followUpCredits <= 0 &&
+      freeChatTickets <= 0 &&
+      coins > 0
+    ) {
+      setPendingExchange({
+        text: clean,
+        clearInput: !textToSend,
+        overrides,
+      });
+      return;
+    }
 
     const ok = onConsumeForChat();
     if (!ok) {
@@ -800,6 +826,56 @@ export function SajuChatDrawer({
               </button>
             </form>
           </>
+        )}
+
+        {/* 꼬리질문 0개일 때 당근 1개 → 꼬리질문 3개 교환 안내 팝업 */}
+        {pendingExchange && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/50 backdrop-blur-xs p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-full max-w-[340px] rounded-3xl bg-white p-5 shadow-2xl border border-orange-100 space-y-4 text-center"
+            >
+              <div className="mx-auto w-12 h-12 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-2xl">
+                🥕
+              </div>
+              <div className="space-y-1.5">
+                <h4 className="text-base font-black text-slate-900 break-keep text-balance">
+                  당근 1개로 꼬리질문 3개 교환하기
+                </h4>
+                <p className="text-xs text-slate-600 leading-relaxed break-keep">
+                  꼬리질문이 0개예요.{" "}
+                  <strong className="text-orange-600">당근 1개</strong>를 사용해{" "}
+                  <strong className="text-rose-600">꼬리질문 3개</strong>로 교환하고
+                  지금 질문에 대한 답변을 받아볼까요?
+                </p>
+              </div>
+              <div className="rounded-2xl bg-[#fff8f1] border border-orange-200/70 px-3 py-2 text-[11px] font-extrabold text-orange-900">
+                보유 당근 {coins}개 → {Math.max(0, coins - 1)}개 · 꼬리질문 3개 충전
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPendingExchange(null)}
+                  className="py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-xs font-extrabold text-slate-600 transition"
+                >
+                  취소
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = pendingExchange;
+                    setPendingExchange(null);
+                    if (next.clearInput) setInput("");
+                    void handleSend(next.text, next.overrides, true);
+                  }}
+                  className="py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 to-rose-500 hover:brightness-105 text-white text-xs font-black shadow-md transition"
+                >
+                  교환하고 질문하기
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </motion.div>
     </div>
