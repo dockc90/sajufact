@@ -7,10 +7,10 @@ const AURA_PALETTE: Record<
   { orb1: string; orb2: string; orb3: string; base: string }
 > = {
   default: {
-    base: "from-[#f8f3ee] via-[#f4eef8] to-[#eef5f3]",
-    orb1: "bg-rose-200/55",
-    orb2: "bg-amber-100/60",
-    orb3: "bg-indigo-200/45",
+    base: "from-[#fdf6f0] via-[#f7eefb] to-[#fff2eb]",
+    orb1: "bg-[#f8c4b4]/55",
+    orb2: "bg-[#d9c2f8]/55",
+    orb3: "bg-[#fde6b8]/55",
   },
   wood: {
     base: "from-emerald-50 via-teal-50/70 to-amber-50/80",

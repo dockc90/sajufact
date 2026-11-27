@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
         gender: body.profile.gender === "male" ? "male" : "female",
         calendar_type: body.profile.calendarType === "lunar" ? "lunar" : "solar",
         birth_hour: body.profile.birthHour || "10",
-        coins: Math.max(0, Number(body.coins ?? 1)),
+        coins: Math.max(0, Number(body.coins ?? 0)),
         free_chat_tickets: Math.max(0, Number(body.freeChatTickets ?? 1)),
         last_free_reset_key: body.lastFreeResetKey || getKst23ResetCycleKey(),
         unlocked_themes: body.unlockedReportIds || [],

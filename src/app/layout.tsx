@@ -18,12 +18,12 @@ const notoSerifKr = Noto_Serif_KR({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sajufact.kr"),
-  title: "사주팩트 (SajuFact) | AI 명리 사주·수호 영물 카드",
+  title: "사주팩트 (SajuFact) | 달토끼 달토 AI 사주 · 파스텔 오라 카드",
   description:
-    "2027 정미년 신년운세, 평생 사주 원국 풀이, 재물·이직운, 연애·궁합 스캔, 오늘의 무료 타로까지. 내 오행 수호 영물 화보와 정밀 운세 카드를 소장하세요.",
+    "2027 정미년 신년운세, 평생 사주 원국 풀이, 재물·이직운, 연애·궁합 스캔, 오늘의 무료 타로까지. 달토끼 달토의 솔직한 조언·따뜻한 처방전과 파스텔 오라 카드를 소장하세요.",
   openGraph: {
-    title: "사주팩트 (SajuFact) — 팩트 기반 AI 사주·수호 영물",
-    description: "내 사주 오행 수호 영물 카드와 정밀 2027 운세 리포트",
+    title: "사주팩트 (SajuFact) — 달토끼 달토 AI 사주 · 파스텔 오라",
+    description: "달토가 짚어주는 정밀 사주 풀이와 파스텔 오라 인스타그램 공유 카드",
     siteName: "사주팩트 (SajuFact)",
   },
 };
@@ -38,7 +38,7 @@ export default function RootLayout({
       lang="ko"
       className={`${notoSansKr.variable} ${notoSerifKr.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-[#f6f3ef] text-slate-900 font-sans selection:bg-amber-200/70 selection:text-slate-900">
+      <body className="min-h-full bg-[#fdf6f0] text-slate-900 font-sans selection:bg-violet-200/70 selection:text-slate-900">
         <main className="min-h-screen w-full flex flex-col relative overflow-x-hidden">
           {children}
         </main>

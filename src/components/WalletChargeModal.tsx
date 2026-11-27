@@ -6,6 +6,7 @@ import { Check, ShieldCheck, Sparkles, X, Zap } from "lucide-react";
 
 interface ChargePackage {
   id: string;
+  name: string;
   baseCoins: number;
   bonusCoins: number;
   totalCoins: number;
@@ -18,42 +19,46 @@ interface ChargePackage {
 const PACKAGES: ChargePackage[] = [
   {
     id: "pack_1",
+    name: "당근 1개",
     baseCoins: 1,
     bonusCoins: 0,
     totalCoins: 1,
     price: 990,
     priceText: "990원",
-    desc: "궁금한 리포트 1종 즉시 열기",
+    desc: "궁금한 사주 리포트 1종 즉시 열기",
   },
   {
-    id: "pack_4",
+    id: "pack_3",
+    name: "당근 한 다발 (3개)",
     baseCoins: 3,
-    bonusCoins: 1,
-    totalCoins: 4,
+    bonusCoins: 0,
+    totalCoins: 3,
     price: 2900,
     priceText: "2,900원",
-    badge: "BEST · 1개 보너스",
-    desc: "기본+신년+연애+궁합 한 번에 스캔",
+    badge: "인기",
+    desc: "기본·신년·연애 핵심 메뉴 가볍게 열기",
   },
   {
-    id: "pack_10",
-    baseCoins: 7,
+    id: "pack_6",
+    name: "당근 바구니 (5+1개)",
+    baseCoins: 5,
+    bonusCoins: 1,
+    totalCoins: 6,
+    price: 4900,
+    priceText: "4,900원",
+    badge: "BEST · +1 보너스",
+    desc: "인기 테마 몰아보기 + 달토 집중 수다",
+  },
+  {
+    id: "pack_13",
+    name: "당근 농장 (10+3개)",
+    baseCoins: 10,
     bonusCoins: 3,
-    totalCoins: 10,
-    price: 5900,
-    priceText: "5,900원",
-    badge: "인기 · 3개 보너스",
-    desc: "7종 전 테마 + 복고양이 집중 상담",
-  },
-  {
-    id: "pack_20",
-    baseCoins: 15,
-    bonusCoins: 5,
-    totalCoins: 20,
+    totalCoins: 13,
     price: 9900,
     priceText: "9,900원",
-    badge: "VIP · 5개 보너스",
-    desc: "친구·가족 사주까지 무제한 케어",
+    badge: "최고혜택 · +3 보너스",
+    desc: "7종 전 테마 + 친구 궁합·달토 상담까지 넉넉하게",
   },
 ];
 
@@ -76,14 +81,14 @@ export function WalletChargeModal({
   onClose,
   onChargeComplete,
 }: WalletChargeModalProps) {
-  const [selectedPackId, setSelectedPackId] = useState<string>("pack_4");
+  const [selectedPackId, setSelectedPackId] = useState<string>("pack_6");
   const [payMethod, setPayMethod] = useState<"kakao" | "toss" | "naver">("kakao");
   const [isProcessing, setIsProcessing] = useState(false);
 
   if (!open) return null;
 
   const selectedPack =
-    PACKAGES.find((p) => p.id === selectedPackId) ?? PACKAGES[1];
+    PACKAGES.find((p) => p.id === selectedPackId) ?? PACKAGES[2];
 
   const portoneStoreId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
   const portoneChannelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY;
@@ -105,8 +110,8 @@ export function WalletChargeModal({
         const res = await win.PortOne.requestPayment({
           storeId: portoneStoreId,
           channelKey: portoneChannelKey,
-          paymentId: `sf-coin-${Date.now()}`,
-          orderName: `사주팩트 복주머니 ${selectedPack.totalCoins}개`,
+          paymentId: `sf-carrot-${Date.now()}`,
+          orderName: `사주팩트 ${selectedPack.name}`,
           totalAmount: selectedPack.price,
           currency: "KRW",
           payMethod: "EASY_PAY",
@@ -116,7 +121,7 @@ export function WalletChargeModal({
           return;
         }
       } else {
-        await new Promise((r) => setTimeout(r, 550));
+        await new Promise((r) => setTimeout(r, 500));
       }
       onChargeComplete(selectedPack.totalCoins, selectedPack.id);
     } catch {
@@ -130,74 +135,78 @@ export function WalletChargeModal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-0 sm:p-4"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-violet-950/35 backdrop-blur-sm p-0 sm:p-4"
     >
       <motion.div
-        initial={{ opacity: 0, y: 36 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-[460px] rounded-t-3xl sm:rounded-3xl bg-white p-5 sm:p-6 shadow-2xl max-h-[92vh] overflow-y-auto"
+        initial={{ opacity: 0, y: 36, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        className="w-full max-w-[460px] rounded-t-[30px] sm:rounded-[30px] bg-gradient-to-b from-[#fffaf5] via-[#fdf5fb] to-white p-5 sm:p-6 shadow-2xl border border-white max-h-[92vh] overflow-y-auto"
       >
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
             <img
-              src="/mascot/lucky-cat.jpg"
-              alt="복고양이"
-              className="w-9 h-9 rounded-full object-cover border border-amber-300"
+              src="/mascot/dalto-rabbit.jpg"
+              alt="달토끼 달토"
+              className="w-11 h-11 rounded-2xl object-cover border-2 border-orange-200 shadow-sm"
             />
             <div>
-              <h3 className="text-base sm:text-lg font-extrabold text-slate-900">
-                복주머니 충전소
+              <h3 className="text-base sm:text-lg font-black text-slate-900">
+                🥕 달토의 당근 충전소
               </h3>
               <p className="text-[11px] text-slate-500">
-                현재 보유: <strong className="text-rose-600">👝 {currentCoins}개</strong>
+                현재 보유:{" "}
+                <strong className="text-orange-600">🥕 당근 {currentCoins}개</strong> · 당근
+                1개=990원
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-slate-100 text-slate-500"
+            className="p-1.5 rounded-full hover:bg-violet-100/70 text-slate-500 transition"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="space-y-2 mb-4">
+        <div className="space-y-2.5 mb-4">
           {PACKAGES.map((pack) => {
             const active = selectedPackId === pack.id;
             return (
-              <button
+              <motion.button
                 key={pack.id}
                 type="button"
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
                 onClick={() => setSelectedPackId(pack.id)}
                 className={`w-full text-left p-3.5 rounded-2xl border-2 transition relative ${
                   active
-                    ? "border-slate-900 bg-amber-50/70 shadow-sm"
-                    : "border-slate-200 hover:border-slate-300"
+                    ? "border-orange-400 bg-gradient-to-r from-orange-50/90 via-rose-50/70 to-violet-50/80 shadow-md"
+                    : "border-violet-100 bg-white/80 hover:border-orange-200"
                 }`}
               >
                 {pack.badge && (
-                  <span className="absolute -top-2 right-3 px-2 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold">
+                  <span className="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 text-white text-[10px] font-extrabold shadow-xs">
                     {pack.badge}
                   </span>
                 )}
                 <div className="flex items-center justify-between gap-2">
                   <div>
                     <p className="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
-                      <span>👝 복주머니 {pack.totalCoins}개</span>
+                      <span>🥕 {pack.name}</span>
                       {pack.bonusCoins > 0 && (
-                        <span className="text-[11px] font-bold text-rose-600">
-                          ({pack.baseCoins}+{pack.bonusCoins})
+                        <span className="rounded-full bg-orange-100 text-orange-700 px-2 py-0.5 text-[10px] font-extrabold">
+                          총 {pack.totalCoins}개
                         </span>
                       )}
                     </p>
                     <p className="text-[11px] text-slate-500 mt-0.5">{pack.desc}</p>
                   </div>
-                  <span className="text-base font-black text-slate-900 shrink-0">
+                  <span className="text-base font-black text-[#4d3780] shrink-0">
                     {pack.priceText}
                   </span>
                 </div>
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -210,12 +219,12 @@ export function WalletChargeModal({
                 key={m.id}
                 type="button"
                 onClick={() => setPayMethod(m.id)}
-                className={`py-2.5 px-2 rounded-xl text-xs font-extrabold transition border-2 ${
+                className={`py-2.5 px-2 rounded-2xl text-xs font-extrabold transition border-2 ${
                   m.bg
                 } ${
                   payMethod === m.id
-                    ? "border-slate-950 scale-[1.02] shadow-md"
-                    : "border-transparent opacity-75 hover:opacity-100"
+                    ? "border-slate-900 scale-[1.02] shadow-md"
+                    : "border-transparent opacity-80 hover:opacity-100"
                 }`}
               >
                 {m.label}
@@ -224,30 +233,32 @@ export function WalletChargeModal({
           </div>
         </div>
 
-        <button
+        <motion.button
           type="button"
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.98 }}
           disabled={isProcessing}
           onClick={handlePay}
-          className="w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm shadow-xl transition disabled:opacity-60 flex items-center justify-center gap-1.5"
+          className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 via-rose-500 to-violet-500 hover:brightness-105 text-white font-extrabold text-sm shadow-lg transition disabled:opacity-60 flex items-center justify-center gap-1.5"
         >
-          <Sparkles className="w-4 h-4 text-amber-300" />
+          <Sparkles className="w-4 h-4 text-amber-200" />
           {isProcessing
-            ? "복주머니 충전 중..."
-            : `${selectedPack.priceText} 결제하고 ${selectedPack.totalCoins}개 받기`}
-        </button>
+            ? "달토 바구니에 당근 담는 중..."
+            : `${selectedPack.priceText} 결제하고 🥕 ${selectedPack.totalCoins}개 받기`}
+        </motion.button>
 
         <button
           type="button"
           onClick={() => onChargeComplete(selectedPack.totalCoins, selectedPack.id)}
-          className="w-full mt-2 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200/80 text-amber-950 text-xs font-bold flex items-center justify-center gap-1.5 border border-amber-300/80 transition"
+          className="w-full mt-2 py-2.5 rounded-2xl bg-orange-100/80 hover:bg-orange-200/80 text-orange-900 text-xs font-bold flex items-center justify-center gap-1.5 border border-orange-200 transition"
         >
           <Zap className="w-3.5 h-3.5" />
-          테스트용 즉시 충전 (+{selectedPack.totalCoins}개 바로 받기)
+          테스트용 즉시 충전 (+{selectedPack.totalCoins}당근 바로 받기)
         </button>
 
         <p className="text-[11px] text-slate-400 text-center mt-2.5 flex items-center justify-center gap-1">
           <ShieldCheck className="w-3.5 h-3.5" />
-          충전한 복주머니는 모든 테마와 복고양이 수다방에서 자유롭게 사용됩니다.
+          당근을 주면 달토의 뼈 때리는 채찍과 따뜻한 처방전이 바로 열려요!
         </p>
         <div className="hidden">
           <Check />

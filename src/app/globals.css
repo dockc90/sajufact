@@ -39,18 +39,47 @@
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.68);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  box-shadow: 0 10px 35px -10px rgba(31, 38, 60, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  background: rgba(255, 252, 249, 0.78);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 12px 36px -12px rgba(139, 92, 246, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 .glass-pill {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 252, 249, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.88);
+}
+
+@keyframes dalto-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-dalto-float {
+  animation: dalto-float 3.4s ease-in-out infinite;
+}
+
+@keyframes mortar-pound {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  45% {
+    transform: translateY(-10px) scale(1.03);
+  }
+  70% {
+    transform: translateY(2px) scale(0.98);
+  }
+}
+
+.animate-mortar-pound {
+  animation: mortar-pound 1.4s ease-in-out infinite;
 }
 
 .no-scrollbar::-webkit-scrollbar {

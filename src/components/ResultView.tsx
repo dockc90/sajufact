@@ -27,7 +27,6 @@ import {
 } from "lucide-react";
 import {
   ELEMENT_THEMES,
-  GUARDIAN_BEAST_META,
   MENU_ITEMS,
   buildCompatibilityReport,
   calculateTodayFortune,
@@ -115,7 +114,6 @@ export function ResultView({
     initialReport.input.menu === "today" ? "today" : "deep"
   );
   const [deepSubTab, setDeepSubTab] = useState<DeepSubTab>(getInitialSubTab);
-  const [previewBabyThumb, setPreviewBabyThumb] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<number>(4);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
@@ -123,7 +121,6 @@ export function ResultView({
   const [extraPartnerBirth, setExtraPartnerBirth] = useState("1995-08-20");
 
   const theme = ELEMENT_THEMES[report.dominantElement];
-  const guardian = GUARDIAN_BEAST_META[report.dominantElement];
   const activeMenuMeta =
     MENU_ITEMS.find((m) => m.id === report.input.menu) ?? MENU_ITEMS[1];
   const coinCost = Math.max(1, activeMenuMeta.coinCost || 1);
@@ -170,7 +167,7 @@ export function ResultView({
         report,
       }),
     }).catch(() => {});
-    showToast(`👝 복주머니 ${coinCost}개로 전체 리포트 & 수호신 카드가 열렸습니다!`);
+    showToast(`🥕 당근 ${coinCost}개로 전체 리포트 & 파스텔 오라 카드가 열렸습니다!`);
   };
 
   const handlePaymentComplete = (
@@ -282,44 +279,51 @@ export function ResultView({
     <section
       className={`${
         mobileVisible ? "block" : "hidden lg:block"
-      } glass-card rounded-3xl p-4 sm:p-5 space-y-3`}
+      } glass-card rounded-3xl p-4 sm:p-5 space-y-3 border border-white/90`}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 bg-rose-100/80 px-2.5 py-0.5 rounded-full whitespace-nowrap">
+        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-violet-700 bg-violet-100/80 px-2.5 py-0.5 rounded-full whitespace-nowrap">
           <Camera className="w-3 h-3" />
-          수호 영물 결과 카드
+          파스텔 오라 인스타 카드
         </span>
         <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">
-          {guardian.nameKo} · {theme.nameKo}
+          9:16 · 4:5 PNG
         </span>
       </div>
 
-      <div className="rounded-2xl overflow-hidden border border-amber-200/80 bg-slate-950 text-white shadow-lg">
-        <div className="relative h-52 overflow-hidden">
-          <img
-            src={previewBabyThumb ? guardian.babyImage : guardian.image}
-            alt={guardian.nameKo}
-            className="w-full h-full object-cover blur-[3px] scale-105 opacity-85"
-          />
-          <div className="absolute inset-0 bg-slate-950/40 flex flex-col items-center justify-center p-4 text-center">
-            <Lock className="w-6 h-6 text-amber-300 mb-1.5" />
+      <div className="rounded-3xl overflow-hidden border-2 border-white bg-gradient-to-br from-[#f6e8ff] via-[#fff0eb] to-[#fce7f3] text-[#2b2242] shadow-lg">
+        <div className="relative h-52 overflow-hidden flex flex-col items-center justify-center p-4 text-center">
+          <div className="absolute -top-8 -left-6 w-32 h-32 rounded-full bg-[#f8b4a0]/55 blur-xl" />
+          <div className="absolute -bottom-8 -right-6 w-36 h-36 rounded-full bg-[#c8b2fa]/55 blur-xl" />
+          <div className="relative z-10 flex flex-col items-center">
+            <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-white shadow-md mb-2">
+              <img
+                src="/mascot/dalto-rabbit.jpg"
+                alt="달토끼 달토"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-0.5 text-[10px] font-extrabold text-violet-700 mb-1 shadow-2xs">
+              <Lock className="w-3 h-3" />
+              파스텔 오라 공유 카드 잠금됨
+            </span>
             <p className="font-serif text-sm font-black">
-              {guardian.nameKo} · 아기 신수 · 천명서 3종 잠금됨
+              {report.input.name}님 · {theme.nameKo} 파스텔 오라 카드
             </p>
           </div>
         </div>
-        <div className="p-3.5 bg-[#121122] text-center space-y-2.5">
-          <p className="text-xs text-amber-100/90 font-semibold">
-            🐅 영험한 신수 · 🐾 아기 신수 · 📜 천명 감정서
+        <div className="p-3.5 bg-white/85 backdrop-blur-sm border-t border-white text-center space-y-2.5">
+          <p className="text-xs text-slate-600 font-semibold">
+            🌸 라벤더 피치 · 🌙 달빛 크림 · ✨ 오행 맞춤 (9:16 & 4:5 저장)
           </p>
           <button
             type="button"
             onClick={handleUnlockByCoins}
-            className="w-full py-2.5 rounded-xl bg-amber-300 text-slate-950 text-xs font-extrabold hover:bg-amber-200 transition shadow"
+            className="w-full py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 via-rose-500 to-violet-500 text-white text-xs font-extrabold hover:brightness-105 transition shadow"
           >
             {walletCoins >= coinCost
-              ? `👝 복주머니 ${coinCost}개로 바로 열기 (보유 ${walletCoins}개)`
-              : `👝 복주머니 충전하고 카드 저장하기`}
+              ? `🥕 당근 ${coinCost}개로 바로 열기 (보유 ${walletCoins}개)`
+              : `🥕 당근 충전하고 오라 카드 저장하기`}
           </button>
         </div>
       </div>
@@ -384,21 +388,16 @@ export function ResultView({
             </div>
 
             <div className="flex items-center gap-3.5">
-              <button
-                type="button"
-                onClick={() => setPreviewBabyThumb((v) => !v)}
-                title="클릭해 영험한 신수 / 아기 신수 전환"
-                className="relative w-16 h-20 sm:w-20 sm:h-24 rounded-2xl overflow-hidden border-2 border-amber-300/70 shrink-0 shadow-md group"
-              >
+              <div className="relative w-16 h-20 sm:w-20 sm:h-24 rounded-2xl overflow-hidden border-2 border-orange-200/90 shrink-0 shadow-md bg-[#fdf6f0]">
                 <img
-                  src={previewBabyThumb ? guardian.babyImage : guardian.image}
-                  alt={previewBabyThumb ? guardian.babyNameKo : guardian.nameKo}
-                  className="w-full h-full object-cover group-hover:scale-105 transition"
+                  src="/mascot/dalto-rabbit.jpg"
+                  alt="달토끼 달토"
+                  className="w-full h-full object-cover"
                 />
-                <span className="absolute inset-x-0 bottom-0 bg-slate-950/75 text-[9px] font-bold text-amber-200 py-0.5 text-center">
-                  {previewBabyThumb ? "🐾 아기" : "🐅 신수"}
+                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-r from-[#5c489b]/90 to-[#d96b8a]/90 text-[9px] font-bold text-white py-0.5 text-center">
+                  🐇 달토
                 </span>
-              </button>
+              </div>
 
               <div className="min-w-0 flex-1 text-left space-y-1">
                 <p className="text-[11px] font-bold text-slate-500">
@@ -406,8 +405,8 @@ export function ResultView({
                   {report.dayBranchHangul ?? ""}(
                   {report.dayMasterHanja}
                   {report.dayBranchHanja ?? ""})일주 ·{" "}
-                  <span className="text-slate-800">
-                    {previewBabyThumb ? guardian.babyNameKo : guardian.nameKo} 수호
+                  <span className="text-violet-700">
+                    {theme.nameKo} 오라
                   </span>
                 </p>
                 <h1 className="font-serif text-base sm:text-xl font-black text-slate-900 leading-snug break-keep">
@@ -436,31 +435,31 @@ export function ResultView({
                 </div>
               )}
 
-            {/* 복고양이 수다방 락인 CTA */}
+            {/* 달토 수다방 락인 CTA */}
             {onOpenChat && (
               <button
                 type="button"
                 onClick={() =>
                   onOpenChat(`[${activeMenuMeta.title}] ${report.oneLineFact}`)
                 }
-                className="w-full rounded-2xl bg-gradient-to-r from-amber-100/90 via-rose-50 to-amber-50 border border-amber-300/80 px-3.5 py-2.5 flex items-center justify-between gap-2 hover:brightness-98 transition"
+                className="w-full rounded-2xl bg-gradient-to-r from-[#fff3e8] via-[#fdf0f6] to-[#f4eeff] border border-orange-200/80 px-3.5 py-2.5 flex items-center justify-between gap-2 hover:brightness-98 transition"
               >
                 <div className="flex items-center gap-2 min-w-0 text-left">
                   <img
-                    src="/mascot/lucky-cat.jpg"
-                    alt="복고양이"
-                    className="w-8 h-8 rounded-full object-cover border border-amber-400 shrink-0"
+                    src="/mascot/dalto-rabbit.jpg"
+                    alt="달토"
+                    className="w-8 h-8 rounded-2xl object-cover border border-orange-300 shrink-0"
                   />
                   <div className="min-w-0">
                     <p className="text-xs font-extrabold text-slate-900 truncate">
-                      🐱 복고양이에게 이 결과로 꼬리 질문하기
+                      🐇 달토에게 이 결과로 꼬리 질문하기
                     </p>
                     <p className="text-[10.5px] text-slate-600 truncate">
-                      내 원국을 기억한 채 직언+처방 상담 (무료 수다권 우선 사용)
+                      내 원국을 기억한 채 뼈 때리는 채찍+따뜻한 처방 (무료수다권 우선 사용)
                     </p>
                   </div>
                 </div>
-                <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-slate-900 text-amber-200 px-2.5 py-1 text-[10px] font-extrabold whitespace-nowrap">
+                <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#5c489b] to-[#d96b8a] text-white px-2.5 py-1 text-[10px] font-extrabold whitespace-nowrap">
                   <Ticket className="w-3 h-3" />
                   {freeChatTickets > 0 ? `무료 ${freeChatTickets}장` : "수다방"}
                 </span>
@@ -469,13 +468,13 @@ export function ResultView({
           </section>
 
           {/* ② 메인 4탭 바 */}
-          <div className="sticky top-[58px] sm:top-[66px] z-20 rounded-2xl bg-white/85 backdrop-blur-xl border border-slate-200/80 p-1.5 shadow-sm grid grid-cols-4 gap-1">
+          <div className="sticky top-[58px] sm:top-[66px] z-20 rounded-2xl bg-white/85 backdrop-blur-xl border border-violet-100 p-1.5 shadow-sm grid grid-cols-4 gap-1">
             {(
               [
                 { id: "deep", label: "🎯 핵심 풀이" },
                 { id: "today", label: "☀️ 오늘 일진" },
                 { id: "core", label: "🧭 사주·오행" },
-                { id: "card", label: "🐾 신수 카드" },
+                { id: "card", label: "✨ 오라 카드" },
               ] as const
             ).map((tab) => {
               const active = activeTab === tab.id;
@@ -486,8 +485,8 @@ export function ResultView({
                   onClick={() => setActiveTab(tab.id)}
                   className={`py-2 px-1 rounded-xl text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap ${
                     active
-                      ? "bg-slate-900 text-amber-200 shadow-sm"
-                      : "text-slate-600 hover:bg-slate-100"
+                      ? "bg-gradient-to-r from-[#5b469c] to-[#d96b8a] text-white shadow-sm"
+                      : "text-slate-600 hover:bg-violet-50"
                   }`}
                 >
                   {tab.label}
@@ -500,16 +499,16 @@ export function ResultView({
           {activeTab === "deep" && (
             <div className="space-y-4">
               {!paidPlan ? (
-                /* 앞부분 20% 무료 티저 + 복주머니 코인 1클릭 잠금 해제 */
-                <section className="glass-card rounded-3xl p-5 space-y-4 border border-amber-200/80 text-left">
+                /* 앞부분 20% 무료 티저 + 당근 코인 1클릭 잠금 해제 */
+                <section className="glass-card rounded-3xl p-5 space-y-4 border border-orange-200/80 text-left">
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between gap-2">
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[11px] font-extrabold">
                         <Lock className="w-3 h-3" />
                         20% 무료 미리보기
                       </span>
-                      <span className="text-[11px] font-bold text-amber-800">
-                        보유 복주머니 👝 {walletCoins}개
+                      <span className="text-[11px] font-bold text-orange-700">
+                        보유 🥕 당근 {walletCoins}개
                       </span>
                     </div>
                     <h2 className="font-serif text-base sm:text-lg font-black text-slate-900">
@@ -520,7 +519,7 @@ export function ResultView({
                     </p>
                   </div>
 
-                  <ul className="space-y-1.5 text-xs font-semibold text-slate-800 bg-slate-50/90 rounded-2xl p-3.5 border border-slate-200/70">
+                  <ul className="space-y-1.5 text-xs font-semibold text-slate-800 bg-[#fdf8ff] rounded-2xl p-3.5 border border-violet-100">
                     <li className="flex items-center gap-2">
                       <span>🔒</span>
                       <span>
@@ -529,12 +528,12 @@ export function ResultView({
                     </li>
                     <li className="flex items-center gap-2">
                       <span>🔒</span>
-                      <span>대운·연운·택일·12개월 흐름 & 맞춤형 액땜 부적</span>
+                      <span>대운·연운·택일·12개월 흐름 & 맞춤형 개운 처방전</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span>🔒</span>
                       <span>
-                        {guardian.nameKo} · {guardian.babyNameKo} PNG 결과 카드 3종 저장
+                        파스텔 오라 인스타그램 공유 카드 (9:16 스토리 · 4:5 피드 PNG 저장)
                       </span>
                     </li>
                   </ul>
@@ -543,19 +542,19 @@ export function ResultView({
                     <button
                       type="button"
                       onClick={handleUnlockByCoins}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white shadow-xl flex items-center justify-between transition"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-orange-500 via-rose-500 to-violet-500 hover:brightness-105 text-white shadow-lg flex items-center justify-between transition"
                     >
                       <div className="text-left">
-                        <span className="inline-block text-[10px] font-bold bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full mb-0.5">
+                        <span className="inline-block text-[10px] font-bold bg-white/25 text-white px-2 py-0.5 rounded-full mb-0.5">
                           {walletCoins >= coinCost
                             ? "즉시 1클릭 잠금 해제"
-                            : "복주머니 충전 필요"}
+                            : "당근 충전 필요"}
                         </span>
                         <p className="text-sm font-extrabold">
-                          👝 복주머니 {coinCost}개로 전체 열기
+                          🥕 당근 {coinCost}개로 전체 열기
                         </p>
                       </div>
-                      <span className="text-xs font-extrabold text-amber-300 shrink-0">
+                      <span className="text-xs font-extrabold text-amber-100 shrink-0">
                         {walletCoins >= coinCost
                           ? `보유 ${walletCoins}개 →`
                           : "충전하기 →"}
@@ -603,8 +602,8 @@ export function ResultView({
                         onClick={() => setDeepSubTab(sub.id)}
                         className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-bold border transition whitespace-nowrap ${
                           deepSubTab === sub.id
-                            ? "bg-slate-900 text-white border-slate-900"
-                            : "bg-white/80 text-slate-700 border-slate-200 hover:bg-white"
+                            ? "bg-gradient-to-r from-[#5b469c] to-[#d96b8a] text-white border-transparent shadow-xs"
+                            : "bg-white/80 text-slate-700 border-violet-100 hover:bg-white"
                         }`}
                       >
                         {sub.label}
@@ -719,7 +718,7 @@ export function ResultView({
                         {report.loveReport.goldenTiming}
                       </p>
                       <div className="rounded-xl bg-pink-50 border border-pink-200 p-3 text-xs font-bold text-rose-900">
-                        💌 복고양이 연애 처방: {report.loveReport.lovePrescription}
+                        💌 달토의 연애 처방: {report.loveReport.lovePrescription}
                       </div>
                     </section>
                   )}

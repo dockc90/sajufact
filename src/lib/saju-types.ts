@@ -168,7 +168,7 @@ export interface WalletProfile {
 export interface WalletState {
   walletId: string;
   profile: WalletProfile;
-  coins: number; // 복주머니 개수
+  coins: number; // 당근 개수
   freeChatTickets: number; // 매일 밤 11시 리셋 무료 수다권
   lastFreeResetKey: string;
   unlockedReportIds: string[];

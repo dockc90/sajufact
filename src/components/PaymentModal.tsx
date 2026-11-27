@@ -167,7 +167,7 @@ export function PaymentModal({
             <ul className="text-xs text-slate-600 space-y-1 mt-1.5">
               <li className="flex items-center gap-1.5">
                 <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                선택 테마 전체 풀이 + 인스타 수호신 카드 (9:16 / 4:5 저장)
+                선택 테마 전체 풀이 + 파스텔 오라 인스타 카드 (9:16 / 4:5 저장)
               </li>
               <li className="flex items-center gap-1.5 font-semibold text-slate-800">
                 <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />

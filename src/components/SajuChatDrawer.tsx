@@ -79,7 +79,7 @@ export function SajuChatDrawer({
         {
           id: "welcome",
           role: "assistant",
-          content: `${profile.name}님 어서 와요! 🐱 생년월일(${profile.birthDate}) 만세력 원국은 복고양이가 이미 머리에 다 펼쳐뒀어요. 연애·이직·재물·인간관계 뭐든 솔직하게 물어보세요. 빈말은 안 하고, 대신 ${profile.name}님 편에서 딱 맞는 처방을 드릴게요!`,
+          content: `${profile.name}님 어서 와요! 🐇 당근 1개(또는 무료수다권)만 주시면 달에서 내려다본 ${profile.name}님(${profile.birthDate}) 원국 그대로 뼈 때리는 채찍과 따뜻한 처방전을 아낌없이 드릴게요. 궁금한 고민 뭐든 물어보세요! 🥕✨`,
           createdAt: new Date().toISOString(),
           suggestions: [STARTER_PROMPTS[0], STARTER_PROMPTS[1]],
         },
@@ -167,28 +167,28 @@ export function SajuChatDrawer({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-0 sm:p-4"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-violet-950/35 backdrop-blur-sm p-0 sm:p-4"
     >
       <motion.div
         initial={{ opacity: 0, y: 36 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-[520px] h-[90vh] sm:h-[82vh] rounded-t-3xl sm:rounded-3xl bg-[#faf7f2] flex flex-col overflow-hidden shadow-2xl border border-white/80"
+        className="w-full max-w-[520px] h-[90vh] sm:h-[82vh] rounded-t-[30px] sm:rounded-[30px] bg-gradient-to-b from-[#fdf6f0] via-[#fdf4fc] to-[#fff9f3] flex flex-col overflow-hidden shadow-2xl border border-white"
       >
         {/* 상단 헤더 */}
-        <div className="bg-white/95 border-b border-slate-200/80 px-4 py-3 flex items-center justify-between gap-2">
+        <div className="bg-white/90 border-b border-violet-100 px-4 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0">
             <img
-              src="/mascot/lucky-cat.jpg"
-              alt="복고양이 도사"
-              className="w-10 h-10 rounded-full object-cover border-2 border-amber-300 shrink-0"
+              src="/mascot/dalto-rabbit.jpg"
+              alt="달토끼 달토"
+              className="w-10 h-10 rounded-2xl object-cover border-2 border-orange-200 shrink-0 shadow-xs"
             />
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <h3 className="text-sm font-black text-slate-900 truncate">
-                  복고양이 사주 수다방
+                  🐇 달토의 사주 수다방
                 </h3>
-                <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9.5px] font-extrabold text-emerald-700 whitespace-nowrap">
-                  실시간 만세력 연동
+                <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[9.5px] font-extrabold text-violet-700 whitespace-nowrap">
+                  만세력 연동
                 </span>
               </div>
               <p className="text-[10.5px] text-slate-500 truncate">
@@ -200,30 +200,30 @@ export function SajuChatDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-slate-100 text-slate-500 shrink-0"
+            className="p-1.5 rounded-full hover:bg-violet-100/70 text-slate-500 shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* 잔여 수다권 / 복주머니 바 */}
-        <div className="bg-amber-50/90 border-b border-amber-200/70 px-4 py-2 flex items-center justify-between gap-2 text-[11px]">
+        {/* 잔여 수다권 / 당근 바 */}
+        <div className="bg-gradient-to-r from-orange-50/90 via-rose-50/70 to-violet-50/90 border-b border-violet-100 px-4 py-2 flex items-center justify-between gap-2 text-[11px]">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 font-extrabold text-rose-700 bg-white px-2.5 py-1 rounded-full border border-rose-200">
+            <span className="inline-flex items-center gap-1 font-extrabold text-rose-700 bg-white px-2.5 py-1 rounded-full border border-rose-200/80 shadow-2xs">
               <Ticket className="w-3 h-3" />
-              무료 수다권 {freeChatTickets}장
+              무료수다권 {freeChatTickets}장
             </span>
-            <span className="inline-flex items-center gap-1 font-extrabold text-amber-900 bg-white px-2.5 py-1 rounded-full border border-amber-200">
-              👝 복주머니 {coins}개
+            <span className="inline-flex items-center gap-1 font-extrabold text-orange-800 bg-white px-2.5 py-1 rounded-full border border-orange-200/80 shadow-2xs">
+              🥕 당근 {coins}개
             </span>
           </div>
           <button
             type="button"
             onClick={onOpenChargeModal}
-            className="inline-flex items-center gap-0.5 rounded-full bg-slate-900 text-amber-200 px-2.5 py-1 font-extrabold hover:bg-slate-800 transition whitespace-nowrap"
+            className="inline-flex items-center gap-0.5 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 text-white px-2.5 py-1 font-extrabold hover:brightness-105 transition whitespace-nowrap shadow-xs"
           >
             <Plus className="w-3 h-3" />
-            충전
+            당근 충전
           </button>
         </div>
 
@@ -243,16 +243,16 @@ export function SajuChatDrawer({
                 >
                   {!isUser && (
                     <img
-                      src="/mascot/lucky-cat.jpg"
-                      alt="복고양이"
-                      className="w-7 h-7 rounded-full object-cover border border-amber-300 shrink-0"
+                      src="/mascot/dalto-rabbit.jpg"
+                      alt="달토"
+                      className="w-7 h-7 rounded-2xl object-cover border border-orange-200 shrink-0"
                     />
                   )}
                   <div
                     className={`rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap shadow-xs ${
                       isUser
-                        ? "bg-slate-900 text-white rounded-br-sm"
-                        : "bg-white text-slate-800 border border-slate-200/80 rounded-bl-sm"
+                        ? "bg-gradient-to-br from-[#6248a8] to-[#c96a8b] text-white rounded-br-sm"
+                        : "bg-white/95 text-slate-800 border border-violet-100 rounded-bl-sm"
                     }`}
                   >
                     {msg.content}
@@ -266,9 +266,9 @@ export function SajuChatDrawer({
                         key={sug}
                         type="button"
                         onClick={() => void handleSend(sug)}
-                        className="rounded-full bg-white hover:bg-amber-50 border border-amber-300/80 px-2.5 py-1 text-[11px] font-bold text-slate-800 transition flex items-center gap-1"
+                        className="rounded-full bg-white hover:bg-orange-50 border border-orange-200/90 px-2.5 py-1 text-[11px] font-bold text-slate-800 transition flex items-center gap-1"
                       >
-                        <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
+                        <Sparkles className="w-3 h-3 text-orange-500 shrink-0" />
                         {sug}
                       </button>
                     ))}
@@ -279,13 +279,13 @@ export function SajuChatDrawer({
           })}
 
           {isSending && (
-            <div className="flex items-center gap-2 text-xs text-slate-500 pl-1">
+            <div className="flex items-center gap-2 text-xs text-violet-700 font-semibold pl-1">
               <img
-                src="/mascot/lucky-cat.jpg"
-                alt="복고양이"
-                className="w-6 h-6 rounded-full object-cover animate-bounce"
+                src="/mascot/dalto-mortar.jpg"
+                alt="절구 찧는 달토"
+                className="w-7 h-7 rounded-xl object-cover animate-bounce border border-violet-200"
               />
-              <span>복고양이가 사주 원국과 올해 흐름을 짚어보는 중...</span>
+              <span>달토가 절구 찧으며 원국을 살펴보는 중... 🐇</span>
             </div>
           )}
           <div ref={bottomRef} />
@@ -299,7 +299,7 @@ export function SajuChatDrawer({
                 key={q}
                 type="button"
                 onClick={() => void handleSend(q)}
-                className="shrink-0 rounded-full bg-white border border-slate-200 hover:border-slate-900 px-3 py-1.5 text-[11px] font-bold text-slate-700 transition"
+                className="shrink-0 rounded-full bg-white border border-violet-200 hover:border-orange-300 px-3 py-1.5 text-[11px] font-bold text-slate-700 transition"
               >
                 💬 {q}
               </button>
@@ -313,7 +313,7 @@ export function SajuChatDrawer({
             e.preventDefault();
             void handleSend();
           }}
-          className="bg-white border-t border-slate-200/80 p-3 flex items-center gap-2"
+          className="bg-white/95 border-t border-violet-100 p-3 flex items-center gap-2"
         >
           <input
             type="text"
@@ -321,17 +321,17 @@ export function SajuChatDrawer({
             onChange={(e) => setInput(e.target.value)}
             placeholder={
               freeChatTickets > 0
-                ? "무료 수다권 1장 사용 · 궁금한 고민을 편하게 물어보세요"
+                ? "무료수다권 1장 사용 · 궁금한 고민을 편하게 물어보세요"
                 : coins > 0
-                ? "복주머니 1개 사용 · 꼬리 질문을 이어가세요"
-                : "수다권/복주머니를 충전하고 고민을 물어보세요"
+                ? "당근 1개 사용 · 달토에게 꼬리 질문을 이어가세요"
+                : "무료수다권 또는 당근을 충전하고 물어보세요"
             }
-            className="flex-1 rounded-xl bg-slate-100/90 border border-slate-200 px-3.5 py-2.5 text-xs sm:text-sm font-medium text-slate-900 outline-none focus:border-slate-900 focus:bg-white"
+            className="flex-1 rounded-2xl bg-[#fdf6f0] border border-violet-100 px-3.5 py-2.5 text-xs sm:text-sm font-medium text-slate-900 outline-none focus:border-violet-400 focus:bg-white"
           />
           <button
             type="submit"
             disabled={isSending || !input.trim()}
-            className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-200 text-xs font-extrabold flex items-center gap-1 shrink-0 disabled:opacity-50 transition"
+            className="h-10 px-4 rounded-2xl bg-gradient-to-r from-[#5c489b] to-[#d96b8a] hover:brightness-105 text-white text-xs font-extrabold flex items-center gap-1 shrink-0 disabled:opacity-50 transition shadow-sm"
           >
             <Send className="w-3.5 h-3.5" />
             질문
