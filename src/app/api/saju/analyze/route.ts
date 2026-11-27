@@ -242,8 +242,12 @@ async function callGeminiWithRetry(
   userPrompt: string,
   mode: AnalyzeMode
 ): Promise<{ output: GeminiSajuOutput; model: string }> {
-  const model = "gemini-3.8-flash";
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const candidateModels = Array.from(
+    new Set([
+      process.env.GEMINI_MODEL || "gemini-2.5-flash",
+      "gemini-2.0-flash",
+    ])
+  );
   const responseSchema =
     mode === "free" ? FREE_MODE_RESPONSE_SCHEMA : PAID_MODE_RESPONSE_SCHEMA;
 
@@ -266,8 +270,8 @@ async function callGeminiWithRetry(
 
   let lastError: unknown = null;
 
-  // 최대 1회 자동 재시도 (총 2회 시도)
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  for (const model of candidateModels) {
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 18000);
 
@@ -300,10 +304,7 @@ async function callGeminiWithRetry(
     } catch (err) {
       clearTimeout(timeoutId);
       lastError = err;
-      console.error(`[SajuAnalyze] Gemini attempt ${attempt}/2 failed:`, err);
-      if (attempt < 2) {
-        await new Promise((r) => setTimeout(r, 450));
-      }
+      console.error(`[SajuAnalyze] ${model} failed:`, err);
     }
   }
 

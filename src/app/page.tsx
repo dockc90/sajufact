@@ -147,7 +147,7 @@ const HOME_FAQ_ITEMS = [
   },
   {
     q: "무료 수다권은 언제 충전되나요?",
-    a: "매일 밤 11시(23:00 KST)가 되면 달토와 1:1 대화를 나눌 수 있는 무료 수다권이 자동으로 1장씩 채워집니다.",
+    a: "매일 밤 11시(23:00 KST)가 되면 무료 수다권이 자동으로 1장씩 채워집니다. 무료 수다권 1장 또는 당근 1개를 사용하면 기본 질문 1회 + 무료 꼬리질문 4회(총 5회)까지 깊게 상담할 수 있어요.",
   },
   {
     q: "환불 규정은 어떻게 되나요?",
@@ -198,6 +198,7 @@ export default function HomePage() {
     },
     coins: 0,
     freeChatTickets: 1,
+    chatFollowUpCredits: 0,
     lastFreeResetKey: "",
     unlockedReportIds: [],
   });
@@ -647,10 +648,19 @@ export default function HomePage() {
   };
 
   const handleConsumeForChat = (): boolean => {
+    const followUps = wallet.chatFollowUpCredits ?? 0;
+    if (followUps > 0) {
+      syncWallet({
+        ...wallet,
+        chatFollowUpCredits: followUps - 1,
+      });
+      return true;
+    }
     if (wallet.freeChatTickets > 0) {
       syncWallet({
         ...wallet,
         freeChatTickets: wallet.freeChatTickets - 1,
+        chatFollowUpCredits: 4,
       });
       return true;
     }
@@ -658,6 +668,7 @@ export default function HomePage() {
       syncWallet({
         ...wallet,
         coins: wallet.coins - 1,
+        chatFollowUpCredits: 4,
       });
       return true;
     }
@@ -1818,6 +1829,7 @@ export default function HomePage() {
         }}
         coins={wallet.coins}
         freeChatTickets={wallet.freeChatTickets}
+        followUpCredits={wallet.chatFollowUpCredits ?? 0}
         initialContext={chatContext}
         onClose={() => setChatOpen(false)}
         onConsumeForChat={handleConsumeForChat}

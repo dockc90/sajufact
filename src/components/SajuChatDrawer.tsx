@@ -31,6 +31,7 @@ interface SajuChatDrawerProps {
   profile: WalletProfile;
   coins: number;
   freeChatTickets: number;
+  followUpCredits?: number;
   initialContext?: string;
   onClose: () => void;
   onConsumeForChat: () => boolean;
@@ -92,6 +93,7 @@ export function SajuChatDrawer({
   profile,
   coins,
   freeChatTickets,
+  followUpCredits = 0,
   initialContext,
   onClose,
   onConsumeForChat,
@@ -398,9 +400,14 @@ export function SajuChatDrawer({
           </div>
         </div>
 
-        {/* 잔여 수다권 / 당근 바 */}
+        {/* 잔여 수다권 / 당근 / 무료 꼬리질문 바 */}
         <div className="bg-gradient-to-r from-orange-50/90 via-rose-50/70 to-violet-50/90 border-b border-violet-100 px-4 py-2 flex items-center justify-between gap-2 text-[11px] shrink-0">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {followUpCredits > 0 && (
+              <span className="inline-flex items-center gap-1 font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 shadow-2xs">
+                💬 무료 꼬리질문 {followUpCredits}회
+              </span>
+            )}
             <span className="inline-flex items-center gap-1 font-extrabold text-rose-700 bg-white px-2.5 py-1 rounded-full border border-rose-200/80 shadow-2xs">
               <Ticket className="w-3 h-3" />
               무료수다권 {freeChatTickets}장
@@ -636,10 +643,12 @@ export function SajuChatDrawer({
                 <Sparkles className="w-4 h-4 shrink-0" />
                 <span>
                   {activePersona.shortName}에게 상담 시작하기 (
-                  {freeChatTickets > 0
-                    ? "무료수다권 1장"
+                  {followUpCredits > 0
+                    ? `무료 꼬리질문 ${followUpCredits}회 남음`
+                    : freeChatTickets > 0
+                    ? "무료수다권 1장 · 5회 대화"
                     : coins > 0
-                    ? "당근 1개"
+                    ? "당근 1개 · 5회 대화"
                     : "당근 충전"}
                   )
                 </span>
@@ -748,10 +757,12 @@ export function SajuChatDrawer({
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={
-                  freeChatTickets > 0
-                    ? `무료수다권 1장 사용 · ${activePersona.shortName}에게 질문하기`
+                  followUpCredits > 0
+                    ? `무료 꼬리질문 ${followUpCredits}회 남음 · 더 구체적으로 물어보세요`
+                    : freeChatTickets > 0
+                    ? `무료수다권 1장(총 5회 대화) · ${activePersona.shortName}에게 질문하기`
                     : coins > 0
-                    ? `당근 1개 사용 · ${activePersona.shortName}에게 꼬리 질문하기`
+                    ? `당근 1개(총 5회 대화) · ${activePersona.shortName}에게 질문하기`
                     : "무료수다권 또는 당근을 충전하고 물어보세요"
                 }
                 className="flex-1 rounded-2xl bg-[#fdf6f0] border border-violet-100 px-3.5 py-2.5 text-xs sm:text-sm font-medium text-slate-900 outline-none focus:border-violet-400 focus:bg-white"
