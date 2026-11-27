@@ -1,7 +1,9 @@
 import { Lunar, Solar } from "lunar-javascript";
 import type {
+  CalendarType,
   CompatibilityReport,
   DaeunDecadeItem,
+  DailyCatcherDraw,
   ElementKey,
   ElementStat,
   ElementTheme,
@@ -11,6 +13,7 @@ import type {
   PillarInfo,
   SajuInput,
   SajuReport,
+  SavedSajuProfile,
   TaekilDateItem,
   TarotCardData,
   TodayFortuneReport,
@@ -1746,6 +1749,69 @@ export function generateSajuReport(input: SajuInput, targetDate?: Date): SajuRep
       ...talismanBase,
     },
     compatibility,
+  };
+}
+
+export function previewFourPillars(
+  birthDate: string,
+  calendarType: CalendarType,
+  birthHour: string
+): PillarInfo[] {
+  const calc = calculatePillars({
+    name: "미리보기",
+    gender: "female",
+    birthDate: birthDate || "1996-05-14",
+    calendarType,
+    birthHour: birthHour || "unknown",
+    worry: "wealth",
+    menu: "lifetime",
+  });
+  return calc.pillars;
+}
+
+const CATCHER_POETIC_QUOTES: Array<{ quote: string; sub: string }> = [
+  { quote: "고요한 물이 깊다.", sub: "덴마크 속담" },
+  { quote: "작은 친절이 큰 운을 데려온다.", sub: "오늘의 길운 문장" },
+  { quote: "서두르지 않는 발걸음이 가장 멀리 간다.", sub: "달토의 한 줄" },
+  { quote: "오늘 웃은 만큼 내일의 복이 자란다.", sub: "동양 명리 격언" },
+  { quote: "같은 마음이 아닐 땐 내 편부터 챙기자.", sub: "달토의 따뜻한 직언" },
+  { quote: "빈 손에 쥔 당근 하나가 내일 황금이 된다.", sub: "달빛 격언" },
+];
+
+export function generateDailyCatcherDraw(
+  profile: SavedSajuProfile,
+  targetDate?: Date
+): DailyCatcherDraw {
+  const report = generateSajuReport(
+    {
+      name: profile.name,
+      gender: profile.gender,
+      birthDate: profile.birthDate,
+      calendarType: profile.calendarType,
+      birthHour: profile.birthHour,
+      worry: "wealth",
+      menu: "today",
+    },
+    targetDate
+  );
+
+  const todayInfo = getTodayKstInfo(targetDate);
+  const shortMonthDay = todayInfo.dateLabel.replace(/^\d{4}년\s*/, "");
+  const score = report.todayReport?.score ?? 78;
+  const seed = hashSeed(`${profile.id}|${profile.birthDate}|${todayInfo.dateKey}`);
+  const poetic = CATCHER_POETIC_QUOTES[seed % CATCHER_POETIC_QUOTES.length];
+
+  return {
+    dateKey: todayInfo.dateKey,
+    dateDisplay: shortMonthDay,
+    profileId: profile.id,
+    profileName: profile.name,
+    score,
+    quote: poetic.quote,
+    quoteSub: poetic.sub,
+    luckyNumber: report.talisman.luckyNumber,
+    luckyColor: report.talisman.luckyColor.split("·")[0].trim(),
+    luckyItem: report.talisman.luckyItem.split("·")[0].trim(),
   };
 }
 

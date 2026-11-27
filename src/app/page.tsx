@@ -25,6 +25,7 @@ import {
 } from "@/lib/saju-engine";
 import type {
   AccountSession,
+  DailyCatcherDraw,
   MenuCategory,
   PaymentPlan,
   SajuInput,
@@ -40,12 +41,15 @@ import {
   loadLocalArchive,
   upsertLocalArchive,
 } from "@/components/ArchiveModal";
+import { FortuneCatcherDevice } from "@/components/FortuneCatcherDevice";
+import { FortuneCatcherModal } from "@/components/FortuneCatcherModal";
 import {
   ProfileManagerModal,
   createProfileId,
 } from "@/components/ProfileManagerModal";
 import { ResultView } from "@/components/ResultView";
 import { SajuChatDrawer } from "@/components/SajuChatDrawer";
+import { SocialLoginModal } from "@/components/SocialLoginModal";
 import { TarotModal } from "@/components/TarotModal";
 import { WalletChargeModal } from "@/components/WalletChargeModal";
 import type { PastelAuraMood } from "@/components/ShareCardStudio";
@@ -56,6 +60,7 @@ const WALLET_STORAGE_KEY = "sajufact_wallet_v1";
 const PROFILES_STORAGE_KEY = "sajufact_saved_profiles_v1";
 const ACTIVE_PROFILE_STORAGE_KEY = "sajufact_active_profile_id_v1";
 const SESSION_STORAGE_KEY = "sajufact_account_session_v1";
+const DAILY_DRAW_STORAGE_KEY = "sajufact_daily_draw_v1";
 
 const CHUNKY_MENU_CARDS: Array<{
   id: MenuCategory;
@@ -207,6 +212,10 @@ export default function HomePage() {
   const [chatOpen, setChatOpen] = useState(false);
   const [chatContext, setChatContext] = useState<string | undefined>(undefined);
   const [isRestoringUrl, setIsRestoringUrl] = useState(false);
+  const [socialLoginOpen, setSocialLoginOpen] = useState(false);
+  const [profileInitialForm, setProfileInitialForm] = useState(false);
+  const [catcherModalOpen, setCatcherModalOpen] = useState(false);
+  const [dailyDraw, setDailyDraw] = useState<DailyCatcherDraw | null>(null);
 
   // 파스텔 오라 인스타 카드 쇼케이스 프리뷰 상태
   const [showcaseMood, setShowcaseMood] = useState<PastelAuraMood>("party");
@@ -218,6 +227,11 @@ export default function HomePage() {
     savedProfiles.find((p) => p.id === activeProfileId) ??
     savedProfiles[0] ??
     null;
+
+  const currentProfileDraw =
+    dailyDraw && activeProfile && dailyDraw.profileId === activeProfile.id
+      ? dailyDraw
+      : null;
 
   const syncWallet = (nextWallet: WalletState) => {
     setWallet(nextWallet);
@@ -277,6 +291,18 @@ export default function HomePage() {
         if (rawSession) {
           const parsedSession = JSON.parse(rawSession) as AccountSession;
           if (parsedSession?.loggedIn) setAccountSession(parsedSession);
+        }
+
+        const kst = new Date(Date.now() + 9 * 3600000);
+        const todayKey = `${kst.getUTCFullYear()}-${String(
+          kst.getUTCMonth() + 1
+        ).padStart(2, "0")}-${String(kst.getUTCDate()).padStart(2, "0")}`;
+        const rawDaily = localStorage.getItem(DAILY_DRAW_STORAGE_KEY);
+        if (rawDaily) {
+          const parsedDaily = JSON.parse(rawDaily) as DailyCatcherDraw;
+          if (parsedDaily?.dateKey === todayKey) {
+            setDailyDraw(parsedDaily);
+          }
         }
       } catch {
         // ignore invalid saved profiles
@@ -369,7 +395,12 @@ export default function HomePage() {
     const targetProf = overrideProfile ?? activeProfile;
     if (!targetProf || !targetProf.name.trim()) {
       setPendingAction({ type: "menu", menu });
-      setProfileModalOpen(true);
+      if (!accountSession?.loggedIn) {
+        setSocialLoginOpen(true);
+      } else {
+        setProfileInitialForm(true);
+        setProfileModalOpen(true);
+      }
       return;
     }
 
@@ -461,7 +492,12 @@ export default function HomePage() {
     const targetProf = overrideProfile ?? activeProfile;
     if (!targetProf || !targetProf.name.trim()) {
       setPendingAction({ type: "chat", context: contextText });
-      setProfileModalOpen(true);
+      if (!accountSession?.loggedIn) {
+        setSocialLoginOpen(true);
+      } else {
+        setProfileInitialForm(true);
+        setProfileModalOpen(true);
+      }
       return;
     }
     setChatContext(contextText);
@@ -572,7 +608,12 @@ export default function HomePage() {
               type="button"
               onClick={() => {
                 setPendingAction(null);
-                setProfileModalOpen(true);
+                if (!accountSession?.loggedIn && !activeProfile) {
+                  setSocialLoginOpen(true);
+                } else {
+                  setProfileInitialForm(false);
+                  setProfileModalOpen(true);
+                }
               }}
               className={
                 accountSession?.loggedIn || activeProfile
@@ -664,35 +705,176 @@ export default function HomePage() {
             </defs>
           </svg>
 
-          {inviterBanner && (
-            <div className="rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-3 flex items-center gap-2 text-xs font-bold shadow-sm">
-              <HeartHandshake className="w-4 h-4 shrink-0" />
-              <span>
-                {inviterBanner.name}님이 궁합을 요청했어요! 아래에서 내 이름 입력 후 990원 궁합을 눌러보세요.
-              </span>
-            </div>
-          )}
+          {/* ① 최상단 달토 포춘 캐처 히어로 (미로그인 → 3초 로그인 → 오늘의 운세 뽑기 → 뽑기 완료 요약) */}
+          <section className="rounded-b-[32px] -mx-3.5 sm:-mx-5 -mt-4 px-5 pt-6 pb-9 gingham-pastel-bg relative overflow-hidden text-center">
+            {!accountSession?.loggedIn && !activeProfile ? (
+              <div className="max-w-md mx-auto space-y-3">
+                <h1 className="text-lg sm:text-xl font-black text-[#2b2242] tracking-tight">
+                  내 운세를 보려면 로그인해 달라토!
+                </h1>
+                <div className="flex justify-center">
+                  <FortuneCatcherDevice
+                    mode="off"
+                    size="lg"
+                    onPress={() => setSocialLoginOpen(true)}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSocialLoginOpen(true)}
+                  className="inline-flex items-center gap-1 text-xs font-extrabold text-slate-700 hover:text-violet-700 transition"
+                >
+                  ⬆ 로그인하면 기기가 켜진다토!
+                </button>
+              </div>
+            ) : !currentProfileDraw || !activeProfile ? (
+              <div className="max-w-md mx-auto space-y-3">
+                <div className="flex items-center justify-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPendingAction(null);
+                      setProfileInitialForm(false);
+                      setProfileModalOpen(true);
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white/90 hover:bg-white border border-violet-200 px-3 py-1 text-[11px] font-extrabold text-[#3d2d66] shadow-2xs transition"
+                  >
+                    <span>
+                      🐇{" "}
+                      {activeProfile
+                        ? `${activeProfile.name} (${
+                            activeProfile.customRelation || activeProfile.relation
+                          })`
+                        : accountSession?.label || "내 사주"}
+                    </span>
+                    <span className="text-violet-600">· 전환 +</span>
+                  </button>
+                </div>
+                <h1 className="text-lg sm:text-xl font-black text-[#2b2242] tracking-tight">
+                  오늘의 운세를 뽑아보라토! 🐇
+                </h1>
+                <div className="flex justify-center">
+                  <FortuneCatcherDevice
+                    mode="idle"
+                    size="lg"
+                    onPress={() => {
+                      if (!activeProfile) {
+                        setProfileInitialForm(true);
+                        setProfileModalOpen(true);
+                      } else {
+                        setCatcherModalOpen(true);
+                      }
+                    }}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!activeProfile) {
+                      setProfileInitialForm(true);
+                      setProfileModalOpen(true);
+                    } else {
+                      setCatcherModalOpen(true);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1 text-xs font-extrabold text-slate-700 hover:text-violet-700 transition"
+                >
+                  ⬆ 버튼 눌러서 오늘 운세 뽑기!
+                </button>
+              </div>
+            ) : (
+              <div className="max-w-xl mx-auto flex items-center justify-between gap-3 sm:gap-5 text-left">
+                <div className="flex-1 min-w-0 space-y-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPendingAction(null);
+                      setProfileInitialForm(false);
+                      setProfileModalOpen(true);
+                    }}
+                    className="inline-flex items-center gap-2 rounded-full bg-white/85 hover:bg-white border border-white px-2.5 py-1 shadow-2xs transition max-w-full"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-emerald-500 text-white text-[11px] font-black flex items-center justify-center shrink-0">
+                      {activeProfile.name.slice(0, 1)}
+                    </span>
+                    <span className="text-xs font-extrabold text-slate-800 truncate">
+                      {activeProfile.name} · {currentProfileDraw.dateDisplay}
+                    </span>
+                    <span className="text-[10px] font-bold text-violet-600 shrink-0">
+                      전환
+                    </span>
+                  </button>
 
-          {activeProfile && (
+                  <p className="text-sm sm:text-base font-black text-[#2b2242] leading-snug line-clamp-2">
+                    &ldquo;{currentProfileDraw.quote}&rdquo;
+                  </p>
+
+                  <div className="inline-flex flex-wrap items-center gap-2 rounded-2xl bg-white/95 border border-white px-3 py-1.5 text-[11px] font-extrabold text-slate-700 shadow-xs">
+                    <span># {currentProfileDraw.luckyNumber}</span>
+                    <span className="text-slate-300">|</span>
+                    <span>🎨 {currentProfileDraw.luckyColor}</span>
+                    <span className="text-slate-300">|</span>
+                    <span>🍀 {currentProfileDraw.luckyItem}</span>
+                  </div>
+
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => void runAnalysis("today", activeProfile)}
+                      className="inline-flex items-center gap-1 rounded-full bg-[#ff85a2] hover:bg-[#ff6f91] text-white px-4 py-1.5 text-xs font-black shadow-sm transition"
+                    >
+                      <span>운세 더보기 &gt;</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="shrink-0">
+                  <FortuneCatcherDevice
+                    mode="result"
+                    score={currentProfileDraw.score}
+                    size="sm"
+                    onPress={() => setCatcherModalOpen(true)}
+                  />
+                </div>
+              </div>
+            )}
+          </section>
+
+          {/* ② 화이트 둥근 시트: 무료 수다권 도착 배너 + 2열 달토끼 포토 카드 */}
+          <div className="rounded-t-[30px] -mt-5 relative z-10 bg-white/95 p-3.5 sm:p-4 space-y-4 shadow-[0_-8px_30px_rgba(60,40,120,0.06)]">
+            {inviterBanner && (
+              <div className="rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-3 flex items-center gap-2 text-xs font-bold shadow-sm">
+                <HeartHandshake className="w-4 h-4 shrink-0" />
+                <span>
+                  {inviterBanner.name}님이 궁합을 요청했어요! 아래에서 내 이름 입력 후 990원 궁합을 눌러보세요.
+                </span>
+              </div>
+            )}
+
             <button
               type="button"
-              onClick={() => {
-                setPendingAction(null);
-                setProfileModalOpen(true);
-              }}
-              className="w-full rounded-2xl bg-white/85 hover:bg-white border border-violet-100 px-3.5 py-2 flex items-center justify-between gap-2 text-xs shadow-2xs transition"
+              onClick={() => handleOpenChat()}
+              className="w-full rounded-2xl bg-gradient-to-r from-[#fff8fb] via-white to-[#fff5f8] hover:from-rose-50 hover:to-pink-50 border border-pink-100/90 px-4 py-3 flex items-center justify-between gap-3 shadow-2xs transition text-left"
             >
-              <span className="font-extrabold text-[#3d2d66] truncate">
-                🐇 현재 사주: {activeProfile.name} ({activeProfile.relation})
-              </span>
-              <span className="text-[11px] font-bold text-violet-600 shrink-0">
-                가족·친구 전환 +
-              </span>
+              <div className="space-y-0.5 min-w-0">
+                <p className="text-sm sm:text-[15px] font-black text-slate-900 truncate">
+                  <span className="text-rose-500">무료 수다권</span>이 도착했어요!
+                </p>
+                <p className="text-[11px] font-medium text-slate-500 truncate">
+                  매일 밤 11시에 1장 자동 충전돼요
+                </p>
+              </div>
+              <div className="shrink-0 relative flex items-center">
+                <div className="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-pink-200 to-rose-200 border border-pink-300/80 px-3 py-1.5 shadow-2xs">
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-300 text-[11px] font-black text-amber-950 shadow-2xs">
+                    {wallet.freeChatTickets}
+                  </span>
+                  <Ticket className="w-4 h-4 text-rose-600" />
+                </div>
+              </div>
             </button>
-          )}
 
-          {/* ① 큼직한 2열 달토끼 파스텔 포토 카드 그리드 (최상단 메인) */}
-          <section className="space-y-3">
+            <section className="space-y-3">
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {CHUNKY_MENU_CARDS.map((card) => {
                 const isBest = card.badge === "BEST";
@@ -861,6 +1043,7 @@ export default function HomePage() {
               </motion.div>
             )}
           </section>
+          </div>
 
           {/* ② 매일 리텐션 2단 배너: 달토 AI 수다방 + 오늘의 무료 일진/타로 */}
           <section className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
@@ -1241,9 +1424,14 @@ export default function HomePage() {
               type="button"
               onClick={() => handleOpenChat()}
               aria-label="달토 수다방"
-              className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-rose-500 transition"
+              className="relative flex flex-col items-center gap-0.5 text-slate-400 hover:text-rose-500 transition"
             >
               <MessageCircle className="w-5 h-5" />
+              {wallet.freeChatTickets > 0 && (
+                <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center shadow-2xs">
+                  {wallet.freeChatTickets}
+                </span>
+              )}
             </button>
             <button
               type="button"
@@ -1257,7 +1445,12 @@ export default function HomePage() {
               type="button"
               onClick={() => {
                 setPendingAction(null);
-                setProfileModalOpen(true);
+                if (!accountSession?.loggedIn && !activeProfile) {
+                  setSocialLoginOpen(true);
+                } else {
+                  setProfileInitialForm(false);
+                  setProfileModalOpen(true);
+                }
               }}
               aria-label="로그인 및 내 사주 프로필"
               className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-violet-600 transition"
@@ -1273,6 +1466,7 @@ export default function HomePage() {
         session={accountSession}
         profiles={savedProfiles}
         activeProfileId={activeProfile?.id ?? null}
+        initialOpenForm={profileInitialForm}
         pendingActionLabel={
           pendingAction?.type === "menu"
             ? `${
@@ -1285,6 +1479,7 @@ export default function HomePage() {
         }
         onClose={() => {
           setProfileModalOpen(false);
+          setProfileInitialForm(false);
           setPendingAction(null);
         }}
         onLogin={(provider, label) => {
@@ -1308,6 +1503,7 @@ export default function HomePage() {
         onSelectProfile={(prof) => {
           activateSavedProfile(prof);
           setProfileModalOpen(false);
+          setProfileInitialForm(false);
           runPendingWithProfile(prof);
         }}
         onSaveProfile={(input) => {
@@ -1316,10 +1512,13 @@ export default function HomePage() {
             id: nextId,
             name: input.name,
             relation: input.relation,
+            customRelation: input.customRelation,
             gender: input.gender,
             birthDate: input.birthDate,
             calendarType: input.calendarType,
             birthHour: input.birthHour,
+            exactTime: input.exactTime,
+            birthCity: input.birthCity,
           };
           const nextList = input.id
             ? savedProfiles.map((p) => (p.id === nextId ? savedItem : p))
@@ -1344,6 +1543,7 @@ export default function HomePage() {
 
           activateSavedProfile(savedItem);
           setProfileModalOpen(false);
+          setProfileInitialForm(false);
           runPendingWithProfile(savedItem);
         }}
         onDeleteProfile={(id) => {
@@ -1365,6 +1565,55 @@ export default function HomePage() {
           }
         }}
         onOpenArchive={() => setArchiveOpen(true)}
+      />
+
+      <SocialLoginModal
+        open={socialLoginOpen}
+        onClose={() => setSocialLoginOpen(false)}
+        onSelectProvider={(provider, label) => {
+          const nextSession: AccountSession = {
+            loggedIn: true,
+            provider,
+            label,
+            accountKey: `${provider}_user`,
+          };
+          setAccountSession(nextSession);
+          try {
+            localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(nextSession));
+          } catch {}
+          setSocialLoginOpen(false);
+
+          if (savedProfiles.length === 0) {
+            setProfileInitialForm(true);
+            setProfileModalOpen(true);
+          } else {
+            const currentProf =
+              savedProfiles.find((p) => p.id === activeProfileId) ??
+              savedProfiles[0];
+            if (currentProf) {
+              runPendingWithProfile(currentProf);
+            }
+          }
+        }}
+      />
+
+      <FortuneCatcherModal
+        open={catcherModalOpen}
+        profile={activeProfile}
+        initialDraw={currentProfileDraw}
+        onClose={() => setCatcherModalOpen(false)}
+        onDrawComplete={(draw) => {
+          setDailyDraw(draw);
+          try {
+            localStorage.setItem(DAILY_DRAW_STORAGE_KEY, JSON.stringify(draw));
+          } catch {}
+        }}
+        onViewMore={() => {
+          setCatcherModalOpen(false);
+          if (activeProfile) {
+            void runAnalysis("today", activeProfile);
+          }
+        }}
       />
 
       <TarotModal

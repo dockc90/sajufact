@@ -176,22 +176,43 @@ export interface WalletState {
 
 export type ProfileRelation =
   | "본인"
-  | "가족"
-  | "연인/썸"
+  | "배우자"
+  | "연인"
+  | "부모"
+  | "자녀"
   | "친구"
-  | "지인"
-  | "직장동료";
+  | "직장동료"
+  | "직접 입력"
+  | "연인/썸"
+  | "가족"
+  | "지인";
 
 export interface SavedSajuProfile extends WalletProfile {
   id: string;
   relation: ProfileRelation;
+  customRelation?: string;
+  exactTime?: string;
+  birthCity?: string;
 }
 
 export interface AccountSession {
   loggedIn: boolean;
-  provider: "kakao" | "google" | "quick";
+  provider: "naver" | "kakao" | "google" | "quick";
   label: string;
   accountKey: string;
+}
+
+export interface DailyCatcherDraw {
+  dateKey: string;
+  dateDisplay: string;
+  profileId: string;
+  profileName: string;
+  score: number;
+  quote: string;
+  quoteSub: string;
+  luckyNumber: number;
+  luckyColor: string;
+  luckyItem: string;
 }
 
 export interface ChatMessage {
