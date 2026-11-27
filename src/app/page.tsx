@@ -83,7 +83,7 @@ const CHUNKY_MENU_CARDS: Array<{
     coinCost: 1,
     badge: "NEW",
     cardBg: "bg-[#fde7ee]",
-    image: "/mascot/dalto-party.jpg",
+    image: "/mascot/dalto-newyear2027.jpg",
   },
   {
     id: "love",
