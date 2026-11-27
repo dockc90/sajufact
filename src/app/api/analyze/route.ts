@@ -67,10 +67,12 @@ export async function POST(req: NextRequest) {
       try {
         const prompt = `당신은 '사주팩트(SajuFact)'의 뼈 때리는 팩폭 AI 사주 전문가입니다.
 유저 이름: ${baseReport.input.name}
-일간: ${baseReport.dayMasterHangul}(${baseReport.dayMasterHanja}), 최강 오행: ${baseReport.dominantElement}, 부족 오행: ${baseReport.weakestElement}
+일주: ${baseReport.dayMasterHangul}${baseReport.dayBranchHangul ?? ""}(${baseReport.dayMasterHanja}${baseReport.dayBranchHanja ?? ""}), 2027 정미년 관계: ${baseReport.relation2027Label ?? "일반 흐름"}
+최강 오행: ${baseReport.dominantElement}, 부족 오행: ${baseReport.weakestElement}
+주의해야 할 달: ${baseReport.criticalMistake2027.dangerMonth}, 횡재수 달: ${baseReport.windfallTiming.bestMonth}
 선택 메뉴: ${input.menu}, 핵심 고민: ${input.worry}
-다음 4개 필드만 한국어 JSON으로 간결하고 매운맛 있게 작성해 주세요:
-{"oneLineFact": "25자 이내 뼈 때리는 한줄 팩폭", "dangerDetail": "2027년 4월 절대 피할 실수 2문장", "moneyDetail": "재물/횡재수 루트 2문장", "healthDetail": "타고난 취약 장기와 번아웃 팩폭 2문장"}`;
+다음 6개 필드만 한국어 JSON으로, 위 사람의 일주와 주의월을 반드시 반영해 기존 템플릿과 겹치지 않게 매운맛으로 작성해 주세요:
+{"oneLineFact": "28자 이내 뼈 때리는 한줄 팩폭", "mistakeTitle": "22자 이내 주의보 제목", "dangerDetail": "${baseReport.criticalMistake2027.dangerMonth} 기준 절대 피할 실수 2문장", "moneyDetail": "재물/횡재수 루트 2문장", "healthDetail": "타고난 취약 장기와 번아웃 팩폭 2문장", "todayHeadline": "오늘 일진(${baseReport.todayReport?.todayGanZhiHangul ?? ""}) 기준 한줄 팩트"}`;
 
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -92,14 +94,20 @@ export async function POST(req: NextRequest) {
           if (text) {
             const parsed = JSON.parse(text) as {
               oneLineFact?: string;
+              mistakeTitle?: string;
               dangerDetail?: string;
               moneyDetail?: string;
               healthDetail?: string;
+              todayHeadline?: string;
             };
             if (parsed.oneLineFact) baseReport.oneLineFact = parsed.oneLineFact;
+            if (parsed.mistakeTitle) baseReport.criticalMistake2027.title = parsed.mistakeTitle;
             if (parsed.dangerDetail) baseReport.criticalMistake2027.detail = parsed.dangerDetail;
             if (parsed.moneyDetail) baseReport.windfallTiming.detail = parsed.moneyDetail;
             if (parsed.healthDetail) baseReport.healthReport.burnoutPattern = parsed.healthDetail;
+            if (parsed.todayHeadline && baseReport.todayReport) {
+              baseReport.todayReport.headline = parsed.todayHeadline;
+            }
           }
         }
       } catch {

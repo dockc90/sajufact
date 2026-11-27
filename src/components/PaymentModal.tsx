@@ -8,11 +8,22 @@ import type { PaymentPlan } from "@/lib/saju-types";
 interface PaymentModalProps {
   open: boolean;
   initialPlan: PaymentPlan;
+  currentPaidPlan?: PaymentPlan | null;
+  defaultPhone?: string;
   onClose: () => void;
-  onComplete: (plan: PaymentPlan, phone?: string) => void;
+  onComplete: (
+    plan: PaymentPlan,
+    phone?: string,
+    paidAmount?: 990 | 1910 | 2900,
+    payMethod?: "kakao" | "toss" | "naver" | "card"
+  ) => void;
 }
 
-const PAY_METHODS = [
+const PAY_METHODS: Array<{
+  id: "kakao" | "toss" | "naver";
+  label: string;
+  bg: string;
+}> = [
   { id: "kakao", label: "카카오페이", bg: "bg-[#FEE500] text-[#191919]" },
   { id: "toss", label: "토스페이", bg: "bg-[#0064FF] text-white" },
   { id: "naver", label: "네이버페이", bg: "bg-[#03C75A] text-white" },
@@ -21,18 +32,26 @@ const PAY_METHODS = [
 export function PaymentModal({
   open,
   initialPlan,
+  currentPaidPlan = null,
+  defaultPhone = "",
   onClose,
   onComplete,
 }: PaymentModalProps) {
-  const [selectedPlan, setSelectedPlan] = useState<PaymentPlan>(initialPlan);
-  const [payMethod, setPayMethod] = useState("kakao");
-  const [phone, setPhone] = useState("");
+  const isUpgradeFromSingle = currentPaidPlan === "single";
+  const [selectedPlan, setSelectedPlan] = useState<PaymentPlan>(
+    isUpgradeFromSingle ? "allinone" : initialPlan
+  );
+  const [payMethod, setPayMethod] = useState<"kakao" | "toss" | "naver">("kakao");
+  const [phone, setPhone] = useState(defaultPhone);
   const [isProcessing, setIsProcessing] = useState(false);
 
   if (!open) return null;
 
-  const priceText = selectedPlan === "allinone" ? "2,900원" : "990원";
-  const amount = selectedPlan === "allinone" ? 2900 : 990;
+  const resolvedPlan: PaymentPlan = isUpgradeFromSingle ? "allinone" : selectedPlan;
+  const amount: 990 | 1910 | 2900 =
+    resolvedPlan === "allinone" ? (isUpgradeFromSingle ? 1910 : 2900) : 990;
+  const priceText =
+    amount === 1910 ? "1,910원" : amount === 2900 ? "2,900원" : "990원";
   const portoneStoreId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
   const portoneChannelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY;
   const isPortoneConfigured = Boolean(portoneStoreId && portoneChannelKey);
@@ -54,10 +73,11 @@ export function PaymentModal({
           storeId: portoneStoreId,
           channelKey: portoneChannelKey,
           paymentId: `sf-${Date.now()}`,
-          orderName:
-            selectedPlan === "allinone"
-              ? "사주팩트 올인원 패키지"
-              : "사주팩트 단건 팩폭팩",
+          orderName: isUpgradeFromSingle
+            ? "사주팩트 올인원 업그레이드 (차액 결제)"
+            : resolvedPlan === "allinone"
+            ? "사주팩트 올인원 패키지"
+            : "사주팩트 단건 팩폭팩",
           totalAmount: amount,
           currency: "KRW",
           payMethod: "EASY_PAY",
@@ -69,9 +89,9 @@ export function PaymentModal({
       } else {
         await new Promise((r) => setTimeout(r, 650));
       }
-      onComplete(selectedPlan, phone.trim() || undefined);
+      onComplete(resolvedPlan, phone.trim() || undefined, amount, payMethod);
     } catch {
-      onComplete(selectedPlan, phone.trim() || undefined);
+      onComplete(resolvedPlan, phone.trim() || undefined, amount, payMethod);
     } finally {
       setIsProcessing(false);
     }
@@ -106,29 +126,42 @@ export function PaymentModal({
         </div>
 
         {/* 2단 업셀링 플랜 선택 */}
+        {isUpgradeFromSingle && (
+          <div className="mb-3 rounded-2xl border border-emerald-200 bg-emerald-50/90 px-3.5 py-2.5 text-xs font-bold text-emerald-900">
+            ✅ 단건 팩폭팩(990원) 기결제가 확인되어{" "}
+            <span className="underline">차액 1,910원만</span> 결제됩니다.
+          </div>
+        )}
+
         <div className="space-y-2.5 mb-5">
           <button
             type="button"
             onClick={() => setSelectedPlan("allinone")}
             className={`w-full text-left p-4 rounded-2xl border-2 transition relative ${
-              selectedPlan === "allinone"
+              resolvedPlan === "allinone"
                 ? "border-slate-900 bg-amber-50/70 shadow-sm"
                 : "border-slate-200 hover:border-slate-300"
             }`}
           >
             <span className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold">
-              BEST 주력 · 84% 선택
+              {isUpgradeFromSingle
+                ? "990원 기결제 차액 할인"
+                : "BEST 주력 · 84% 선택"}
             </span>
             <div className="flex items-center justify-between mb-1">
               <span className="font-extrabold text-slate-900 flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-amber-600" />
-                올인원 패키지
+                {isUpgradeFromSingle
+                  ? "올인원 패키지 업그레이드"
+                  : "올인원 패키지"}
               </span>
               <div className="text-right">
                 <span className="text-xs line-through text-slate-400 mr-1.5">
-                  5,900원
+                  {isUpgradeFromSingle ? "2,900원" : "5,900원"}
                 </span>
-                <span className="text-lg font-black text-rose-600">2,900원</span>
+                <span className="text-lg font-black text-rose-600">
+                  {isUpgradeFromSingle ? "1,910원" : "2,900원"}
+                </span>
               </div>
             </div>
             <ul className="text-xs text-slate-600 space-y-1 mt-1.5">
@@ -149,22 +182,27 @@ export function PaymentModal({
 
           <button
             type="button"
+            disabled={isUpgradeFromSingle}
             onClick={() => setSelectedPlan("single")}
             className={`w-full text-left p-4 rounded-2xl border-2 transition ${
-              selectedPlan === "single"
+              isUpgradeFromSingle
+                ? "border-slate-200 bg-slate-100/70 opacity-55 cursor-not-allowed"
+                : resolvedPlan === "single"
                 ? "border-slate-900 bg-slate-50 shadow-sm"
                 : "border-slate-200 hover:border-slate-300"
             }`}
           >
             <div className="flex items-center justify-between">
               <div>
-                <span className="font-bold text-slate-900">단건 팩폭팩</span>
+                <span className="font-bold text-slate-900">
+                  단건 팩폭팩 {isUpgradeFromSingle ? "(이미 결제됨)" : ""}
+                </span>
                 <p className="text-xs text-slate-500 mt-0.5">
                   선택한 테마 1종 전체 리포트 + 인스타 공유 카드 저장
                 </p>
               </div>
               <span className="text-base font-extrabold text-slate-900">
-                990원
+                {isUpgradeFromSingle ? "결제 완료" : "990원"}
               </span>
             </div>
           </button>
@@ -224,11 +262,18 @@ export function PaymentModal({
         {/* 테스트용 스킵 버튼 */}
         <button
           type="button"
-          onClick={() => onComplete(selectedPlan, phone.trim() || undefined)}
+          onClick={() =>
+            onComplete(
+              resolvedPlan,
+              phone.trim() || undefined,
+              amount,
+              payMethod
+            )
+          }
           className="w-full mt-2.5 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200/80 text-amber-950 text-xs font-bold flex items-center justify-center gap-1.5 border border-amber-300/80 transition"
         >
           <Zap className="w-3.5 h-3.5" />
-          테스트용 결제 즉시 완료 (스킵하고 결과 보기)
+          테스트용 결제 즉시 완료 ({priceText} · 스킵하고 결과 보기)
         </button>
 
         <p className="text-[11px] text-slate-400 text-center mt-3 flex items-center justify-center gap-1">

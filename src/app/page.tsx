@@ -7,6 +7,7 @@ import {
   Calendar,
   Clock,
   Flame,
+  FolderOpen,
   HeartHandshake,
   Sparkles,
   User,
@@ -24,12 +25,18 @@ import type {
   ElementKey,
   GenderType,
   MenuCategory,
+  PaymentPlan,
   SajuInput,
   SajuReport,
   WorryTopic,
 } from "@/lib/saju-types";
 import { AuraBackground } from "@/components/AuraBackground";
 import { AnalyzingView } from "@/components/AnalyzingView";
+import {
+  ArchiveModal,
+  loadLocalArchive,
+  upsertLocalArchive,
+} from "@/components/ArchiveModal";
 import { ResultView } from "@/components/ResultView";
 import { TarotModal } from "@/components/TarotModal";
 import {
@@ -41,8 +48,11 @@ import type { CardEdition } from "@/components/ShareCardStudio";
 
 type ScreenPhase = "home" | "analyzing" | "result";
 
+const RECENT_PROFILES_KEY = "sajufact_recent_profiles_v1";
+
 const NAV_LABELS: Record<MenuCategory, string> = {
   newyear2027: "2027 신년운세",
+  today: "오늘의 운세",
   lifetime: "평생 사주 팩폭",
   wealth: "재물·이직운",
   compatibility: "연애·궁합 스캔",
@@ -69,15 +79,39 @@ export default function HomePage() {
   } | null>(null);
 
   const [report, setReport] = useState<SajuReport | null>(null);
+  const [paidPlan, setPaidPlan] = useState<PaymentPlan | null>(null);
+  const [keeperPhone, setKeeperPhone] = useState<string>("");
   const [tarotOpen, setTarotOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
+  const [isRestoringUrl, setIsRestoringUrl] = useState(false);
+  const [recentProfiles, setRecentProfiles] = useState<SajuInput[]>([]);
+  const [birthQuickInput, setBirthQuickInput] = useState("19960514");
   const [formError, setFormError] = useState<string | null>(null);
   const [showcaseEdition, setShowcaseEdition] = useState<CardEdition>("aura");
 
-  // URL 쿼리 파라미터(궁합 초대 링크 / 저장된 리포트 복원) 처리
+  const applyBirthDate = (isoDate: string) => {
+    setBirthDate(isoDate);
+    setBirthQuickInput(isoDate.replace(/-/g, ""));
+  };
+
+  // URL 쿼리 파라미터(궁합 초대 링크 / 저장된 리포트 복원) 및 최근 프로필 불러오기
   useEffect(() => {
     let active = true;
     queueMicrotask(() => {
       if (!active || typeof window === "undefined") return;
+
+      try {
+        const rawProfiles = localStorage.getItem(RECENT_PROFILES_KEY);
+        if (rawProfiles) {
+          const parsedProfiles = JSON.parse(rawProfiles) as SajuInput[];
+          if (Array.isArray(parsedProfiles)) {
+            setRecentProfiles(parsedProfiles.slice(0, 4));
+          }
+        }
+      } catch {
+        // ignore invalid recent profiles
+      }
+
       const params = new URLSearchParams(window.location.search);
       const inviter = params.get("inviter");
       const inviterBirth = params.get("inviterBirth");
@@ -90,18 +124,63 @@ export default function HomePage() {
         setSelectedMenu("compatibility");
         setWorry("love");
       } else if (savedId) {
-        try {
-          const raw = localStorage.getItem(`sajufact_report_${savedId}`);
-          if (raw) {
-            const parsed = JSON.parse(raw) as { report: SajuReport };
-            if (parsed?.report) {
-              setReport(parsed.report);
-              setPhase("result");
+        setIsRestoringUrl(true);
+
+        // 1차: 로컬 보관함/스토리지에서 즉시 복원 시도
+        const localHit = loadLocalArchive().find((x) => x.report.id === savedId);
+        if (localHit) {
+          setReport(localHit.report);
+          setPaidPlan(localHit.paidPlan);
+          setKeeperPhone(localHit.keeperPhone ?? "");
+          setPhase("result");
+        } else {
+          try {
+            const raw = localStorage.getItem(`sajufact_report_${savedId}`);
+            if (raw) {
+              const parsed = JSON.parse(raw) as {
+                report: SajuReport;
+                plan?: PaymentPlan | null;
+                phone?: string;
+              };
+              if (parsed?.report) {
+                setReport(parsed.report);
+                setPaidPlan(parsed.plan ?? null);
+                setKeeperPhone(parsed.phone ?? "");
+                setPhase("result");
+              }
             }
+          } catch {
+            // ignore invalid storage
           }
-        } catch {
-          // ignore invalid storage
         }
+
+        // 2차: 다른 기기/카카오톡 인앱에서도 열리도록 Supabase API에서 영구 결과 동기화
+        fetch(`/api/reports?id=${encodeURIComponent(savedId)}`)
+          .then(async (res) => {
+            if (!res.ok) return null;
+            return (await res.json()) as {
+              ok: boolean;
+              report?: SajuReport;
+              paidPlan?: PaymentPlan | null;
+              keeperPhone?: string;
+            };
+          })
+          .then((data) => {
+            if (!active || !data?.ok || !data.report) return;
+            setReport(data.report);
+            setPaidPlan((prev) => data.paidPlan ?? prev ?? null);
+            if (data.keeperPhone) setKeeperPhone(data.keeperPhone);
+            upsertLocalArchive(
+              data.report,
+              data.paidPlan ?? localHit?.paidPlan ?? null,
+              data.keeperPhone ?? localHit?.keeperPhone
+            );
+            setPhase("result");
+          })
+          .catch(() => {})
+          .finally(() => {
+            if (active) setIsRestoringUrl(false);
+          });
       }
     });
     return () => {
@@ -173,7 +252,41 @@ export default function HomePage() {
       .catch(() => generateSajuReport(payload));
 
     const [, computedReport] = await Promise.all([minDelayPromise, apiPromise]);
+
+    // 최근 입력 프로필 저장 (1초 재입력용)
+    const nextProfiles = [
+      payload,
+      ...recentProfiles.filter(
+        (p) => !(p.name === payload.name && p.birthDate === payload.birthDate)
+      ),
+    ].slice(0, 4);
+    setRecentProfiles(nextProfiles);
+    try {
+      localStorage.setItem(RECENT_PROFILES_KEY, JSON.stringify(nextProfiles));
+    } catch {
+      // ignore storage quota
+    }
+
+    // 기존 결제 상태 확인 + 로컬 자동 보관 + 영구 URL(?saved=...) 반영
+    const existingLocal = loadLocalArchive().find(
+      (x) => x.report.id === computedReport.id
+    );
+    const restoredPlan = existingLocal?.paidPlan ?? null;
+    const restoredPhone = existingLocal?.keeperPhone ?? "";
+    upsertLocalArchive(computedReport, restoredPlan, restoredPhone || undefined);
+    try {
+      window.history.replaceState(
+        null,
+        "",
+        `/?saved=${encodeURIComponent(computedReport.id)}`
+      );
+    } catch {
+      // ignore history error
+    }
+
     setReport(computedReport);
+    setPaidPlan(restoredPlan);
+    setKeeperPhone(restoredPhone);
     setPhase("result");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -191,6 +304,9 @@ export default function HomePage() {
             type="button"
             onClick={() => {
               setPhase("home");
+              try {
+                window.history.replaceState(null, "", "/");
+              } catch {}
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             className="flex items-center gap-2 text-left shrink-0"
@@ -229,8 +345,16 @@ export default function HomePage() {
             })}
           </nav>
 
-          {/* 우측 실시간 카운터 & 모바일 타로 바로가기 */}
+          {/* 우측 보관함 버튼 & 실시간 카운터 & 모바일 타로 바로가기 */}
           <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setArchiveOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/85 hover:bg-white border border-slate-200/90 text-slate-800 text-[11px] font-bold shadow-sm transition"
+            >
+              <FolderOpen className="w-3.5 h-3.5 text-amber-600" />
+              <span>내 보관함</span>
+            </button>
             <span className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-pill text-[11px] font-bold text-slate-700">
               <Flame className="w-3.5 h-3.5 text-rose-500" />
               오늘 14,820명 스캔 중
@@ -240,20 +364,45 @@ export default function HomePage() {
               onClick={() => setTarotOpen(true)}
               className="md:hidden inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-indigo-600 text-white text-[11px] font-bold shadow-sm"
             >
-              🃏 무료 타로
+              🃏 타로
             </button>
           </div>
         </div>
       </header>
 
+      {isRestoringUrl && phase === "home" && (
+        <div className="max-w-md mx-auto mt-16 px-4">
+          <div className="glass-card rounded-3xl p-8 text-center space-y-3">
+            <Sparkles className="w-7 h-7 text-amber-500 mx-auto animate-spin" />
+            <p className="font-serif text-base font-black text-slate-900">
+              저장된 사주 리포트를 불러오는 중...
+            </p>
+            <p className="text-xs text-slate-500">
+              영구 보관 URL에서 회원님의 결과와 오늘의 일진을 복원하고 있습니다.
+            </p>
+          </div>
+        </div>
+      )}
+
       {phase === "analyzing" && <AnalyzingView userName={name.trim() || "당신"} />}
 
       {phase === "result" && report && (
         <ResultView
+          key={`${report.id}-${paidPlan ?? "free"}`}
           initialReport={report}
+          initialPaidPlan={paidPlan}
+          initialPhone={keeperPhone}
           isInvitedFriendMode={Boolean(inviterBanner)}
+          onPaidPlanChange={(plan, phone) => {
+            setPaidPlan(plan);
+            if (phone) setKeeperPhone(phone);
+          }}
+          onOpenArchive={() => setArchiveOpen(true)}
           onResetHome={() => {
             setPhase("home");
+            try {
+              window.history.replaceState(null, "", "/");
+            } catch {}
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
         />
@@ -570,6 +719,34 @@ export default function HomePage() {
                   </span>
                 </div>
 
+                {/* 최근 입력 프로필 1초 자동 완성 칩 */}
+                {recentProfiles.length > 0 && (
+                  <div className="rounded-2xl bg-amber-50/75 border border-amber-200/70 p-2.5 space-y-1.5">
+                    <p className="text-[10px] font-extrabold text-amber-900">
+                      ⚡ 최근 본 프로필 1초 불러오기
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {recentProfiles.map((prof, idx) => (
+                        <button
+                          key={`${prof.name}-${prof.birthDate}-${idx}`}
+                          type="button"
+                          onClick={() => {
+                            setName(prof.name);
+                            setGender(prof.gender);
+                            applyBirthDate(prof.birthDate);
+                            setCalendarType(prof.calendarType);
+                            setBirthHour(prof.birthHour);
+                            setWorry(prof.worry);
+                          }}
+                          className="rounded-full bg-white hover:bg-slate-900 hover:text-white border border-amber-200 px-2.5 py-1 text-[11px] font-bold text-slate-800 transition shadow-xs"
+                        >
+                          {prof.name} ({prof.birthDate.slice(2).replace(/-/g, ".")})
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* 이름 + 성별 */}
                 <div className="grid grid-cols-5 gap-2.5">
                   <div className="col-span-3">
@@ -649,14 +826,41 @@ export default function HomePage() {
                       </button>
                     </div>
                   </div>
-                  <input
-                    type="date"
-                    value={birthDate}
-                    max="2026-12-31"
-                    min="1940-01-01"
-                    onChange={(e) => setBirthDate(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/85 border border-slate-200/90 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={8}
+                        value={birthQuickInput}
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, "").slice(0, 8);
+                          setBirthQuickInput(digits);
+                          if (digits.length === 8) {
+                            const y = digits.slice(0, 4);
+                            const m = digits.slice(4, 6);
+                            const d = digits.slice(6, 8);
+                            if (Number(m) >= 1 && Number(m) <= 12 && Number(d) >= 1 && Number(d) <= 31) {
+                              setBirthDate(`${y}-${m}-${d}`);
+                            }
+                          }
+                        }}
+                        placeholder="숫자 8자리 (예: 19960514)"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white/85 border border-slate-200/90 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                      />
+                      <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
+                        8자리 빠른입력
+                      </span>
+                    </div>
+                    <input
+                      type="date"
+                      value={birthDate}
+                      max="2026-12-31"
+                      min="1940-01-01"
+                      onChange={(e) => applyBirthDate(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-white/85 border border-slate-200/90 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    />
+                  </div>
                 </div>
 
                 {/* 태어난 시간 */}
@@ -785,6 +989,26 @@ export default function HomePage() {
         onConvertToSaju={() => {
           setPhase("home");
           setSelectedMenu("newyear2027");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
+
+      <ArchiveModal
+        open={archiveOpen}
+        currentReportId={report?.id}
+        onClose={() => setArchiveOpen(false)}
+        onSelectReport={(selectedReport, selectedPlan, selectedPhone) => {
+          setReport(selectedReport);
+          setPaidPlan(selectedPlan);
+          setKeeperPhone(selectedPhone ?? "");
+          setPhase("result");
+          try {
+            window.history.replaceState(
+              null,
+              "",
+              `/?saved=${encodeURIComponent(selectedReport.id)}`
+            );
+          } catch {}
           window.scrollTo({ top: 0, behavior: "smooth" });
         }}
       />

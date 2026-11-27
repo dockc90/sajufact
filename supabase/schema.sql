@@ -30,7 +30,7 @@ create table if not exists public.saju_payments (
   report_id text not null references public.saju_reports(id) on delete cascade,
   merchant_uid text unique not null,
   plan text not null check (plan in ('single', 'allinone')),
-  amount integer not null check (amount in (990, 2900)),
+  amount integer not null check (amount in (990, 1910, 2900)),
   pay_method text not null check (pay_method in ('kakao', 'toss', 'naver', 'card')),
   status text not null default 'paid' check (status in ('ready', 'paid', 'cancelled', 'failed')),
   created_at timestamptz not null default now()

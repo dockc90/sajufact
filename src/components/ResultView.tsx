@@ -8,8 +8,11 @@ import {
   ArrowLeft,
   Camera,
   Check,
+  Clock,
   Coins,
+  Compass,
   Copy,
+  FolderOpen,
   Heart,
   Link2,
   Lock,
@@ -17,13 +20,16 @@ import {
   RotateCcw,
   ShieldAlert,
   Sparkles,
+  Sun,
   TrendingUp,
 } from "lucide-react";
 import {
   ELEMENT_THEMES,
   buildCompatibilityReport,
+  calculateTodayFortune,
 } from "@/lib/saju-engine";
 import type { PaymentPlan, SajuReport } from "@/lib/saju-types";
+import { upsertLocalArchive } from "./ArchiveModal";
 import { PaymentModal } from "./PaymentModal";
 import { ShareCardStudio } from "./ShareCardStudio";
 import {
@@ -36,17 +42,26 @@ import {
 
 interface ResultViewProps {
   initialReport: SajuReport;
+  initialPaidPlan?: PaymentPlan | null;
+  initialPhone?: string;
   isInvitedFriendMode?: boolean;
+  onPaidPlanChange?: (plan: PaymentPlan, phone?: string) => void;
+  onOpenArchive?: () => void;
   onResetHome: () => void;
 }
 
 export function ResultView({
   initialReport,
+  initialPaidPlan = null,
+  initialPhone = "",
   isInvitedFriendMode = false,
+  onPaidPlanChange,
+  onOpenArchive,
   onResetHome,
 }: ResultViewProps) {
   const [report, setReport] = useState<SajuReport>(initialReport);
-  const [paidPlan, setPaidPlan] = useState<PaymentPlan | null>(null);
+  const [paidPlan, setPaidPlan] = useState<PaymentPlan | null>(initialPaidPlan);
+  const [keeperPhone, setKeeperPhone] = useState<string>(initialPhone);
   const [payModalOpen, setPayModalOpen] = useState(false);
   const [modalInitialPlan, setModalInitialPlan] = useState<PaymentPlan>("allinone");
   const [selectedMonth, setSelectedMonth] = useState<number>(4);
@@ -57,6 +72,14 @@ export function ResultView({
   const [extraPartnerBirth, setExtraPartnerBirth] = useState("1995-08-20");
 
   const theme = ELEMENT_THEMES[report.dominantElement];
+  const liveToday =
+    report.todayReport ??
+    calculateTodayFortune(
+      report.input,
+      report.dayMasterHanja,
+      report.dayBranchHanja || "午",
+      report.weakestElement
+    );
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -68,19 +91,52 @@ export function ResultView({
     setPayModalOpen(true);
   };
 
-  const handlePaymentComplete = (plan: PaymentPlan, phone?: string) => {
+  const handlePaymentComplete = (
+    plan: PaymentPlan,
+    phone?: string,
+    paidAmount?: 990 | 1910 | 2900,
+    payMethod?: "kakao" | "toss" | "naver" | "card"
+  ) => {
     setPaidPlan(plan);
+    if (phone) setKeeperPhone(phone);
     setPayModalOpen(false);
+    onPaidPlanChange?.(plan, phone);
+
+    const nextPhone = phone || keeperPhone || undefined;
+    upsertLocalArchive(report, plan, nextPhone);
     try {
       localStorage.setItem(
         `sajufact_report_${report.id}`,
-        JSON.stringify({ report, plan, phone })
+        JSON.stringify({ report, plan, phone: nextPhone })
       );
     } catch {
       // ignore storage quota
     }
+
+    // Supabase DB에도 결제 등급·휴대폰 보관 정보·결제 내역 비동기 반영
+    const amount: 990 | 1910 | 2900 =
+      paidAmount ?? (plan === "allinone" ? 2900 : 990);
+    void fetch("/api/reports", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: report.id,
+        paidPlan: plan,
+        keeperPhone: nextPhone ?? null,
+        report,
+        payment: {
+          plan,
+          amount,
+          payMethod: payMethod ?? "kakao",
+          merchantUid: `sf-${report.id}-${Date.now()}`,
+        },
+      }),
+    }).catch(() => {});
+
     showToast(
-      plan === "allinone"
+      amount === 1910
+        ? "차액 1,910원 결제로 올인원 패키지 업그레이드가 완료되었습니다!"
+        : plan === "allinone"
         ? "올인원 패키지 잠금이 해제되었습니다! (12개월 그래프·부적 포함)"
         : "단건 팩폭팩 잠금이 해제되었습니다!"
     );
@@ -131,19 +187,56 @@ export function ResultView({
 
   return (
     <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-5 lg:pt-8 pb-20 space-y-5">
-      {/* 상단 서브 네비게이션 */}
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={onResetHome}
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass-pill text-xs font-bold text-slate-700 hover:bg-white transition"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          다시 입력하기
-        </button>
-        <span className="text-xs font-bold text-slate-500">
-          {report.input.name}님의 사주 팩트 리포트
-        </span>
+      {/* 상단 서브 네비게이션 + 빠른 점프 탭바 */}
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={onResetHome}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass-pill text-xs font-bold text-slate-700 hover:bg-white transition"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            다시 입력하기
+          </button>
+          <div className="flex items-center gap-2">
+            {onOpenArchive && (
+              <button
+                type="button"
+                onClick={onOpenArchive}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/80 border border-slate-200 text-xs font-bold text-slate-700 hover:bg-white transition"
+              >
+                <FolderOpen className="w-3.5 h-3.5 text-amber-600" />
+                내 보관함
+              </button>
+            )}
+            <span className="hidden sm:inline text-xs font-bold text-slate-500">
+              {report.input.name}님의 사주 팩트 리포트
+            </span>
+          </div>
+        </div>
+
+        {/* 섹션 퀵 점프 바 */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          {[
+            { id: "section-summary", label: "⚡ 핵심 팩폭" },
+            { id: "section-today", label: "☀️ 오늘의 일진" },
+            { id: "section-deep", label: "💣 상세 주의·횡재" },
+            { id: "section-card", label: "📸 공유 카드" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => {
+                document
+                  .getElementById(tab.id)
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className="shrink-0 rounded-full bg-white/80 hover:bg-slate-900 hover:text-white border border-slate-200/80 px-3 py-1 text-[11px] font-bold text-slate-700 transition"
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* 토스트 알림 */}
@@ -188,7 +281,10 @@ export function ResultView({
           )}
 
           {/* ① 무료 맛보기 영역 (상단) */}
-          <section className="glass-card rounded-3xl p-5 sm:p-6 space-y-4 relative overflow-hidden">
+          <section
+            id="section-summary"
+            className="glass-card rounded-3xl p-5 sm:p-6 space-y-4 relative overflow-hidden scroll-mt-20"
+          >
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 flex-wrap">
                 <span
@@ -298,14 +394,110 @@ export function ResultView({
             </div>
           </section>
 
+          {/* ☀️ 오늘의 일진 팩폭 (매일 자동 리셋 무료 데일리 섹션) */}
+          <section
+            id="section-today"
+            className="glass-card rounded-3xl p-5 space-y-4 border border-amber-200/80 bg-gradient-to-br from-amber-50/70 via-white/80 to-orange-50/50 scroll-mt-20"
+          >
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <Sun className="w-4 h-4 text-amber-500" />
+                  <span className="text-xs font-extrabold text-amber-700">
+                    오늘의 일진 팩폭 · {liveToday.dateLabel}
+                  </span>
+                </div>
+                <h3 className="font-serif text-base font-black text-slate-900 mt-1">
+                  오늘 일진 {liveToday.todayGanZhiHangul}({liveToday.todayGanZhiHanja}) ·{" "}
+                  <span className="text-amber-700">{liveToday.relationBadge}</span>
+                </h3>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-[10px] font-bold text-slate-500">오늘 운세 지수</span>
+                <span className="text-2xl font-black text-slate-900">
+                  {liveToday.score}
+                  <span className="text-xs font-bold text-slate-500">점</span>
+                </span>
+              </div>
+            </div>
+
+            <p className="rounded-2xl bg-white/90 border border-amber-200/70 px-3.5 py-3 text-[13px] font-bold text-slate-900 leading-relaxed">
+              “{liveToday.headline}”
+            </p>
+
+            {/* 4대 오늘 시그널 */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {(
+                [
+                  { title: "재물", item: liveToday.signals.wealth },
+                  { title: "연애·대인", item: liveToday.signals.love },
+                  { title: "일·직장", item: liveToday.signals.work },
+                  { title: "컨디션", item: liveToday.signals.condition },
+                ] as const
+              ).map(({ title, item }) => (
+                <div
+                  key={title}
+                  className="rounded-2xl bg-white/85 border border-slate-200/70 p-2.5 space-y-1"
+                >
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-[11px] font-bold text-slate-500">{title}</span>
+                    <span
+                      className={`rounded-full px-1.5 py-0.5 text-[10px] font-extrabold ${
+                        item.tone === "good"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : item.tone === "caution"
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-rose-100 text-rose-700"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-700 leading-snug">{item.summary}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* 시간대별 흐름 */}
+            <div className="space-y-1.5 text-xs">
+              <div className="rounded-xl bg-white/80 px-3 py-2 border border-white flex items-start gap-2">
+                <span className="shrink-0 font-extrabold text-amber-700">🌅 오전</span>
+                <span className="text-slate-700">{liveToday.timeFlow.morning}</span>
+              </div>
+              <div className="rounded-xl bg-white/80 px-3 py-2 border border-white flex items-start gap-2">
+                <span className="shrink-0 font-extrabold text-orange-700">☀️ 오후</span>
+                <span className="text-slate-700">{liveToday.timeFlow.afternoon}</span>
+              </div>
+              <div className="rounded-xl bg-white/80 px-3 py-2 border border-white flex items-start gap-2">
+                <span className="shrink-0 font-extrabold text-indigo-700">🌙 밤</span>
+                <span className="text-slate-700">{liveToday.timeFlow.evening}</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+              <div className="rounded-xl bg-slate-900 text-white px-3 py-2 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                <span>골든타임: {liveToday.luckyTime}</span>
+              </div>
+              <div className="rounded-xl bg-slate-900 text-white px-3 py-2 flex items-center gap-1.5">
+                <Compass className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
+                <span>행운 방위: {liveToday.luckyDirection}</span>
+              </div>
+              <div className="rounded-xl bg-rose-100/90 text-rose-900 px-3 py-2 font-bold">
+                🚫 오늘 금지: {liveToday.avoidAction}
+              </div>
+            </div>
+          </section>
+
           {/* ② 블러(Blur) 잠금 페이월 또는 해제된 전체 리포트 */}
+          <div id="section-deep" className="scroll-mt-20">
           {!paidPlan ? (
             <section className="relative rounded-3xl overflow-hidden">
               {/* 실제 리포트 미리보기 (은은한 블러 처리) */}
               <div className="glass-card rounded-3xl p-5 space-y-4 blur-[6px] select-none pointer-events-none opacity-75">
                 <div className="rounded-2xl bg-rose-50/90 p-4 border border-rose-200">
                   <h3 className="font-bold text-sm text-rose-900">
-                    2027년 4월, 절대 피해야 할 치명적 실수 1가지
+                    {report.criticalMistake2027.dangerMonth}, 절대 피해야 할 치명적 실수
                   </h3>
                   <p className="text-xs text-slate-700 mt-1.5 leading-relaxed">
                     {report.criticalMistake2027.detail}
@@ -347,7 +539,9 @@ export function ResultView({
                   <ul className="space-y-2 text-xs font-semibold text-slate-800 bg-slate-50 rounded-2xl p-3.5 border border-slate-200/70">
                     <li className="flex items-start gap-2">
                       <span>🔒</span>
-                      <span>“2027년 4월, 절대 피해야 할 치명적 실수 1가지”</span>
+                      <span>
+                        “{report.criticalMistake2027.dangerMonth}, 절대 피해야 할 치명적 실수 1가지”
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span>🔒</span>
@@ -689,31 +883,35 @@ export function ResultView({
                   </section>
                 </>
               ) : (
-                /* 단건 결제자용 업그레이드 안내 */
+                /* 단건 결제자용 업그레이드 안내 (차액 1,910원) */
                 <div className="rounded-3xl p-4 bg-amber-50/90 border border-amber-200 flex items-center justify-between gap-3">
                   <div>
+                    <span className="inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800 mb-1">
+                      990원 기결제 적용 · 차액 결제
+                    </span>
                     <p className="text-xs font-extrabold text-amber-950">
                       12개월 월별 그래프 + 궁합 스캔 + 액땜 부적도 궁금하다면?
                     </p>
                     <p className="text-[11px] text-amber-800 mt-0.5">
-                      올인원 패키지로 전체 기능을 열어보세요.
+                      기존 990원을 뺀 <strong className="text-rose-700">차액 1,910원만</strong> 결제하고 올인원 열기
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => openPayModal("allinone")}
-                    className="px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold shrink-0"
+                    className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-200 text-xs font-extrabold shrink-0 transition"
                   >
-                    업그레이드
+                    1,910원 업그레이드
                   </button>
                 </div>
               )}
             </motion.div>
           )}
+          </div>
         </div>
 
         {/* 우측 컬럼 (PC 스티키 사이드바 / 모바일 하단): 오라 카드 스튜디오 + 바이럴 훅 */}
-        <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-5">
+        <div id="section-card" className="lg:col-span-5 lg:sticky lg:top-24 space-y-5 scroll-mt-20">
           {paidPlan ? (
             <ShareCardStudio report={report} />
           ) : (
@@ -827,8 +1025,11 @@ export function ResultView({
       </div>
 
       <PaymentModal
+        key={`${payModalOpen}-${modalInitialPlan}-${paidPlan ?? "free"}`}
         open={payModalOpen}
         initialPlan={modalInitialPlan}
+        currentPaidPlan={paidPlan}
+        defaultPhone={keeperPhone}
         onClose={() => setPayModalOpen(false)}
         onComplete={handlePaymentComplete}
       />

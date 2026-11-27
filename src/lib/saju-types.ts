@@ -1,5 +1,6 @@
 export type MenuCategory =
   | "newyear2027"
+  | "today"
   | "lifetime"
   | "wealth"
   | "compatibility"
@@ -92,6 +93,35 @@ export interface CompatibilityReport {
   solutionTip: string;
 }
 
+export interface TodaySignalItem {
+  label: string;
+  tone: "good" | "caution" | "warn";
+  summary: string;
+}
+
+export interface TodayFortuneReport {
+  dateLabel: string;
+  todayGanZhiHangul: string;
+  todayGanZhiHanja: string;
+  relationBadge: string;
+  score: number;
+  headline: string;
+  timeFlow: {
+    morning: string;
+    afternoon: string;
+    evening: string;
+  };
+  signals: {
+    wealth: TodaySignalItem;
+    love: TodaySignalItem;
+    work: TodaySignalItem;
+    condition: TodaySignalItem;
+  };
+  luckyTime: string;
+  luckyDirection: string;
+  avoidAction: string;
+}
+
 export interface SajuReport {
   id: string;
   createdAt: string;
@@ -99,6 +129,9 @@ export interface SajuReport {
   pillars: PillarInfo[];
   dayMasterHanja: string;
   dayMasterHangul: string;
+  dayBranchHanja?: string;
+  dayBranchHangul?: string;
+  relation2027Label?: string;
   elements: ElementStat[];
   dominantElement: ElementKey;
   weakestElement: ElementKey;
@@ -108,6 +141,7 @@ export interface SajuReport {
   oneLineFact: string;
   subHook: string;
   hashtags: string[];
+  todayReport?: TodayFortuneReport;
   // Paid sections
   criticalMistake2027: {
     dangerMonth: string;
