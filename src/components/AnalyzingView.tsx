@@ -36,28 +36,28 @@ export function AnalyzingView({ userName }: { userName: string }) {
   const current = STAGES[stageIdx];
 
   return (
-    <div className="min-h-[82vh] flex flex-col items-center justify-center px-5 py-10 text-center relative">
-      {/* 달토끼 달토 절구 찧기 일러스트 & 몽글몽글 파스텔 오라 */}
-      <div className="relative flex items-center justify-center mb-7">
-        <div className="absolute w-64 h-64 rounded-full bg-gradient-to-tr from-[#f8c4b4]/55 via-[#fde6b8]/60 to-[#d9c2f8]/55 blur-2xl animate-pulse" />
+    <div className="min-h-[82vh] flex flex-col items-center justify-center px-3 sm:px-5 py-8 text-center relative">
+      {/* 달토끼 달토 절구 찧기 풀블리드 루프 영상 & 몽글몽글 파스텔 오라 */}
+      <div className="relative w-full max-w-xl sm:max-w-2xl flex items-center justify-center mb-8">
+        <div className="absolute w-72 h-72 sm:w-80 sm:h-80 rounded-full bg-gradient-to-tr from-[#f8c4b4]/55 via-[#fde6b8]/60 to-[#d9c2f8]/55 blur-2xl animate-pulse" />
 
         {/* 둥실둥실 떠다니는 미니 당근 & 달 */}
         <motion.span
-          animate={{ y: [0, -8, 0], rotate: [-8, 8, -8] }}
+          animate={{ y: [0, -6, 0], rotate: [-8, 8, -8] }}
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-3 -left-3 z-20 rounded-full bg-white/90 px-2.5 py-1 text-base shadow-md border border-orange-200"
+          className="absolute top-3 left-3 z-20 rounded-full bg-white/90 px-2.5 py-1 text-base shadow-md border border-orange-200"
         >
           🥕
         </motion.span>
         <motion.span
-          animate={{ y: [0, 7, 0], scale: [1, 1.1, 1] }}
+          animate={{ y: [0, 6, 0], scale: [1, 1.1, 1] }}
           transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-2 -right-3 z-20 rounded-full bg-white/90 px-2.5 py-1 text-base shadow-md border border-violet-200"
+          className="absolute top-3 right-3 z-20 rounded-full bg-white/90 px-2.5 py-1 text-base shadow-md border border-violet-200"
         >
           🌕
         </motion.span>
 
-        <div className="relative z-10 w-72 sm:w-80 aspect-video rounded-[28px] overflow-hidden border-4 border-white/90 shadow-[0_20px_50px_rgba(139,92,246,0.22)] bg-[#fdf6f0]">
+        <div className="relative z-10 w-full max-w-xl sm:max-w-2xl aspect-video rounded-3xl overflow-hidden shadow-[0_22px_60px_rgba(92,72,155,0.22)] bg-[#fdf6f0]">
           <video
             src="/mascot/dalto-mortar-loop.mp4"
             poster="/mascot/dalto-mortar.jpg"
@@ -71,7 +71,7 @@ export function AnalyzingView({ userName }: { userName: string }) {
           />
         </div>
 
-        <div className="absolute -bottom-3 z-20">
+        <div className="absolute -bottom-3.5 z-20">
           <span className="inline-flex items-center gap-1.5 font-serif text-xs sm:text-sm font-black tracking-wide text-[#523e88] bg-white/95 px-4 py-1.5 rounded-full shadow-md border border-violet-200/80 whitespace-nowrap">
             🐇 {userName || "당신"}의 원국 절구 찧는 중
           </span>

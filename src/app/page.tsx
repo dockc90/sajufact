@@ -582,11 +582,11 @@ export default function HomePage() {
             title="홈으로 이동"
             className="group flex items-center gap-2 text-left shrink-0"
           >
-            <span className="w-9 h-9 rounded-2xl bg-white/95 border border-violet-100/90 shadow-2xs flex items-center justify-center p-1 group-hover:scale-105 active:scale-95 transition">
+            <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#2b1e4c] via-[#4a327a] to-[#7951a3] border border-violet-300/60 shadow-sm flex items-center justify-center p-0.5 group-hover:scale-105 active:scale-95 transition">
               <img
                 src="/logo/dalto-logo.png"
                 alt="달토사주 로고"
-                className="w-7 h-7 object-contain"
+                className="w-8 h-8 object-contain scale-110 brightness-110 contrast-125 saturate-150 drop-shadow-[0_0_5px_rgba(255,225,248,0.7)]"
               />
             </span>
             <span className="font-serif text-base sm:text-lg font-black tracking-tight text-[#1c1b22]">
@@ -811,7 +811,7 @@ export default function HomePage() {
                     <span className="w-6 h-6 rounded-full bg-emerald-500 text-white text-[11px] font-black flex items-center justify-center shrink-0">
                       {activeProfile.name.slice(0, 1)}
                     </span>
-                    <span className="text-xs font-extrabold text-slate-800 truncate">
+                    <span className="text-[11px] sm:text-xs font-extrabold text-slate-800 whitespace-nowrap">
                       {activeProfile.name} · {currentProfileDraw.dateDisplay}
                     </span>
                     <span className="text-[10px] font-bold text-violet-600 shrink-0">

@@ -135,7 +135,7 @@ export function ProfileManagerModal({
   const [relation, setRelation] = useState<ProfileRelation>("본인");
   const [customRelation, setCustomRelation] = useState("");
   const [gender, setGender] = useState<GenderType>("female");
-  const [birthDate, setBirthDate] = useState("1996-05-14");
+  const [birthDate, setBirthDate] = useState("");
   const [calendarType, setCalendarType] = useState<CalendarType>("solar");
   const [knowsTime, setKnowsTime] = useState(false);
   const [knowsExactTime, setKnowsExactTime] = useState(true);
@@ -152,6 +152,7 @@ export function ProfileManagerModal({
       if (initialOpenForm || profiles.length === 0) {
         setFormOpen(true);
         setEditingId(null);
+        setBirthDate("");
         setRelation(profiles.length === 0 ? "본인" : "가족");
       } else {
         setFormOpen(false);
@@ -191,7 +192,7 @@ export function ProfileManagerModal({
     setRelation(profiles.length === 0 ? "본인" : "연인");
     setCustomRelation("");
     setGender("female");
-    setBirthDate("1996-05-14");
+    setBirthDate("");
     setCalendarType("solar");
     setKnowsTime(false);
     setKnowsExactTime(true);
