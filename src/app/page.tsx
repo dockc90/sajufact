@@ -99,8 +99,7 @@ const CHUNKY_MENU_CARDS: Array<{
     subtitle: "썸, 결혼운, 재회운까지",
     coinCost: 1,
     cardBg: "bg-[#fff0f5]",
-    image: "/mascot/dalto-party.jpg",
-    clipId: "clip-heart",
+    image: "/mascot/dalto-love.jpg",
   },
   {
     id: "compatibility",
@@ -108,8 +107,7 @@ const CHUNKY_MENU_CARDS: Array<{
     subtitle: "우리 사이는 몇 점?",
     coinCost: 1,
     cardBg: "bg-[#eef8c6]",
-    image: "/mascot/dalto-rabbit.jpg",
-    clipId: "clip-tulip",
+    image: "/mascot/dalto-compat.jpg",
   },
   {
     id: "daeun",
