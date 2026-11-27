@@ -578,19 +578,19 @@ export default function HomePage() {
           <button
             type="button"
             onClick={handleGoHome}
-            aria-label="사주팩트 홈으로 이동"
+            aria-label="달토사주 홈으로 이동"
             title="홈으로 이동"
             className="group flex items-center gap-2 text-left shrink-0"
           >
             <span className="w-9 h-9 rounded-2xl bg-white/95 border border-violet-100/90 shadow-2xs flex items-center justify-center p-1 group-hover:scale-105 active:scale-95 transition">
               <img
                 src="/logo/dalto-logo.png"
-                alt="사주팩트 로고"
+                alt="달토사주 로고"
                 className="w-7 h-7 object-contain"
               />
             </span>
             <span className="font-serif text-base sm:text-lg font-black tracking-tight text-[#1c1b22]">
-              사주팩트
+              달토사주
             </span>
           </button>
 

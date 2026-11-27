@@ -57,17 +57,19 @@ export function AnalyzingView({ userName }: { userName: string }) {
           🌕
         </motion.span>
 
-        <motion.div
-          animate={{ y: [0, -10, 0], rotate: [0, -2, 2, 0] }}
-          transition={{ duration: 1.35, repeat: Infinity, ease: "easeInOut" }}
-          className="relative z-10 w-44 h-44 sm:w-48 sm:h-48 rounded-[36px] overflow-hidden border-4 border-white/90 shadow-[0_20px_50px_rgba(139,92,246,0.22)] bg-[#fdf6f0]"
-        >
-          <img
-            src="/mascot/dalto-mortar.jpg"
-            alt="절구 찧는 달토끼 달토"
+        <div className="relative z-10 w-72 sm:w-80 aspect-video rounded-[28px] overflow-hidden border-4 border-white/90 shadow-[0_20px_50px_rgba(139,92,246,0.22)] bg-[#fdf6f0]">
+          <video
+            src="/mascot/dalto-mortar-loop.mp4"
+            poster="/mascot/dalto-mortar.jpg"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            aria-label="절구 찧는 달토끼 달토 애니메이션"
             className="w-full h-full object-cover"
           />
-        </motion.div>
+        </div>
 
         <div className="absolute -bottom-3 z-20">
           <span className="inline-flex items-center gap-1.5 font-serif text-xs sm:text-sm font-black tracking-wide text-[#523e88] bg-white/95 px-4 py-1.5 rounded-full shadow-md border border-violet-200/80 whitespace-nowrap">
