@@ -2,6 +2,45 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateSajuReport } from "@/lib/saju-engine";
 import type { SajuInput } from "@/lib/saju-types";
 
+async function saveReportToSupabase(
+  report: ReturnType<typeof generateSajuReport>,
+  input: SajuInput
+): Promise<boolean> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) return false;
+
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/saju_reports`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        Prefer: "resolution=ignore-duplicates,return=minimal",
+      },
+      body: JSON.stringify({
+        id: report.id,
+        user_name: report.input.name,
+        gender: input.gender,
+        birth_date: input.birthDate,
+        calendar_type: input.calendarType,
+        birth_hour: input.birthHour,
+        worry: input.worry,
+        menu: input.menu,
+        dominant_element: report.dominantElement,
+        report_json: report,
+      }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as Partial<SajuInput>;
@@ -66,7 +105,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ report: baseReport });
+    // 3단계: Supabase DB에 리포트 결과 비동기 캐싱 저장
+    const savedToDb = await saveReportToSupabase(baseReport, input);
+
+    return NextResponse.json({ report: baseReport, savedToDb });
   } catch {
     return NextResponse.json(
       { error: "사주 분석 중 오류가 발생했습니다. 입력값을 확인해 주세요." },

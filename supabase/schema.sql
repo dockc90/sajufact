@@ -1,5 +1,5 @@
 -- 사주팩트(SajuFact) Supabase 초기 스키마
--- Supabase SQL Editor에 그대로 붙여넣어 실행하세요.
+-- Supabase SQL Editor 또는 마이그레이션(init_sajufact_schema)에 적용됩니다.
 
 create extension if not exists "pgcrypto";
 
@@ -36,12 +36,19 @@ create table if not exists public.saju_payments (
   created_at timestamptz not null default now()
 );
 
+create index if not exists idx_saju_payments_report_id
+  on public.saju_payments (report_id);
+
 -- 3. Row Level Security (RLS)
 alter table public.saju_reports enable row level security;
 alter table public.saju_payments enable row level security;
 
--- 서버(Service Role Key) 외 클라이언트 직접 조회/수정 제한
-create policy "Public read report by exact id"
-  on public.saju_reports
-  for select
+create policy "Allow anon read reports"
+  on public.saju_reports for select
+  to anon, authenticated
   using (true);
+
+create policy "Allow anon upsert reports"
+  on public.saju_reports for insert
+  to anon, authenticated
+  with check (true);
