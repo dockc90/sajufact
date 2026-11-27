@@ -6,24 +6,25 @@ import {
   Calendar,
   ChevronDown,
   Clock,
+  Clover,
   Edit3,
   FolderOpen,
   HeartHandshake,
+  Home,
   Lock,
+  MessageCircle,
   MessageCircleHeart,
   Plus,
   Sparkles,
-  Sun,
   Ticket,
   User,
+  UserRound,
   Users,
   X,
 } from "lucide-react";
 import {
   BENCHMARK_REVIEWS,
   BIRTH_HOUR_OPTIONS,
-  CORE_SEVEN_MENUS,
-  MENU_ITEMS,
   generateSajuReport,
   getKst23ResetCycleKey,
   getNext23KstCountdown,
@@ -56,25 +57,79 @@ type ScreenPhase = "home" | "analyzing" | "result";
 const WALLET_STORAGE_KEY = "sajufact_wallet_v1";
 const RECENT_PROFILES_KEY = "sajufact_recent_profiles_v1";
 
-const MENU_BUNNY_IMG: Partial<Record<MenuCategory, string>> = {
-  lifetime: "/mascot/dalto-rabbit.jpg",
-  newyear2027: "/mascot/dalto-party.jpg",
-  love: "/mascot/dalto-party.jpg",
-  compatibility: "/mascot/dalto-rabbit.jpg",
-  daeun: "/mascot/dalto-mortar.jpg",
-  yeonun: "/mascot/dalto-party.jpg",
-  taekil: "/mascot/dalto-mortar.jpg",
-};
-
-const MENU_ICON_CIRCLE_BG: Partial<Record<MenuCategory, string>> = {
-  lifetime: "bg-gradient-to-br from-[#f3ecff] to-[#fde8f3]",
-  newyear2027: "bg-gradient-to-br from-[#ffede4] to-[#ffe4ef]",
-  love: "bg-gradient-to-br from-[#ffe8f1] to-[#fff0f6]",
-  compatibility: "bg-gradient-to-br from-[#fde7f3] to-[#f3e8ff]",
-  daeun: "bg-gradient-to-br from-[#ede9fe] to-[#e0e7ff]",
-  yeonun: "bg-gradient-to-br from-[#e8f4ff] to-[#ede9fe]",
-  taekil: "bg-gradient-to-br from-[#fff5e4] to-[#ffede4]",
-};
+const CHUNKY_MENU_CARDS: Array<{
+  id: MenuCategory;
+  title: string;
+  subtitle: string;
+  coinCost: number;
+  cardBg: string;
+  image: string;
+  clipId?: string;
+  badge?: "BEST" | "NEW";
+}> = [
+  {
+    id: "lifetime",
+    title: "990원 사주",
+    subtitle: "용하다고 소문난 사주 해설",
+    coinCost: 1,
+    badge: "BEST",
+    cardBg: "bg-[#fff8d2]",
+    image: "/mascot/dalto-rabbit.jpg",
+  },
+  {
+    id: "newyear2027",
+    title: "신년운세",
+    subtitle: "2027년엔 대박난다",
+    coinCost: 1,
+    badge: "NEW",
+    cardBg: "bg-[#fde7ee]",
+    image: "/mascot/dalto-party.jpg",
+  },
+  {
+    id: "love",
+    title: "연애운",
+    subtitle: "썸, 결혼운, 재회운까지",
+    coinCost: 1,
+    cardBg: "bg-[#fff0f5]",
+    image: "/mascot/dalto-party.jpg",
+    clipId: "clip-heart",
+  },
+  {
+    id: "compatibility",
+    title: "990원 궁합",
+    subtitle: "우리 사이는 몇 점?",
+    coinCost: 1,
+    cardBg: "bg-[#eef8c6]",
+    image: "/mascot/dalto-rabbit.jpg",
+    clipId: "clip-tulip",
+  },
+  {
+    id: "daeun",
+    title: "10년 대운",
+    subtitle: "내 인생 황금기 언제?",
+    coinCost: 2,
+    cardBg: "bg-[#e1f1fd]",
+    image: "/mascot/dalto-mortar.jpg",
+    clipId: "clip-star",
+  },
+  {
+    id: "yeonun",
+    title: "3년 연운",
+    subtitle: "2026~2028 상승곡선",
+    coinCost: 1,
+    cardBg: "bg-[#efe7fc]",
+    image: "/mascot/dalto-party.jpg",
+    clipId: "clip-cloud",
+  },
+  {
+    id: "taekil",
+    title: "길일 택일",
+    subtitle: "계약·면접·고백 대박날",
+    coinCost: 1,
+    cardBg: "bg-[#ffefe0]",
+    image: "/mascot/dalto-mortar.jpg",
+  },
+];
 
 const HOME_FAQ_ITEMS = [
   {
@@ -284,7 +339,9 @@ export default function HomePage() {
     if (!clean) {
       setFormError("달토가 이름을 알 수 있게 이름(닉네임)을 입력해 주세요.");
       setProfileConfirmed(false);
-      window.scrollTo({ top: 120, behavior: "smooth" });
+      document
+        .getElementById("profile-form-section")
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
       return null;
     }
     if (!birthDate) {
@@ -462,10 +519,6 @@ export default function HomePage() {
     return true;
   };
 
-  const sevenGridMenus = CORE_SEVEN_MENUS.map(
-    (id) => MENU_ITEMS.find((m) => m.id === id)!
-  );
-
   return (
     <>
       <AuraBackground
@@ -576,48 +629,197 @@ export default function HomePage() {
       )}
 
       {phase === "home" && (
-        <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pt-5 pb-16 space-y-6">
-          {/* ① 심플 비주얼 달토 히어로 배너 + 3초 간편 프로필 */}
-          <section className="glass-card rounded-3xl p-4 sm:p-5 border border-white/95 bg-gradient-to-br from-[#fffaf6]/95 via-[#fdf5fc]/90 to-[#fff2ea]/90 space-y-4">
-            <div className="rounded-3xl overflow-hidden bg-gradient-to-r from-[#fce7f3] via-[#fff2ea] to-[#f4ecff] border border-white p-3.5 sm:p-4 flex items-center gap-3.5 sm:gap-5 shadow-2xs">
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl overflow-hidden border-2 border-white shadow-md shrink-0">
-                <img
-                  src="/mascot/dalto-party.jpg"
-                  alt="파티 달토끼 달토"
-                  className="w-full h-full object-cover animate-dalto-float"
-                />
-                <span className="absolute bottom-1 right-1 rounded-full bg-white/95 px-1.5 py-0.5 text-[10px] shadow-xs">
-                  🥕
-                </span>
-              </div>
-              <div className="text-left space-y-1.5 min-w-0">
-                <span className="inline-flex items-center gap-1 rounded-full bg-white/90 text-rose-600 px-2.5 py-0.5 text-[10px] font-extrabold shadow-2xs">
-                  🥕 당근 1개 990원 · 밤 11시 무료수다권 1장
-                </span>
-                <h1 className="font-serif text-lg sm:text-2xl font-black text-[#2b2242] leading-snug break-keep">
-                  990원 당근 1개로 여는 2027 사주 🐇
-                </h1>
-                <p className="text-xs font-semibold text-slate-600">
-                  빈말 없는 채찍 + 따뜻한 처방전을 주는 달토끼 상담소
-                </p>
+        <div className="max-w-2xl mx-auto w-full px-3.5 sm:px-5 pt-4 pb-28 space-y-5 relative">
+          {/* 인라인 SVG 클립패스 마스크 (하트 · 튤립 · 별 · 구름) */}
+          <svg
+            aria-hidden="true"
+            className="absolute w-0 h-0 pointer-events-none"
+            width="0"
+            height="0"
+          >
+            <defs>
+              <clipPath id="clip-heart" clipPathUnits="objectBoundingBox">
+                <path d="M 0.5,0.92 C 0.16,0.72 0.03,0.48 0.03,0.30 C 0.03,0.14 0.16,0.04 0.31,0.04 C 0.41,0.04 0.47,0.10 0.50,0.16 C 0.53,0.10 0.59,0.04 0.69,0.04 C 0.84,0.04 0.97,0.14 0.97,0.30 C 0.97,0.48 0.84,0.72 0.50,0.92 Z" />
+              </clipPath>
+              <clipPath id="clip-tulip" clipPathUnits="objectBoundingBox">
+                <path d="M 0.50,0.96 C 0.15,0.94 0.04,0.68 0.06,0.36 C 0.07,0.16 0.17,0.05 0.25,0.10 C 0.31,0.14 0.35,0.23 0.38,0.23 C 0.41,0.23 0.44,0.05 0.50,0.05 C 0.56,0.05 0.59,0.23 0.62,0.23 C 0.65,0.23 0.69,0.14 0.75,0.10 C 0.83,0.05 0.93,0.16 0.94,0.36 C 0.96,0.68 0.85,0.94 0.50,0.96 Z" />
+              </clipPath>
+              <clipPath id="clip-star" clipPathUnits="objectBoundingBox">
+                <path d="M 0.50,0.04 C 0.58,0.04 0.62,0.24 0.69,0.28 C 0.76,0.32 0.94,0.24 0.97,0.33 C 1.00,0.42 0.82,0.54 0.82,0.62 C 0.82,0.70 0.94,0.88 0.86,0.94 C 0.78,1.00 0.62,0.84 0.50,0.84 C 0.38,0.84 0.22,1.00 0.14,0.94 C 0.06,0.88 0.18,0.70 0.18,0.62 C 0.18,0.54 0.00,0.42 0.03,0.33 C 0.06,0.24 0.24,0.32 0.31,0.28 C 0.38,0.24 0.42,0.04 0.50,0.04 Z" />
+              </clipPath>
+              <clipPath id="clip-cloud" clipPathUnits="objectBoundingBox">
+                <path d="M 0.30,0.95 C 0.12,0.95 0.04,0.80 0.10,0.66 C 0.02,0.56 0.04,0.38 0.16,0.32 C 0.14,0.16 0.26,0.05 0.42,0.09 C 0.52,0.02 0.68,0.04 0.74,0.16 C 0.88,0.14 0.97,0.28 0.92,0.44 C 0.99,0.56 0.95,0.74 0.82,0.80 C 0.84,0.92 0.68,0.98 0.56,0.92 C 0.48,0.97 0.38,0.97 0.30,0.95 Z" />
+              </clipPath>
+            </defs>
+          </svg>
+
+          {inviterBanner && (
+            <div className="rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-3 flex items-center gap-2 text-xs font-bold shadow-sm">
+              <HeartHandshake className="w-4 h-4 shrink-0" />
+              <span>
+                {inviterBanner.name}님이 궁합을 요청했어요! 아래에서 내 이름 입력 후 990원 궁합을 눌러보세요.
+              </span>
+            </div>
+          )}
+
+          {/* ① 큼직한 2열 달토끼 파스텔 포토 카드 그리드 (최상단 메인) */}
+          <section className="space-y-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {CHUNKY_MENU_CARDS.map((card) => {
+                const isBest = card.badge === "BEST";
+                const isNew = card.badge === "NEW";
+                const pricePillClass =
+                  card.coinCost >= 2
+                    ? "bg-violet-100 text-violet-700 border border-violet-200/90"
+                    : "bg-white text-orange-600 border border-orange-200/90";
+
+                return (
+                  <motion.button
+                    key={card.id}
+                    type="button"
+                    whileHover={{ y: -3, scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => void runAnalysis(card.id)}
+                    className={`relative text-left rounded-[28px] p-3 sm:p-3.5 shadow-sm border border-white/95 hover:shadow-md transition flex flex-col justify-between gap-2.5 ${card.cardBg}`}
+                  >
+                    {/* 상단 왕큰 달토끼 사진 영역 */}
+                    <div className="relative aspect-square w-full">
+                      <div
+                        style={
+                          card.clipId
+                            ? { clipPath: `url(#${card.clipId})` }
+                            : undefined
+                        }
+                        className={`w-full h-full overflow-hidden ${
+                          card.clipId ? "" : "rounded-[22px]"
+                        }`}
+                      >
+                        <img
+                          src={card.image}
+                          alt={card.title}
+                          className="w-full h-full object-cover object-center"
+                        />
+                      </div>
+                      {(isBest || isNew) && (
+                        <span
+                          className={`absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wide text-white shadow-sm ${
+                            isBest
+                              ? "bg-rose-500"
+                              : "bg-gradient-to-r from-violet-500 to-fuchsia-500"
+                          }`}
+                        >
+                          {card.badge}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* 하단 큰 타이틀 + 당근 가격 배지 */}
+                    <div className="px-0.5 space-y-0.5">
+                      <div className="flex items-center justify-between gap-1">
+                        <h3 className="text-[15px] sm:text-base font-black text-slate-900 tracking-tight truncate">
+                          {card.title}
+                        </h3>
+                        <span
+                          className={`shrink-0 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-black shadow-2xs ${pricePillClass}`}
+                        >
+                          🥕 {card.coinCost}
+                        </span>
+                      </div>
+                      <p className="text-[11px] sm:text-xs font-medium text-slate-600 truncate">
+                        {card.subtitle}
+                      </p>
+                    </div>
+                  </motion.button>
+                );
+              })}
+
+              {/* 8번째 카드: Coming Soon */}
+              <div className="relative text-left rounded-[28px] p-3 sm:p-3.5 shadow-sm border border-dashed border-violet-200 bg-[#f3f0fa] flex flex-col justify-between gap-2.5">
+                <div className="relative aspect-square w-full overflow-hidden rounded-[22px] bg-white/60">
+                  <img
+                    src="/mascot/dalto-rabbit.jpg"
+                    alt="시험·합격운 준비 중"
+                    className="w-full h-full object-cover opacity-55 grayscale-[25%]"
+                  />
+                  <div className="absolute inset-0 bg-violet-950/20 flex flex-col items-center justify-center gap-1">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-[10.5px] font-black text-violet-700 shadow-sm">
+                      <Lock className="w-3 h-3" />
+                      SOON
+                    </span>
+                  </div>
+                </div>
+                <div className="px-0.5 space-y-0.5">
+                  <div className="flex items-center justify-between gap-1">
+                    <h3 className="text-[15px] sm:text-base font-black text-slate-700 tracking-tight truncate">
+                      시험·합격운
+                    </h3>
+                    <span className="shrink-0 rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-[10px] font-extrabold">
+                      12월
+                    </span>
+                  </div>
+                  <p className="text-[11px] sm:text-xs font-medium text-slate-500 truncate">
+                    오픈 준비 중이에요
+                  </p>
+                </div>
               </div>
             </div>
 
-            {inviterBanner && (
-              <div className="rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-3 flex items-center gap-2 text-xs font-bold">
-                <HeartHandshake className="w-4 h-4 shrink-0" />
-                <span>
-                  {inviterBanner.name}님이 궁합을 요청했어요! 본인 정보 입력 후 궁합 스캔을 눌러보세요.
-                </span>
-              </div>
+            {/* 궁합 상대방 입력 시트 (990원 궁합 선택 시 확장) */}
+            {compatSheetOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-3xl bg-pink-50/95 border-2 border-pink-200 p-4 space-y-2.5 text-left"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-extrabold text-pink-800 flex items-center gap-1.5">
+                    <Users className="w-4 h-4" />
+                    상대방 정보를 입력하고 궁합 스캔하기 (썸·연인·상사)
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setCompatSheetOpen(false)}
+                    className="text-[11px] font-bold text-slate-500"
+                  >
+                    닫기
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <input
+                    type="text"
+                    placeholder="상대방 이름"
+                    value={partnerName}
+                    onChange={(e) => setPartnerName(e.target.value)}
+                    className="px-3 py-2 rounded-xl bg-white border border-pink-200 text-xs font-semibold"
+                  />
+                  <input
+                    type="date"
+                    value={partnerBirthDate}
+                    onChange={(e) => setPartnerBirthDate(e.target.value)}
+                    className="px-3 py-2 rounded-xl bg-white border border-pink-200 text-xs font-semibold"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void runAnalysis("compatibility")}
+                    className="py-2 px-4 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:brightness-105 text-white text-xs font-extrabold transition"
+                  >
+                    궁합 스캔 시작 →
+                  </button>
+                </div>
+              </motion.div>
             )}
+          </section>
 
-            {/* 3초 프로필: 확정되면 파스텔 콤팩트 바, 아니면 입력 폼 */}
+          {/* ② 3초 간편 내 사주 프로필 입력/확인 바 */}
+          <section
+            id="profile-form-section"
+            className="glass-card rounded-3xl p-4 sm:p-5 border border-white/95 bg-gradient-to-br from-[#fffaf6]/95 via-[#fdf5fc]/90 to-[#fff2ea]/90 space-y-3"
+          >
             {profileConfirmed && name.trim() ? (
               <div className="rounded-2xl bg-gradient-to-r from-[#f4eeff] via-[#fff5ef] to-[#fdf0f6] border border-violet-200/80 text-slate-900 px-4 py-3 flex items-center justify-between gap-3">
                 <div className="min-w-0 text-left">
                   <span className="text-[10px] font-extrabold text-violet-700 block">
-                    🐇 달토에게 내 원국 등록 완료 · 아래 메뉴를 누르면 바로 열려요
+                    🐇 달토에게 내 원국 등록 완료 · 위 카드를 누르면 바로 열려요
                   </span>
                   <p className="text-xs sm:text-sm font-black truncate mt-0.5 text-[#2b2242]">
                     {name} · {gender === "female" ? "여성" : "남성"} · {birthDate} (
@@ -641,6 +843,14 @@ export default function HomePage() {
                 onSubmit={handleSaveProfileOnly}
                 className="rounded-2xl bg-white/90 border border-amber-200/80 p-4 space-y-3"
               >
+                <div className="flex items-center justify-between gap-2 text-left">
+                  <p className="text-xs sm:text-sm font-black text-[#2b2242]">
+                    🐇 내 사주 원국 입력하고 달토 만나기 (3초 완료)
+                  </p>
+                  <span className="rounded-full bg-orange-100 text-orange-700 px-2 py-0.5 text-[10px] font-extrabold whitespace-nowrap">
+                    밤 11시 무료 1장
+                  </span>
+                </div>
                 {recentProfiles.length > 0 && (
                   <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
                     <span className="text-[10px] font-extrabold text-amber-800 shrink-0">
@@ -783,14 +993,14 @@ export default function HomePage() {
                     <span>내 사주 스캔하고 무료 수다권 쓰기 →</span>
                   </button>
                   <p className="text-[11px] text-slate-500 text-center">
-                    프로필 저장 시 7종 메뉴와 달토 수다방을 바로 이용할 수 있어요.
+                    프로필 저장 시 7종 사주 카드와 달토 수다방을 바로 이용할 수 있어요.
                   </p>
                 </div>
               </form>
             )}
           </section>
 
-          {/* ② 매일 리텐션 2단 배너: 달토 AI 수다방 + 오늘의 무료 일진/타로 */}
+          {/* ③ 매일 리텐션 2단 배너: 달토 AI 수다방 + 오늘의 무료 일진/타로 */}
           <section className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
             <motion.button
               type="button"
@@ -814,7 +1024,7 @@ export default function HomePage() {
                       {countdownLabel}
                     </span>
                   </div>
-                  <h2 className="font-serif text-base sm:text-lg font-black text-white truncate">
+                  <h2 className="font-serif text-base font-black text-white truncate">
                     💬 달토에게 무엇이든 물어보세요
                   </h2>
                   <p className="text-xs text-white/90 truncate">
@@ -845,7 +1055,7 @@ export default function HomePage() {
                     오늘의 일진
                   </p>
                   <p className="text-[10.5px] text-slate-500 mt-0.5">
-                    오늘 점수 · 금지 행동
+                    오늘 점수 · 주의
                   </p>
                 </div>
               </motion.button>
@@ -868,178 +1078,10 @@ export default function HomePage() {
                     오늘의 타로
                   </p>
                   <p className="text-[10.5px] text-slate-500 mt-0.5">
-                    직감으로 1장 뽑기
+                    직감으로 1장
                   </p>
                 </div>
               </motion.button>
-            </div>
-          </section>
-
-          {/* ③ 초세분화 7종 메뉴 아이콘 그리드 + Coming Soon */}
-          <section className="space-y-3">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-xs sm:text-sm font-extrabold text-[#3b2d66] flex items-center gap-1.5">
-                <Sun className="w-4 h-4 text-orange-500" />
-                🥕 당근으로 열어보는 7종 정밀 사주 메뉴
-              </h2>
-              <button
-                type="button"
-                onClick={() => setChargeOpen(true)}
-                className="text-[11px] font-bold text-orange-600 hover:underline"
-              >
-                당근 충전하기 →
-              </button>
-            </div>
-
-            {/* 궁합 상대방 입력 시트 (궁합 카드 선택 시 확장) */}
-            {compatSheetOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-3xl bg-pink-50/90 border-2 border-pink-200 p-4 space-y-2.5 text-left"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-extrabold text-pink-800 flex items-center gap-1.5">
-                    <Users className="w-4 h-4" />
-                    상대방 정보를 입력하고 궁합 스캔하기 (썸·연인·상사)
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setCompatSheetOpen(false)}
-                    className="text-[11px] font-bold text-slate-500"
-                  >
-                    닫기
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <input
-                    type="text"
-                    placeholder="상대방 이름"
-                    value={partnerName}
-                    onChange={(e) => setPartnerName(e.target.value)}
-                    className="px-3 py-2 rounded-xl bg-white border border-pink-200 text-xs font-semibold"
-                  />
-                  <input
-                    type="date"
-                    value={partnerBirthDate}
-                    onChange={(e) => setPartnerBirthDate(e.target.value)}
-                    className="px-3 py-2 rounded-xl bg-white border border-pink-200 text-xs font-semibold"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => void runAnalysis("compatibility")}
-                    className="py-2 px-4 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:brightness-105 text-white text-xs font-extrabold transition"
-                  >
-                    궁합 스캔 시작 →
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {sevenGridMenus.map((item) => {
-                const isBest = item.id === "lifetime";
-                const isNew = item.id === "newyear2027";
-                const pricePillClass =
-                  item.coinCost >= 2
-                    ? "bg-gradient-to-r from-violet-100 to-purple-100 text-violet-700 border border-violet-200/90"
-                    : "bg-gradient-to-r from-orange-100 to-rose-100 text-orange-700 border border-orange-200/90";
-                const iconCircleBg =
-                  MENU_ICON_CIRCLE_BG[item.id] ?? "bg-violet-50";
-
-                const bunnyImg =
-                  MENU_BUNNY_IMG[item.id] ?? "/mascot/dalto-party.jpg";
-
-                return (
-                  <motion.button
-                    key={item.id}
-                    type="button"
-                    whileHover={{ y: -3, scale: 1.01 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => void runAnalysis(item.id)}
-                    className={`relative text-left glass-card rounded-3xl p-3.5 sm:p-4 transition hover:shadow-lg flex flex-col justify-between gap-2.5 border ${
-                      isNew
-                        ? "border-rose-200 bg-gradient-to-br from-[#fff5f5]/95 to-white"
-                        : isBest
-                        ? "border-violet-200 bg-gradient-to-br from-[#f8f3ff]/95 to-white"
-                        : "border-white/90"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-1">
-                      <div className="relative shrink-0">
-                        <div
-                          className={`w-12 h-12 rounded-2xl overflow-hidden border-2 border-white shadow-sm ${iconCircleBg}`}
-                        >
-                          <img
-                            src={bunnyImg}
-                            alt={item.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white border border-violet-100 shadow-xs flex items-center justify-center text-[11px]">
-                          {item.emoji}
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        {(isBest || isNew) && (
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[9px] font-black tracking-wide text-white shadow-2xs ${
-                              isBest
-                                ? "bg-rose-500"
-                                : "bg-gradient-to-r from-violet-500 to-fuchsia-500"
-                            }`}
-                          >
-                            {isBest ? "BEST" : "NEW"}
-                          </span>
-                        )}
-                        <span
-                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold whitespace-nowrap ${pricePillClass}`}
-                        >
-                          🥕 {item.coinCost}당근
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug">
-                        {item.title}
-                      </h3>
-                      <p className="text-[10.5px] text-slate-500 mt-0.5 line-clamp-1 leading-snug">
-                        {item.subtitle}
-                      </p>
-                    </div>
-                  </motion.button>
-                );
-              })}
-
-              {/* Coming Soon 카드 */}
-              <div className="text-left rounded-3xl p-3.5 sm:p-4 border border-dashed border-violet-200 bg-white/55 flex flex-col justify-between gap-2.5 opacity-80">
-                <div className="flex items-start justify-between">
-                  <div className="relative shrink-0">
-                    <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white shadow-sm">
-                      <img
-                        src="/mascot/dalto-mortar.jpg"
-                        alt="시험·합격 달토"
-                        className="w-full h-full object-cover opacity-80"
-                      />
-                    </div>
-                    <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[11px]">
-                      🎓
-                    </span>
-                  </div>
-                  <span className="rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-[9.5px] font-bold flex items-center gap-0.5">
-                    <Lock className="w-2.5 h-2.5" />
-                    SOON
-                  </span>
-                </div>
-                <div>
-                  <h3 className="text-xs sm:text-sm font-extrabold text-slate-700">
-                    시험·합격·작명운
-                  </h3>
-                  <p className="text-[10.5px] text-slate-500 mt-0.5 leading-snug">
-                    12월 오픈 예정
-                  </p>
-                </div>
-              </div>
             </div>
           </section>
 
@@ -1305,6 +1347,45 @@ export default function HomePage() {
               🐇 sajufact.kr · © SajuFact All rights reserved.
             </p>
           </footer>
+
+          {/* 플로팅 하단 알약 네비게이션 독 */}
+          <nav
+            aria-label="하단 빠른 메뉴"
+            className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 bg-white/95 backdrop-blur-xl border border-violet-100/90 shadow-[0_12px_35px_rgba(60,40,120,0.16)] rounded-full px-6 py-2.5 flex items-center gap-7 sm:gap-9"
+          >
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              aria-label="홈"
+              className="flex flex-col items-center gap-0.5 text-slate-900 hover:text-violet-700 transition"
+            >
+              <Home className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleOpenChat()}
+              aria-label="달토 수다방"
+              className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-rose-500 transition"
+            >
+              <MessageCircle className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => void runAnalysis("today")}
+              aria-label="오늘 운세"
+              className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-orange-500 transition"
+            >
+              <Clover className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setArchiveOpen(true)}
+              aria-label="내 보관함"
+              className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-violet-600 transition"
+            >
+              <UserRound className="w-5 h-5" />
+            </button>
+          </nav>
         </div>
       )}
 
