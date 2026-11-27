@@ -32,7 +32,21 @@ import {
   calculateTodayFortune,
   toShortCardFact,
 } from "@/lib/saju-engine";
-import type { PaymentPlan, SajuReport } from "@/lib/saju-types";
+import type { MenuCategory, PaymentPlan, SajuReport } from "@/lib/saju-types";
+
+const MENU_COVER_IMAGE: Record<MenuCategory, string> = {
+  lifetime: "/mascot/dalto-basic.jpg",
+  newyear2027: "/mascot/dalto-newyear2027.jpg",
+  love: "/mascot/dalto-love.jpg",
+  compatibility: "/mascot/dalto-compat.jpg",
+  daeun: "/mascot/dalto-mortar.jpg",
+  yeonun: "/mascot/dalto-party.jpg",
+  taekil: "/mascot/dalto-mortar.jpg",
+  today: "/mascot/dalto-basic.jpg",
+  wealth: "/mascot/dalto-basic.jpg",
+  health: "/mascot/dalto-basic.jpg",
+  tarot: "/mascot/dalto-basic.jpg",
+};
 import { upsertLocalArchive } from "./ArchiveModal";
 import { PaymentModal } from "./PaymentModal";
 import {
@@ -128,6 +142,7 @@ export function ResultView({
   const activeMenuMeta =
     MENU_ITEMS.find((m) => m.id === report.input.menu) ?? MENU_ITEMS[1];
   const coinCost = Math.max(1, activeMenuMeta.coinCost || 1);
+  const menuImage = MENU_COVER_IMAGE[report.input.menu] ?? "/mascot/dalto-basic.jpg";
 
   const liveToday =
     report.todayReport ??
@@ -394,8 +409,8 @@ export function ResultView({
             <div className="flex items-center gap-3.5">
               <div className="relative w-16 h-20 sm:w-20 sm:h-24 rounded-2xl overflow-hidden border-2 border-orange-200/90 shrink-0 shadow-md bg-[#fdf6f0]">
                 <img
-                  src="/mascot/dalto-party.jpg"
-                  alt="달토끼 달토"
+                  src={menuImage}
+                  alt={activeMenuMeta.title}
                   className="w-full h-full object-cover"
                 />
                 <span className="absolute inset-x-0 bottom-0 bg-gradient-to-r from-[#5c489b]/90 to-[#d96b8a]/90 text-[9px] font-bold text-white py-0.5 text-center">
@@ -450,8 +465,8 @@ export function ResultView({
               >
                 <div className="flex items-center gap-2 min-w-0 text-left">
                   <img
-                    src="/mascot/dalto-party.jpg"
-                    alt="달토"
+                    src={menuImage}
+                    alt={activeMenuMeta.title}
                     className="w-8 h-8 rounded-2xl object-cover border border-orange-300 shrink-0"
                   />
                   <div className="min-w-0">

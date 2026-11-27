@@ -154,39 +154,19 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
 
   return (
     <section className="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5 border border-white/90">
-      <div className="flex items-center justify-between gap-2">
-        <div>
+      <div className="space-y-1.5 text-left">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-violet-700 bg-violet-100/80 px-2.5 py-0.5 rounded-full">
             <Camera className="w-3 h-3" />
             티어별 달토 오라 인스타그램 카드
           </span>
-          <h3 className="font-serif text-base sm:text-lg font-black text-slate-900 mt-1">
-            {report.input.name}님의 {cardTier} 티어 카드 · {theme.nameKo}
-          </h3>
+          <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">
+            {theme.auraLabel}
+          </span>
         </div>
-        <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">
-          {theme.auraLabel}
-        </span>
-      </div>
-
-      {/* 4단계 티어 희귀도 표시 바 (사주 결과 티어 자동 매칭) */}
-      <div className="grid grid-cols-4 gap-1.5 p-1 bg-violet-100/70 rounded-2xl">
-        {(["SSR", "SR", "S", "A"] as CardTierKey[]).map((tKey) => {
-          const isMine = cardTier === tKey;
-          return (
-            <div
-              key={tKey}
-              className={`py-1.5 px-1 rounded-xl text-[10.5px] sm:text-[11px] font-extrabold text-center transition whitespace-nowrap ${
-                isMine
-                  ? `${TIER_CARD_THEMES[tKey].accentPill} shadow-sm`
-                  : "text-slate-500 bg-white/40"
-              }`}
-            >
-              {TIER_CARD_THEMES[tKey].tabLabel}
-              {isMine ? " · 내 등급" : ""}
-            </div>
-          );
-        })}
+        <h3 className="font-serif text-base sm:text-lg font-black text-slate-900 leading-snug break-keep">
+          {report.input.name}님의 {cardTier} 티어 카드 · {theme.nameKo}
+        </h3>
       </div>
 
       {/* 9:16 / 4:5 비율 전환 탭 */}
