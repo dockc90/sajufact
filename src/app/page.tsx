@@ -148,7 +148,7 @@ const HOME_FAQ_ITEMS = [
   },
   {
     q: "무료 수다권은 언제 충전되나요?",
-    a: "매일 밤 11시(23:00 KST)가 되면 무료 수다권이 자동으로 1장씩 채워집니다. 당근 1개(또는 무료수다권 1장)를 사용하면 기본 질문 1회 + 꼬리질문 3개(총 4회)까지 깊게 상담할 수 있어요.",
+    a: "매일 밤 11시(23:00 KST)가 되면 무료 수다권이 자동으로 1장씩 채워집니다. 당근 1개(또는 무료수다권 1장)를 사용하면 꼬리질문 3개로 교환되어 총 3회까지 깊게 상담할 수 있어요.",
   },
   {
     q: "환불 규정은 어떻게 되나요?",
@@ -661,7 +661,7 @@ export default function HomePage() {
       syncWallet({
         ...wallet,
         freeChatTickets: wallet.freeChatTickets - 1,
-        chatFollowUpCredits: 3,
+        chatFollowUpCredits: 2,
       });
       return true;
     }
@@ -669,7 +669,7 @@ export default function HomePage() {
       syncWallet({
         ...wallet,
         coins: wallet.coins - 1,
-        chatFollowUpCredits: 3,
+        chatFollowUpCredits: 2,
       });
       return true;
     }

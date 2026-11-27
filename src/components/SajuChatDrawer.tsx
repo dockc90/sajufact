@@ -471,7 +471,7 @@ export function SajuChatDrawer({
           <span>🥕 당근 1개(또는 무료수다권 1장)</span>
           <span className="text-slate-400">=</span>
           <span className="text-rose-600 font-extrabold">
-            기본 질문 1회 + 꼬리질문 3개
+            꼬리질문 3개
           </span>
         </div>
 
@@ -695,9 +695,9 @@ export function SajuChatDrawer({
                   {followUpCredits > 0
                     ? `꼬리질문 ${followUpCredits}개 남음`
                     : freeChatTickets > 0
-                    ? "무료수다권 1장 · 꼬리질문 3개 포함"
+                    ? "무료수다권 1장 · 3회 질문"
                     : coins > 0
-                    ? "당근 1개 · 꼬리질문 3개 포함"
+                    ? "당근 1개 · 3회 질문"
                     : "당근 충전"}
                   )
                 </span>
@@ -809,9 +809,9 @@ export function SajuChatDrawer({
                   followUpCredits > 0
                     ? `꼬리질문 ${followUpCredits}개 남음 · 더 구체적으로 물어보세요`
                     : freeChatTickets > 0
-                    ? `무료수다권 1장(꼬리질문 3개 포함) · ${activePersona.shortName}에게 질문하기`
+                    ? `무료수다권 1장(꼬리질문 3개) · ${activePersona.shortName}에게 질문하기`
                     : coins > 0
-                    ? `당근 1개(꼬리질문 3개 포함) · ${activePersona.shortName}에게 질문하기`
+                    ? `당근 1개(꼬리질문 3개) · ${activePersona.shortName}에게 질문하기`
                     : "무료수다권 또는 당근을 충전하고 물어보세요"
                 }
                 className="flex-1 rounded-2xl bg-[#fdf6f0] border border-violet-100 px-3.5 py-2.5 text-xs sm:text-sm font-medium text-slate-900 outline-none focus:border-violet-400 focus:bg-white"
@@ -847,11 +847,11 @@ export function SajuChatDrawer({
                   꼬리질문이 0개예요.{" "}
                   <strong className="text-orange-600">당근 1개</strong>를 사용해{" "}
                   <strong className="text-rose-600">꼬리질문 3개</strong>로 교환하고
-                  지금 질문에 대한 답변을 받아볼까요?
+                  이번 질문(1개 차감)을 바로 보낼까요?
                 </p>
               </div>
               <div className="rounded-2xl bg-[#fff8f1] border border-orange-200/70 px-3 py-2 text-[11px] font-extrabold text-orange-900">
-                보유 당근 {coins}개 → {Math.max(0, coins - 1)}개 · 꼬리질문 3개 충전
+                보유 당근 {coins}개 → {Math.max(0, coins - 1)}개 · 질문 후 꼬리질문 2개 남음
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <button
