@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ChevronDown,
@@ -222,6 +222,144 @@ export default function HomePage() {
   const [showcaseRatio, setShowcaseRatio] = useState<"9:16" | "4:5">("9:16");
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [policyModal, setPolicyModal] = useState<"terms" | "privacy" | null>(null);
+
+  const uiDepth =
+    (phase !== "home" ? 1 : 0) +
+    (policyModal !== null ? 1 : 0) +
+    (chargeOpen ? 1 : 0) +
+    (archiveOpen ? 1 : 0) +
+    (tarotOpen ? 1 : 0) +
+    (catcherModalOpen ? 1 : 0) +
+    (socialLoginOpen ? 1 : 0) +
+    (profileModalOpen ? 1 : 0) +
+    (chatOpen ? 1 : 0) +
+    (compatSheetOpen ? 1 : 0);
+
+  const pushedDepthRef = useRef(0);
+  const ignorePopCountRef = useRef(0);
+  const isHandlingPopRef = useRef(false);
+  const navStateRef = useRef({
+    phase,
+    policyModal,
+    chargeOpen,
+    archiveOpen,
+    tarotOpen,
+    catcherModalOpen,
+    socialLoginOpen,
+    profileModalOpen,
+    chatOpen,
+    compatSheetOpen,
+  });
+
+  useEffect(() => {
+    navStateRef.current = {
+      phase,
+      policyModal,
+      chargeOpen,
+      archiveOpen,
+      tarotOpen,
+      catcherModalOpen,
+      socialLoginOpen,
+      profileModalOpen,
+      chatOpen,
+      compatSheetOpen,
+    };
+  });
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (ignorePopCountRef.current > 0) {
+        ignorePopCountRef.current -= 1;
+        return;
+      }
+
+      pushedDepthRef.current = Math.max(0, pushedDepthRef.current - 1);
+      isHandlingPopRef.current = true;
+
+      const cur = navStateRef.current;
+      if (cur.policyModal !== null) {
+        setPolicyModal(null);
+      } else if (cur.chargeOpen) {
+        setChargeOpen(false);
+      } else if (cur.archiveOpen) {
+        setArchiveOpen(false);
+      } else if (cur.tarotOpen) {
+        setTarotOpen(false);
+      } else if (cur.catcherModalOpen) {
+        setCatcherModalOpen(false);
+      } else if (cur.socialLoginOpen) {
+        setSocialLoginOpen(false);
+      } else if (cur.profileModalOpen) {
+        setProfileModalOpen(false);
+        setProfileInitialForm(false);
+        setPendingAction(null);
+      } else if (cur.chatOpen) {
+        setChatOpen(false);
+      } else if (cur.compatSheetOpen) {
+        setCompatSheetOpen(false);
+      } else if (cur.phase !== "home") {
+        setPhase("home");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (isHandlingPopRef.current) {
+      isHandlingPopRef.current = false;
+      if (
+        uiDepth === 0 &&
+        phase === "home" &&
+        window.location.search.includes("saved=")
+      ) {
+        try {
+          window.history.replaceState(window.history.state, "", "/");
+        } catch {}
+      }
+      return;
+    }
+
+    if (uiDepth > pushedDepthRef.current) {
+      const nextUrl =
+        phase === "result" && report?.id
+          ? `/?saved=${encodeURIComponent(report.id)}`
+          : `${window.location.pathname}${window.location.search}`;
+      for (let d = pushedDepthRef.current + 1; d <= uiDepth; d += 1) {
+        try {
+          window.history.pushState({ daltoNav: true, depth: d }, "", nextUrl);
+        } catch {}
+      }
+      pushedDepthRef.current = uiDepth;
+    } else if (uiDepth < pushedDepthRef.current) {
+      const diff = pushedDepthRef.current - uiDepth;
+      pushedDepthRef.current = uiDepth;
+      ignorePopCountRef.current += 1;
+      window.history.go(-diff);
+    } else if (phase === "result" && report?.id) {
+      try {
+        window.history.replaceState(
+          window.history.state,
+          "",
+          `/?saved=${encodeURIComponent(report.id)}`
+        );
+      } catch {}
+    } else if (
+      uiDepth === 0 &&
+      phase === "home" &&
+      window.location.search.includes("saved=")
+    ) {
+      try {
+        window.history.replaceState(window.history.state, "", "/");
+      } catch {}
+    }
+  }, [uiDepth, phase, report?.id]);
 
   const activeProfile =
     savedProfiles.find((p) => p.id === activeProfileId) ??
@@ -470,13 +608,6 @@ export default function HomePage() {
       restoredPlan,
       existingLocal?.keeperPhone
     );
-    try {
-      window.history.replaceState(
-        null,
-        "",
-        `/?saved=${encodeURIComponent(computedReport.id)}`
-      );
-    } catch {}
 
     setReport(computedReport);
     setPaidPlan(restoredPlan);
@@ -560,9 +691,6 @@ export default function HomePage() {
     setCompatSheetOpen(false);
     setPolicyModal(null);
     setPendingAction(null);
-    try {
-      window.history.replaceState(null, "", "/");
-    } catch {}
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -686,9 +814,6 @@ export default function HomePage() {
           onOpenArchive={() => setArchiveOpen(true)}
           onResetHome={() => {
             setPhase("home");
-            try {
-              window.history.replaceState(null, "", "/");
-            } catch {}
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
         />
@@ -1664,13 +1789,6 @@ export default function HomePage() {
           setPaidPlan(selectedPlan);
           setKeeperPhone(selectedPhone ?? "");
           setPhase("result");
-          try {
-            window.history.replaceState(
-              null,
-              "",
-              `/?saved=${encodeURIComponent(selectedReport.id)}`
-            );
-          } catch {}
           window.scrollTo({ top: 0, behavior: "smooth" });
         }}
       />
