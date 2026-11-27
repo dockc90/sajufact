@@ -174,6 +174,26 @@ export interface WalletState {
   unlockedReportIds: string[];
 }
 
+export type ProfileRelation =
+  | "본인"
+  | "가족"
+  | "연인/썸"
+  | "친구"
+  | "지인"
+  | "직장동료";
+
+export interface SavedSajuProfile extends WalletProfile {
+  id: string;
+  relation: ProfileRelation;
+}
+
+export interface AccountSession {
+  loggedIn: boolean;
+  provider: "kakao" | "google" | "quick";
+  label: string;
+  accountKey: string;
+}
+
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant";

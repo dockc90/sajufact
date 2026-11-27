@@ -3,12 +3,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Calendar,
   ChevronDown,
-  Clock,
   Clover,
-  Edit3,
-  FolderOpen,
   HeartHandshake,
   Home,
   Lock,
@@ -17,25 +13,23 @@ import {
   Plus,
   Sparkles,
   Ticket,
-  User,
   UserRound,
   Users,
   X,
 } from "lucide-react";
 import {
   BENCHMARK_REVIEWS,
-  BIRTH_HOUR_OPTIONS,
   generateSajuReport,
   getKst23ResetCycleKey,
   getNext23KstCountdown,
 } from "@/lib/saju-engine";
 import type {
-  CalendarType,
-  GenderType,
+  AccountSession,
   MenuCategory,
   PaymentPlan,
   SajuInput,
   SajuReport,
+  SavedSajuProfile,
   WalletProfile,
   WalletState,
 } from "@/lib/saju-types";
@@ -46,6 +40,10 @@ import {
   loadLocalArchive,
   upsertLocalArchive,
 } from "@/components/ArchiveModal";
+import {
+  ProfileManagerModal,
+  createProfileId,
+} from "@/components/ProfileManagerModal";
 import { ResultView } from "@/components/ResultView";
 import { SajuChatDrawer } from "@/components/SajuChatDrawer";
 import { TarotModal } from "@/components/TarotModal";
@@ -55,7 +53,9 @@ import type { PastelAuraMood } from "@/components/ShareCardStudio";
 type ScreenPhase = "home" | "analyzing" | "result";
 
 const WALLET_STORAGE_KEY = "sajufact_wallet_v1";
-const RECENT_PROFILES_KEY = "sajufact_recent_profiles_v1";
+const PROFILES_STORAGE_KEY = "sajufact_saved_profiles_v1";
+const ACTIVE_PROFILE_STORAGE_KEY = "sajufact_active_profile_id_v1";
+const SESSION_STORAGE_KEY = "sajufact_account_session_v1";
 
 const CHUNKY_MENU_CARDS: Array<{
   id: MenuCategory;
@@ -155,17 +155,22 @@ function buildWalletId(profile: WalletProfile): string {
   return `w_${cleanName}_${profile.birthDate}_${profile.birthHour}`;
 }
 
+type PendingAction =
+  | { type: "menu"; menu: MenuCategory }
+  | { type: "chat"; context?: string }
+  | null;
+
 export default function HomePage() {
   const [phase, setPhase] = useState<ScreenPhase>("home");
-  const [name, setName] = useState("");
-  const [gender, setGender] = useState<GenderType>("female");
-  const [birthDate, setBirthDate] = useState("1996-05-14");
-  const [birthQuickInput, setBirthQuickInput] = useState("19960514");
-  const [calendarType, setCalendarType] = useState<CalendarType>("solar");
-  const [birthHour, setBirthHour] = useState<string>("unknown");
 
-  // 프로필 저장 여부 (저장 시 콤팩트 카드로 접혀서 대시보드 7종 메뉴를 원클릭 실행 가능)
-  const [profileConfirmed, setProfileConfirmed] = useState(false);
+  // 저장된 다중 사주 프로필 & 로그인 세션 (본인·가족·연인·친구·지인·직장동료)
+  const [savedProfiles, setSavedProfiles] = useState<SavedSajuProfile[]>([]);
+  const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
+  const [accountSession, setAccountSession] = useState<AccountSession | null>(
+    null
+  );
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
 
   // 궁합 스캔 상대방 정보
   const [compatSheetOpen, setCompatSheetOpen] = useState(false);
@@ -186,8 +191,8 @@ export default function HomePage() {
       calendarType: "solar",
       birthHour: "unknown",
     },
-    coins: 0, // 기본 당근 0개 (충전소에서 1개 990원부터 충전)
-    freeChatTickets: 1, // 매일 밤 11시 리셋 무료수다권 1장
+    coins: 0,
+    freeChatTickets: 1,
     lastFreeResetKey: "",
     unlockedReportIds: [],
   });
@@ -202,8 +207,6 @@ export default function HomePage() {
   const [chatOpen, setChatOpen] = useState(false);
   const [chatContext, setChatContext] = useState<string | undefined>(undefined);
   const [isRestoringUrl, setIsRestoringUrl] = useState(false);
-  const [recentProfiles, setRecentProfiles] = useState<SajuInput[]>([]);
-  const [formError, setFormError] = useState<string | null>(null);
 
   // 파스텔 오라 인스타 카드 쇼케이스 프리뷰 상태
   const [showcaseMood, setShowcaseMood] = useState<PastelAuraMood>("party");
@@ -211,10 +214,10 @@ export default function HomePage() {
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [policyModal, setPolicyModal] = useState<"terms" | "privacy" | null>(null);
 
-  const applyBirthDate = (isoDate: string) => {
-    setBirthDate(isoDate);
-    setBirthQuickInput(isoDate.replace(/-/g, ""));
-  };
+  const activeProfile =
+    savedProfiles.find((p) => p.id === activeProfileId) ??
+    savedProfiles[0] ??
+    null;
 
   const syncWallet = (nextWallet: WalletState) => {
     setWallet(nextWallet);
@@ -247,37 +250,36 @@ export default function HomePage() {
               parsed.lastFreeResetKey !== currentCycle
                 ? Math.max(1, parsed.freeChatTickets)
                 : parsed.freeChatTickets;
-            const restored: WalletState = {
+            setWallet({
               ...parsed,
               freeChatTickets: resetTickets,
               lastFreeResetKey: currentCycle,
-            };
-            setWallet(restored);
-            if (restored.profile.name) {
-              setName(restored.profile.name);
-              setGender(restored.profile.gender);
-              applyBirthDate(restored.profile.birthDate);
-              setCalendarType(restored.profile.calendarType);
-              setBirthHour(restored.profile.birthHour);
-              setProfileConfirmed(true);
-            }
+            });
           }
         }
       } catch {
         // ignore invalid wallet storage
       }
 
-      // 2) 최근 프로필 로드
+      // 2) 저장된 프로필 수첩 & 로그인 세션 로드
       try {
-        const rawProfiles = localStorage.getItem(RECENT_PROFILES_KEY);
-        if (rawProfiles) {
-          const parsedProfiles = JSON.parse(rawProfiles) as SajuInput[];
-          if (Array.isArray(parsedProfiles)) {
-            setRecentProfiles(parsedProfiles.slice(0, 4));
+        const rawProfs = localStorage.getItem(PROFILES_STORAGE_KEY);
+        if (rawProfs) {
+          const parsedProfs = JSON.parse(rawProfs) as SavedSajuProfile[];
+          if (Array.isArray(parsedProfs)) {
+            setSavedProfiles(parsedProfs);
           }
         }
+        const savedActiveId = localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY);
+        if (savedActiveId) setActiveProfileId(savedActiveId);
+
+        const rawSession = localStorage.getItem(SESSION_STORAGE_KEY);
+        if (rawSession) {
+          const parsedSession = JSON.parse(rawSession) as AccountSession;
+          if (parsedSession?.loggedIn) setAccountSession(parsedSession);
+        }
       } catch {
-        // ignore invalid profiles
+        // ignore invalid saved profiles
       }
 
       // 3) URL 파라미터(?inviter= / ?saved=) 복원
@@ -334,74 +336,42 @@ export default function HomePage() {
     };
   }, []);
 
-  const ensureValidProfile = (): WalletProfile | null => {
-    const clean = name.trim();
-    if (!clean) {
-      setFormError("달토가 이름을 알 수 있게 이름(닉네임)을 입력해 주세요.");
-      setProfileConfirmed(false);
-      document
-        .getElementById("profile-form-section")
-        ?.scrollIntoView({ behavior: "smooth", block: "center" });
-      return null;
-    }
-    if (!birthDate) {
-      setFormError("생년월일을 입력해 주세요.");
-      setProfileConfirmed(false);
-      return null;
-    }
-    setFormError(null);
-
-    const nextProfile: WalletProfile = {
-      name: clean,
-      gender,
-      birthDate,
-      calendarType,
-      birthHour,
-    };
-    const nextWalletId = buildWalletId(nextProfile);
-    if (wallet.walletId !== nextWalletId || wallet.profile.name !== clean) {
-      syncWallet({
-        ...wallet,
-        walletId: nextWalletId,
-        profile: nextProfile,
-      });
-    }
-    setProfileConfirmed(true);
-    return nextProfile;
-  };
-
-  const handleSaveProfileOnly = (e: React.FormEvent) => {
-    e.preventDefault();
-    const prof = ensureValidProfile();
-    if (!prof) return;
-    // 최근 프로필 갱신
-    const item: SajuInput = {
-      ...prof,
-      worry: "wealth",
-      menu: "newyear2027",
-    };
-    const nextProfiles = [
-      item,
-      ...recentProfiles.filter(
-        (p) => !(p.name === prof.name && p.birthDate === prof.birthDate)
-      ),
-    ].slice(0, 4);
-    setRecentProfiles(nextProfiles);
+  const activateSavedProfile = (prof: SavedSajuProfile) => {
+    setActiveProfileId(prof.id);
     try {
-      localStorage.setItem(RECENT_PROFILES_KEY, JSON.stringify(nextProfiles));
+      localStorage.setItem(ACTIVE_PROFILE_STORAGE_KEY, prof.id);
     } catch {}
-    setChatContext(undefined);
-    setChatOpen(true);
+
+    const walletProfile: WalletProfile = {
+      name: prof.name,
+      gender: prof.gender,
+      birthDate: prof.birthDate,
+      calendarType: prof.calendarType,
+      birthHour: prof.birthHour,
+    };
+    const nextWalletId = buildWalletId(walletProfile);
+    syncWallet({
+      ...wallet,
+      walletId: nextWalletId,
+      profile: walletProfile,
+    });
   };
 
-  const runAnalysis = async (menu: MenuCategory) => {
+  const runAnalysis = async (
+    menu: MenuCategory,
+    overrideProfile?: SavedSajuProfile
+  ) => {
     if (menu === "tarot") {
       setTarotOpen(true);
       return;
     }
 
-    const prof = ensureValidProfile();
-    if (!prof) return;
+    const targetProf = overrideProfile ?? activeProfile;
+    if (!targetProf || !targetProf.name.trim()) {
+      setPendingAction({ type: "menu", menu });
+      setProfileModalOpen(true);
+      return;
+    }
 
     if (menu === "compatibility" && !compatSheetOpen && !inviterBanner) {
       setCompatSheetOpen(true);
@@ -423,7 +393,11 @@ export default function HomePage() {
     };
 
     const payload: SajuInput = {
-      ...prof,
+      name: targetProf.name,
+      gender: targetProf.gender,
+      birthDate: targetProf.birthDate,
+      calendarType: targetProf.calendarType,
+      birthHour: targetProf.birthHour,
       worry: worryByMenu[menu],
       menu,
       partnerName:
@@ -480,11 +454,29 @@ export default function HomePage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleOpenChat = (contextText?: string) => {
-    const prof = ensureValidProfile();
-    if (!prof) return;
+  const handleOpenChat = (
+    contextText?: string,
+    overrideProfile?: SavedSajuProfile
+  ) => {
+    const targetProf = overrideProfile ?? activeProfile;
+    if (!targetProf || !targetProf.name.trim()) {
+      setPendingAction({ type: "chat", context: contextText });
+      setProfileModalOpen(true);
+      return;
+    }
     setChatContext(contextText);
     setChatOpen(true);
+  };
+
+  const runPendingWithProfile = (prof: SavedSajuProfile) => {
+    const action = pendingAction;
+    setPendingAction(null);
+    if (!action) return;
+    if (action.type === "menu") {
+      void runAnalysis(action.menu, prof);
+    } else if (action.type === "chat") {
+      handleOpenChat(action.context, prof);
+    }
   };
 
   const handleConsumeForChat = (): boolean => {
@@ -573,16 +565,33 @@ export default function HomePage() {
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full hover:bg-rose-100/70 text-rose-700 transition whitespace-nowrap"
               >
                 <Ticket className="w-3 h-3 text-rose-500" />
-                <span>무료수다권 {wallet.freeChatTickets}</span>
+                <span>{wallet.freeChatTickets}</span>
               </button>
             </div>
             <button
               type="button"
-              onClick={() => setArchiveOpen(true)}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/90 hover:bg-violet-50 border border-violet-100 text-slate-700 text-[11px] font-bold transition whitespace-nowrap"
+              onClick={() => {
+                setPendingAction(null);
+                setProfileModalOpen(true);
+              }}
+              className={
+                accountSession?.loggedIn || activeProfile
+                  ? "inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/95 hover:bg-violet-50 border border-violet-200 text-[#4c3787] text-[11px] font-extrabold transition whitespace-nowrap shadow-2xs"
+                  : "inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#ffe46b] hover:bg-[#ffd93d] text-slate-900 text-[11px] font-black transition whitespace-nowrap shadow-2xs"
+              }
             >
-              <FolderOpen className="w-3.5 h-3.5 text-violet-500" />
-              <span className="hidden sm:inline">보관함</span>
+              {accountSession?.loggedIn || activeProfile ? (
+                <>
+                  <UserRound className="w-3.5 h-3.5 text-violet-500 shrink-0" />
+                  <span className="max-w-[84px] truncate">
+                    {activeProfile
+                      ? `${activeProfile.name}(${activeProfile.relation})`
+                      : accountSession?.label}
+                  </span>
+                </>
+              ) : (
+                <span>로그인</span>
+              )}
             </button>
           </div>
         </div>
@@ -599,7 +608,9 @@ export default function HomePage() {
         </div>
       )}
 
-      {phase === "analyzing" && <AnalyzingView userName={name.trim() || "당신"} />}
+      {phase === "analyzing" && (
+        <AnalyzingView userName={activeProfile?.name || "당신"} />
+      )}
 
       {phase === "result" && report && (
         <ResultView
@@ -660,6 +671,24 @@ export default function HomePage() {
                 {inviterBanner.name}님이 궁합을 요청했어요! 아래에서 내 이름 입력 후 990원 궁합을 눌러보세요.
               </span>
             </div>
+          )}
+
+          {activeProfile && (
+            <button
+              type="button"
+              onClick={() => {
+                setPendingAction(null);
+                setProfileModalOpen(true);
+              }}
+              className="w-full rounded-2xl bg-white/85 hover:bg-white border border-violet-100 px-3.5 py-2 flex items-center justify-between gap-2 text-xs shadow-2xs transition"
+            >
+              <span className="font-extrabold text-[#3d2d66] truncate">
+                🐇 현재 사주: {activeProfile.name} ({activeProfile.relation})
+              </span>
+              <span className="text-[11px] font-bold text-violet-600 shrink-0">
+                가족·친구 전환 +
+              </span>
+            </button>
           )}
 
           {/* ① 큼직한 2열 달토끼 파스텔 포토 카드 그리드 (최상단 메인) */}
@@ -784,6 +813,29 @@ export default function HomePage() {
                     닫기
                   </button>
                 </div>
+                {savedProfiles.filter((p) => p.id !== activeProfile?.id).length >
+                  0 && (
+                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                    <span className="text-[10px] font-extrabold text-pink-700 shrink-0">
+                      ⚡ 저장된 사람:
+                    </span>
+                    {savedProfiles
+                      .filter((p) => p.id !== activeProfile?.id)
+                      .map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => {
+                            setPartnerName(p.name);
+                            setPartnerBirthDate(p.birthDate);
+                          }}
+                          className="shrink-0 rounded-full bg-white border border-pink-200 hover:bg-pink-500 hover:text-white px-2.5 py-0.5 text-[11px] font-bold text-pink-800 transition"
+                        >
+                          {p.name} ({p.relation})
+                        </button>
+                      ))}
+                  </div>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <input
                     type="text"
@@ -810,197 +862,7 @@ export default function HomePage() {
             )}
           </section>
 
-          {/* ② 3초 간편 내 사주 프로필 입력/확인 바 */}
-          <section
-            id="profile-form-section"
-            className="glass-card rounded-3xl p-4 sm:p-5 border border-white/95 bg-gradient-to-br from-[#fffaf6]/95 via-[#fdf5fc]/90 to-[#fff2ea]/90 space-y-3"
-          >
-            {profileConfirmed && name.trim() ? (
-              <div className="rounded-2xl bg-gradient-to-r from-[#f4eeff] via-[#fff5ef] to-[#fdf0f6] border border-violet-200/80 text-slate-900 px-4 py-3 flex items-center justify-between gap-3">
-                <div className="min-w-0 text-left">
-                  <span className="text-[10px] font-extrabold text-violet-700 block">
-                    🐇 달토에게 내 원국 등록 완료 · 위 카드를 누르면 바로 열려요
-                  </span>
-                  <p className="text-xs sm:text-sm font-black truncate mt-0.5 text-[#2b2242]">
-                    {name} · {gender === "female" ? "여성" : "남성"} · {birthDate} (
-                    {calendarType === "solar" ? "양력" : "음력"} ·{" "}
-                    {BIRTH_HOUR_OPTIONS.find((o) => o.value === birthHour)?.label.split(" ")[0] ??
-                      "시간"}
-                    )
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setProfileConfirmed(false)}
-                  className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-white/90 hover:bg-white border border-violet-200 px-3 py-1.5 text-xs font-bold text-violet-700 transition shadow-2xs"
-                >
-                  <Edit3 className="w-3.5 h-3.5" />
-                  변경
-                </button>
-              </div>
-            ) : (
-              <form
-                onSubmit={handleSaveProfileOnly}
-                className="rounded-2xl bg-white/90 border border-amber-200/80 p-4 space-y-3"
-              >
-                <div className="flex items-center justify-between gap-2 text-left">
-                  <p className="text-xs sm:text-sm font-black text-[#2b2242]">
-                    🐇 내 사주 원국 입력하고 달토 만나기 (3초 완료)
-                  </p>
-                  <span className="rounded-full bg-orange-100 text-orange-700 px-2 py-0.5 text-[10px] font-extrabold whitespace-nowrap">
-                    밤 11시 무료 1장
-                  </span>
-                </div>
-                {recentProfiles.length > 0 && (
-                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-                    <span className="text-[10px] font-extrabold text-amber-800 shrink-0">
-                      ⚡ 최근:
-                    </span>
-                    {recentProfiles.map((prof, idx) => (
-                      <button
-                        key={`${prof.name}-${prof.birthDate}-${idx}`}
-                        type="button"
-                        onClick={() => {
-                          setName(prof.name);
-                          setGender(prof.gender);
-                          applyBirthDate(prof.birthDate);
-                          setCalendarType(prof.calendarType);
-                          setBirthHour(prof.birthHour);
-                        }}
-                        className="shrink-0 rounded-full bg-amber-50 hover:bg-slate-900 hover:text-white border border-amber-200 px-2.5 py-0.5 text-[11px] font-bold text-slate-800 transition"
-                      >
-                        {prof.name} ({prof.birthDate.slice(2).replace(/-/g, ".")})
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end">
-                  <div className="sm:col-span-3 text-left">
-                    <label className="text-[11px] font-bold text-slate-600 flex items-center gap-1 mb-1">
-                      <User className="w-3 h-3" />
-                      이름 (닉네임)
-                    </label>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="예: 김민지"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 focus:bg-white focus:border-slate-900 outline-none"
-                    />
-                  </div>
-
-                  <div className="sm:col-span-2 text-left">
-                    <label className="text-[11px] font-bold text-slate-600 block mb-1">
-                      성별
-                    </label>
-                    <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl">
-                      {(["female", "male"] as const).map((g) => (
-                        <button
-                          key={g}
-                          type="button"
-                          onClick={() => setGender(g)}
-                          className={`py-1.5 rounded-lg text-xs font-bold transition ${
-                            gender === g
-                              ? "bg-slate-900 text-white"
-                              : "text-slate-600"
-                          }`}
-                        >
-                          {g === "female" ? "여" : "남"}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-4 text-left">
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="text-[11px] font-bold text-slate-600 flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        생년월일 (8자리)
-                      </label>
-                      <div className="flex gap-1 text-[10px] font-bold">
-                        {(["solar", "lunar"] as const).map((cal) => (
-                          <button
-                            key={cal}
-                            type="button"
-                            onClick={() => setCalendarType(cal)}
-                            className={`px-1.5 py-0.5 rounded ${
-                              calendarType === cal
-                                ? "bg-slate-900 text-white"
-                                : "text-slate-500 bg-slate-100"
-                            }`}
-                          >
-                            {cal === "solar" ? "양력" : "음력"}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={8}
-                      value={birthQuickInput}
-                      onChange={(e) => {
-                        const digits = e.target.value.replace(/\D/g, "").slice(0, 8);
-                        setBirthQuickInput(digits);
-                        if (digits.length === 8) {
-                          const y = digits.slice(0, 4);
-                          const m = digits.slice(4, 6);
-                          const d = digits.slice(6, 8);
-                          if (
-                            Number(m) >= 1 &&
-                            Number(m) <= 12 &&
-                            Number(d) >= 1 &&
-                            Number(d) <= 31
-                          ) {
-                            setBirthDate(`${y}-${m}-${d}`);
-                          }
-                        }
-                      }}
-                      placeholder="19960514"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 focus:bg-white focus:border-slate-900 outline-none"
-                    />
-                  </div>
-
-                  <div className="sm:col-span-3 text-left">
-                    <label className="text-[11px] font-bold text-slate-600 flex items-center gap-1 mb-1">
-                      <Clock className="w-3 h-3" />
-                      태어난 시간
-                    </label>
-                    <select
-                      value={birthHour}
-                      onChange={(e) => setBirthHour(e.target.value)}
-                      className="w-full px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-900 outline-none focus:border-slate-900"
-                    >
-                      {BIRTH_HOUR_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {formError && (
-                  <p className="text-xs font-bold text-rose-600">{formError}</p>
-                )}
-
-                <div className="pt-1 space-y-1.5">
-                  <button
-                    type="submit"
-                    className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#5c489b] via-[#c96a8b] to-[#f97316] hover:brightness-105 text-white text-sm font-black shadow-lg transition flex items-center justify-center gap-1.5"
-                  >
-                    <span>내 사주 스캔하고 무료 수다권 쓰기 →</span>
-                  </button>
-                  <p className="text-[11px] text-slate-500 text-center">
-                    프로필 저장 시 7종 사주 카드와 달토 수다방을 바로 이용할 수 있어요.
-                  </p>
-                </div>
-              </form>
-            )}
-          </section>
-
-          {/* ③ 매일 리텐션 2단 배너: 달토 AI 수다방 + 오늘의 무료 일진/타로 */}
+          {/* ② 매일 리텐션 2단 배너: 달토 AI 수다방 + 오늘의 무료 일진/타로 */}
           <section className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
             <motion.button
               type="button"
@@ -1128,15 +990,15 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* ⑤ 풀블리드 달토 파스텔 오라 인스타그램 공유 카드 쇼케이스 */}
+          {/* ⑤ 풀블리드 달토 파스텔 오라 인스타그램 공유 카드 쇼케이스 (예시 & 기능 안내) */}
           <section className="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5 border border-white/95">
             <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="text-left">
-                <span className="text-[10px] font-extrabold tracking-widest text-violet-600 uppercase">
-                  PASTEL AURA CARD
+              <div className="text-left space-y-1">
+                <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 text-violet-700 px-2.5 py-0.5 text-[10px] font-black tracking-wide uppercase">
+                  ✨ 예시 미리보기 · SAMPLE
                 </span>
                 <h2 className="font-serif text-sm sm:text-base font-black text-[#2b2242]">
-                  왕큰 달토 사진이 담긴 파스텔 오라 인스타 공유 카드
+                  사주 풀이 시 함께 받는 파스텔 오라 인스타 카드 (예시)
                 </h2>
               </div>
               <div className="flex items-center gap-1 bg-violet-100/70 p-1 rounded-2xl">
@@ -1161,6 +1023,16 @@ export default function HomePage() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div className="rounded-2xl bg-gradient-to-r from-[#f8f3ff] via-[#fff5f0] to-[#fff8fc] border border-violet-100 p-3.5 text-left space-y-1">
+              <p className="text-xs font-black text-[#4b3880]">
+                📌 어떤 기능에서 만들 수 있나요?
+              </p>
+              <p className="text-[11.5px] text-slate-600 leading-relaxed">
+                상단의 <strong className="text-slate-900">7종 사주 메뉴(990원 사주·신년운세·연애운·궁합 등)</strong>를 열어보면, 결과 화면의 <strong className="text-violet-700">[✨ 오라 카드]</strong> 탭에서 내 사주에 맞춘 나만의 카드를 9:16 스토리·4:5 피드 PNG로 바로 저장할 수 있어요!{" "}
+                <span className="text-slate-500 font-semibold">(아래는 예시 이미지입니다)</span>
+              </p>
             </div>
 
             <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -1210,8 +1082,8 @@ export default function HomePage() {
                     className="w-full h-full object-cover object-center"
                   />
                   <div className="absolute inset-x-0 top-0 px-2.5 pt-2.5 flex items-center justify-between gap-1 pointer-events-none">
-                    <span className="inline-flex items-center gap-1 bg-white/88 rounded-full px-2 py-0.5 text-[9px] font-extrabold text-[#4b3880] shadow-2xs">
-                      🐇 달토 오라
+                    <span className="inline-flex items-center gap-1 bg-white/90 rounded-full px-2 py-0.5 text-[9px] font-extrabold text-[#4b3880] shadow-2xs">
+                      🐇 예시 카드 · SAMPLE
                     </span>
                     <span className="rounded-full bg-gradient-to-r from-[#ec4899] to-[#8b5cf6] text-white px-2 py-0.5 text-[8.5px] font-extrabold shadow-2xs">
                       TIER: S · 상위 8%
@@ -1224,7 +1096,7 @@ export default function HomePage() {
                 <div className="shrink-0 px-3 py-2.5 space-y-1.5 bg-gradient-to-b from-[#fff8fc] to-[#fdf4ff] border-t border-white">
                   <div className="flex items-center justify-between gap-1">
                     <span className="text-[9.5px] font-extrabold text-[#832d68]">
-                      김민지 · 신해(辛亥)일주
+                      예시) 김민지 · 신해(辛亥)일주
                     </span>
                     <div className="flex gap-0.5">
                       {["庚午", "庚辰", "辛亥", "癸巳"].map((gz) => (
@@ -1262,9 +1134,13 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <p className="text-xs text-slate-600 font-semibold">
-                🥕 당근 1개로 사주 풀이 열면 위 9:16 · 4:5 고화질 PNG 카드를 바로 저장할 수 있어요!
-              </p>
+              <button
+                type="button"
+                onClick={() => void runAnalysis("lifetime")}
+                className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-[#5c489b] via-[#c96a8b] to-[#f97316] hover:brightness-105 text-white text-xs sm:text-sm font-black shadow-md transition"
+              >
+                🥕 990원 사주 보고 내 오라 카드 만들기 →
+              </button>
             </div>
           </section>
 
@@ -1379,8 +1255,11 @@ export default function HomePage() {
             </button>
             <button
               type="button"
-              onClick={() => setArchiveOpen(true)}
-              aria-label="내 보관함"
+              onClick={() => {
+                setPendingAction(null);
+                setProfileModalOpen(true);
+              }}
+              aria-label="로그인 및 내 사주 프로필"
               className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-violet-600 transition"
             >
               <UserRound className="w-5 h-5" />
@@ -1388,6 +1267,105 @@ export default function HomePage() {
           </nav>
         </div>
       )}
+
+      <ProfileManagerModal
+        open={profileModalOpen}
+        session={accountSession}
+        profiles={savedProfiles}
+        activeProfileId={activeProfile?.id ?? null}
+        pendingActionLabel={
+          pendingAction?.type === "menu"
+            ? `${
+                CHUNKY_MENU_CARDS.find((c) => c.id === pendingAction.menu)?.title ??
+                "오늘의 운세"
+              } 보기`
+            : pendingAction?.type === "chat"
+            ? "달토 수다방 입장하기"
+            : undefined
+        }
+        onClose={() => {
+          setProfileModalOpen(false);
+          setPendingAction(null);
+        }}
+        onLogin={(provider, label) => {
+          const nextSession: AccountSession = {
+            loggedIn: true,
+            provider,
+            label: label || "달토 회원",
+            accountKey: `${provider}_user`,
+          };
+          setAccountSession(nextSession);
+          try {
+            localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(nextSession));
+          } catch {}
+        }}
+        onLogout={() => {
+          setAccountSession(null);
+          try {
+            localStorage.removeItem(SESSION_STORAGE_KEY);
+          } catch {}
+        }}
+        onSelectProfile={(prof) => {
+          activateSavedProfile(prof);
+          setProfileModalOpen(false);
+          runPendingWithProfile(prof);
+        }}
+        onSaveProfile={(input) => {
+          const nextId = input.id || createProfileId();
+          const savedItem: SavedSajuProfile = {
+            id: nextId,
+            name: input.name,
+            relation: input.relation,
+            gender: input.gender,
+            birthDate: input.birthDate,
+            calendarType: input.calendarType,
+            birthHour: input.birthHour,
+          };
+          const nextList = input.id
+            ? savedProfiles.map((p) => (p.id === nextId ? savedItem : p))
+            : [savedItem, ...savedProfiles];
+          setSavedProfiles(nextList);
+          try {
+            localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(nextList));
+          } catch {}
+
+          if (!accountSession?.loggedIn) {
+            const quickSession: AccountSession = {
+              loggedIn: true,
+              provider: "quick",
+              label: `${savedItem.name}님 수첩`,
+              accountKey: `quick_${savedItem.id}`,
+            };
+            setAccountSession(quickSession);
+            try {
+              localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(quickSession));
+            } catch {}
+          }
+
+          activateSavedProfile(savedItem);
+          setProfileModalOpen(false);
+          runPendingWithProfile(savedItem);
+        }}
+        onDeleteProfile={(id) => {
+          const nextList = savedProfiles.filter((p) => p.id !== id);
+          setSavedProfiles(nextList);
+          try {
+            localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(nextList));
+          } catch {}
+          if (activeProfileId === id) {
+            const fallbackId = nextList[0]?.id ?? null;
+            setActiveProfileId(fallbackId);
+            try {
+              if (fallbackId) {
+                localStorage.setItem(ACTIVE_PROFILE_STORAGE_KEY, fallbackId);
+              } else {
+                localStorage.removeItem(ACTIVE_PROFILE_STORAGE_KEY);
+              }
+            } catch {}
+          }
+        }}
+        onOpenArchive={() => setArchiveOpen(true)}
+      />
 
       <TarotModal
         open={tarotOpen}
@@ -1435,11 +1413,11 @@ export default function HomePage() {
         open={chatOpen}
         walletId={wallet.walletId}
         profile={{
-          name: name.trim() || wallet.profile.name || "회원",
-          gender,
-          birthDate,
-          calendarType,
-          birthHour,
+          name: activeProfile?.name || wallet.profile.name || "회원",
+          gender: activeProfile?.gender || wallet.profile.gender,
+          birthDate: activeProfile?.birthDate || wallet.profile.birthDate,
+          calendarType: activeProfile?.calendarType || wallet.profile.calendarType,
+          birthHour: activeProfile?.birthHour || wallet.profile.birthHour,
         }}
         coins={wallet.coins}
         freeChatTickets={wallet.freeChatTickets}
