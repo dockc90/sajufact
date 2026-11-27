@@ -1262,7 +1262,6 @@ export function generateSajuReport(input: SajuInput, targetDate?: Date): SajuRep
 
   const tierObj = pick(TIER_LIST, seed, 2);
   const baseOneLine = pick(ONE_LINE_FACTS[calc.dominantElement][input.worry], seed, 1);
-  const oneLineFact = `${stemTrait.symbol} 기질의 ${baseOneLine}`;
 
   const HEALTH_PROFILE_MAP: Record<
     ElementKey,
@@ -1391,6 +1390,25 @@ export function generateSajuReport(input: SajuInput, targetDate?: Date): SajuRep
           calc.dominantElement
         )
       : undefined;
+
+  const todayFocusLineByWorry: Record<WorryTopic, string> = {
+    wealth: todayReport.signals.wealth.summary,
+    love: todayReport.signals.love.summary,
+    career: todayReport.signals.work.summary,
+    relationship: todayReport.signals.love.summary,
+    health: todayReport.signals.condition.summary,
+  };
+
+  const oneLineByMenu: Record<MenuCategory, string> = {
+    today: `[오늘 ${todayReport.todayGanZhiHangul}일진 ${todayReport.score}점] ${todayReport.relationBadge} — ${todayFocusLineByWorry[input.worry]}`,
+    newyear2027: `[2027 ${branchTrait.jeongMiRelationBadge}] ${bestMonth.month}월 대운 상승 · ${worstMonth.month}월 주의 — ${baseOneLine}`,
+    lifetime: `${dayIlju} 타고난 ${stemTrait.symbol} 팔자 — ${stemTrait.outerMask}, ${baseOneLine}`,
+    wealth: `${dayIlju} 재물·천직 스캔 — '${branchTrait.windfallStyle}'로 ${bestMonth.month}월 몸값 터지는 구조`,
+    compatibility: `${cleanName} × ${compatibility?.partnerName || "상대방"} 궁합 ${compatibility?.score ?? 84}점 — ${compatibility?.gradeLabel || "끌림과 긴장이 공존하는 케미"}`,
+    health: `${domTheme.nameKo} 과열·${weakTheme.nameKo} 결핍 체질 — ${pick(ONE_LINE_FACTS[calc.dominantElement].health, seed, 1)}`,
+    tarot: `${stemTrait.symbol} 기질의 ${baseOneLine}`,
+  };
+  const oneLineFact = oneLineByMenu[input.menu] || `${stemTrait.symbol} 기질의 ${baseOneLine}`;
 
   const elementDiagnosis = `${dayIlju} 일주 기준, 가장 강한 기운은 ${domTheme.nameKo}(${calc.elements.find((e) => e.key === calc.dominantElement)?.percentage}%)이며 보완할 기운은 ${weakTheme.nameKo}(${calc.elements.find((e) => e.key === calc.weakestElement)?.percentage}%)입니다.`;
 

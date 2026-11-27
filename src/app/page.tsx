@@ -50,6 +50,69 @@ type ScreenPhase = "home" | "analyzing" | "result";
 
 const RECENT_PROFILES_KEY = "sajufact_recent_profiles_v1";
 
+const MENU_SUB_FOCUS: Record<
+  MenuCategory,
+  {
+    sectionTitle: string;
+    lockedMessage?: string;
+    options: Array<{ value: WorryTopic; label: string; emoji: string }>;
+  }
+> = {
+  newyear2027: {
+    sectionTitle: "🔥 2027 정미년에서 가장 팩폭 받고 싶은 분야 (1개)",
+    options: [
+      { value: "wealth", label: "2027 재물·횡재", emoji: "💸" },
+      { value: "love", label: "2027 연애·결혼", emoji: "💘" },
+      { value: "career", label: "2027 이직·승진", emoji: "🚀" },
+      { value: "relationship", label: "2027 귀인·구설", emoji: "🗡️" },
+      { value: "health", label: "2027 건강·액땜", emoji: "🏥" },
+    ],
+  },
+  today: {
+    sectionTitle: "☀️ 오늘의 일진에서 먼저 보고 싶은 포인트 (1개)",
+    options: [
+      { value: "wealth", label: "오늘 금전·결제운", emoji: "💸" },
+      { value: "love", label: "오늘 연애·연락운", emoji: "💘" },
+      { value: "career", label: "오늘 업무·미팅운", emoji: "💼" },
+      { value: "relationship", label: "오늘 대인·말조심", emoji: "🗡️" },
+      { value: "health", label: "오늘 컨디션·체력", emoji: "🔋" },
+    ],
+  },
+  lifetime: {
+    sectionTitle: "⚡ 평생 사주 원국에서 깊게 파고들 영역 (1개)",
+    options: [
+      { value: "relationship", label: "타고난 기질·악연", emoji: "⚡" },
+      { value: "wealth", label: "평생 재물그릇·소비", emoji: "💰" },
+      { value: "career", label: "천직·커리어 팔자", emoji: "🚀" },
+      { value: "love", label: "평생 연애·배우자복", emoji: "💘" },
+      { value: "health", label: "타고난 오행 체질", emoji: "🏥" },
+    ],
+  },
+  wealth: {
+    sectionTitle: "💰 재물·직업·이직운 세부 포커스 선택",
+    options: [
+      { value: "wealth", label: "돈 버는 루트 & 횡재수", emoji: "💸" },
+      { value: "career", label: "이직 타이밍 & 연봉 점프", emoji: "🚀" },
+    ],
+  },
+  compatibility: {
+    sectionTitle: "💕 어떤 관계의 궁합을 스캔할까요?",
+    options: [
+      { value: "love", label: "썸·연인·배우자 애정 궁합", emoji: "💘" },
+      { value: "relationship", label: "직장상사·동료·비즈니스 궁합", emoji: "🗡️" },
+    ],
+  },
+  health: {
+    sectionTitle: "💪 건강·체력·번아웃 정밀 스캔 항목",
+    lockedMessage: "🏥 오행 취약 장기 · 멘탈 번아웃 신호 · 2027 주의 계절 · 데일리 처방전 일괄 스캔",
+    options: [{ value: "health", label: "건강·번아웃 전체 스캔", emoji: "🏥" }],
+  },
+  tarot: {
+    sectionTitle: "지금 가장 팩폭 받고 싶은 고민 (1개)",
+    options: WORRY_OPTIONS,
+  },
+};
+
 const NAV_LABELS: Record<MenuCategory, string> = {
   newyear2027: "2027 신년운세",
   today: "오늘의 운세",
@@ -199,8 +262,10 @@ export default function HomePage() {
     }
     if (id === "compatibility") {
       setWorry("love");
-    } else if (id === "wealth") {
+    } else if (id === "wealth" || id === "newyear2027" || id === "today") {
       setWorry("wealth");
+    } else if (id === "lifetime") {
+      setWorry("relationship");
     } else if (id === "health") {
       setWorry("health");
     }
@@ -719,6 +784,30 @@ export default function HomePage() {
                   </span>
                 </div>
 
+                {/* 현재 상단에서 선택한 테마 고정 배지 */}
+                {(() => {
+                  const activeMenuMeta =
+                    MENU_ITEMS.find((m) => m.id === selectedMenu) ?? MENU_ITEMS[0];
+                  return (
+                    <div className="rounded-2xl bg-slate-900 text-white px-3.5 py-2.5 flex items-center justify-between gap-2 shadow-sm">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-base shrink-0">{activeMenuMeta.emoji}</span>
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-bold text-amber-300">
+                            선택된 분석 테마
+                          </p>
+                          <p className="text-xs font-extrabold truncate">
+                            {activeMenuMeta.title}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="shrink-0 rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-bold text-amber-200">
+                        결과에 최우선 반영
+                      </span>
+                    </div>
+                  );
+                })()}
+
                 {/* 최근 입력 프로필 1초 자동 완성 칩 */}
                 {recentProfiles.length > 0 && (
                   <div className="rounded-2xl bg-amber-50/75 border border-amber-200/70 p-2.5 space-y-1.5">
@@ -924,49 +1013,66 @@ export default function HomePage() {
                   </motion.div>
                 )}
 
-                {/* 핵심 고민 1개 선택 */}
-                <div>
-                  <label className="text-[11px] font-bold text-slate-600 block mb-1.5">
-                    지금 가장 팩폭 받고 싶은 고민 (1개)
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {WORRY_OPTIONS.map((opt) => {
-                      const active = worry === opt.value;
-                      return (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          onClick={() => setWorry(opt.value)}
-                          className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 ${
-                            opt.value === "health" ? "col-span-2" : ""
-                          } ${
-                            active
-                              ? "bg-slate-900 text-white border-slate-900 shadow-sm"
-                              : "bg-white/75 text-slate-700 border-slate-200 hover:bg-white"
-                          }`}
-                        >
-                          <span>{opt.emoji}</span>
-                          <span>{opt.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                {/* 선택한 상단 테마에 연동되는 세부 포커스 선택 */}
+                {(() => {
+                  const subFocus = MENU_SUB_FOCUS[selectedMenu] ?? MENU_SUB_FOCUS.newyear2027;
+                  const activeMenuMeta =
+                    MENU_ITEMS.find((m) => m.id === selectedMenu) ?? MENU_ITEMS[0];
+                  return (
+                    <>
+                      <div>
+                        <label className="text-[11px] font-bold text-slate-600 block mb-1.5">
+                          {subFocus.sectionTitle}
+                        </label>
+                        {subFocus.lockedMessage ? (
+                          <div className="rounded-xl bg-teal-50/90 border border-teal-200 px-3.5 py-3 text-xs font-bold text-teal-900">
+                            {subFocus.lockedMessage}
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-2 gap-2">
+                            {subFocus.options.map((opt, idx) => {
+                              const active = worry === opt.value;
+                              const spanTwo =
+                                subFocus.options.length === 5 && idx === 4
+                                  ? "col-span-2"
+                                  : "";
+                              return (
+                                <button
+                                  key={`${selectedMenu}-${opt.value}`}
+                                  type="button"
+                                  onClick={() => setWorry(opt.value)}
+                                  className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 ${spanTwo} ${
+                                    active
+                                      ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                                      : "bg-white/75 text-slate-700 border-slate-200 hover:bg-white"
+                                  }`}
+                                >
+                                  <span>{opt.emoji}</span>
+                                  <span>{opt.label}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
 
-                {formError && (
-                  <p className="text-xs font-bold text-rose-600 text-center">
-                    {formError}
-                  </p>
-                )}
+                      {formError && (
+                        <p className="text-xs font-bold text-rose-600 text-center">
+                          {formError}
+                        </p>
+                      )}
 
-                <button
-                  type="submit"
-                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-slate-900 via-[#221d3a] to-slate-900 hover:brightness-110 text-white font-extrabold text-sm shadow-[0_14px_30px_rgba(15,23,42,0.28)] flex items-center justify-center gap-2 transition"
-                >
-                  <Sparkles className="w-4 h-4 text-amber-300" />
-                  무료 팩폭 스캔 & 오라 등급 확인하기
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                      <button
+                        type="submit"
+                        className="w-full py-4 rounded-2xl bg-gradient-to-r from-slate-900 via-[#221d3a] to-slate-900 hover:brightness-110 text-white font-extrabold text-sm shadow-[0_14px_30px_rgba(15,23,42,0.28)] flex items-center justify-center gap-2 transition"
+                      >
+                        <Sparkles className="w-4 h-4 text-amber-300" />
+                        [{activeMenuMeta.title}] 무료 팩폭 스캔하기
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </>
+                  );
+                })()}
 
                 <p className="text-[11px] text-slate-500 text-center">
                   오행 차트 · 한 줄 팩폭 · 종합 등급(TIER)은 100% 무료로 바로 공개됩니다
