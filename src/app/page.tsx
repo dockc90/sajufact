@@ -1348,7 +1348,7 @@ export default function HomePage() {
                   ✨ 예시 미리보기 · SAMPLE
                 </span>
                 <h2 className="font-serif text-sm sm:text-base font-black text-[#2b2242]">
-                  사주 풀이 시 함께 받는 파스텔 오라 인스타 카드 (예시)
+                  사주 풀이 시 함께 받는 달토 사주 카드 (예시)
                 </h2>
               </div>
               <div className="flex items-center gap-1 bg-violet-100/70 p-1 rounded-2xl">
@@ -1374,7 +1374,7 @@ export default function HomePage() {
                 📌 어떤 기능에서 만들 수 있나요?
               </p>
               <p className="text-[11.5px] text-slate-600 leading-relaxed">
-                상단의 <strong className="text-slate-900">7종 사주 메뉴(990원 사주·신년운세·연애운·궁합 등)</strong>를 열어보면, 결과 화면의 <strong className="text-violet-700">[✨ 오라 카드]</strong> 탭에서 내 사주에 맞춘 나만의 카드를 9:16 스토리·4:5 피드 PNG로 바로 저장할 수 있어요!{" "}
+                상단의 <strong className="text-slate-900">7종 사주 메뉴(990원 사주·신년운세·연애운·궁합 등)</strong>를 열어보면, 결과 화면의 <strong className="text-violet-700">[✨ 사주 카드]</strong> 탭에서 내 사주에 맞춘 나만의 카드를 9:16 스토리·4:5 피드 PNG로 바로 저장할 수 있어요!{" "}
                 <span className="text-slate-500 font-semibold">(아래는 예시 이미지입니다)</span>
               </p>
             </div>
@@ -1445,20 +1445,15 @@ export default function HomePage() {
                         <span className={`text-[9.5px] font-extrabold ${previewTheme.accentText}`}>
                           예시) 김민지 · 신해(辛亥)일주
                         </span>
-                        <div className="flex gap-0.5">
-                          {["庚午", "庚辰", "辛亥", "癸巳"].map((gz) => (
-                            <span
-                              key={gz}
-                              className="px-1 py-0.5 rounded bg-white border border-violet-100 text-[8px] font-serif font-black"
-                            >
-                              {gz}
-                            </span>
-                          ))}
-                        </div>
                       </div>
-                      <p className="rounded-xl bg-white/90 border border-white px-2.5 py-1.5 font-serif text-[11px] font-black leading-snug break-keep text-center">
-                        “겉은 무덤덤해도 속은 불꽃, 결정타 한 방이 있는 팔자”
-                      </p>
+                      <div className="rounded-xl bg-white/90 border border-white px-2.5 py-1.5 text-center">
+                        <p className="font-serif text-[11px] font-black leading-snug break-keep">
+                          “겉은 무덤덤해도 속은 불꽃, 결정타 한 방이 있는 팔자”
+                        </p>
+                        <p className="text-[8.5px] text-slate-600 font-medium leading-snug break-keep mt-0.5">
+                          신해(辛亥) 일주 기준, 가장 강한 기운은 수(水)(36%)이며 보완할 기운은 화(火)(8%)입니다.
+                        </p>
+                      </div>
                       <div className="grid grid-cols-2 gap-1 text-[8.5px] text-left">
                         <div className="rounded-lg bg-[#fff7ef] px-2 py-1 border border-orange-100">
                           <span className="block text-[7.5px] font-bold text-orange-600">
@@ -1474,9 +1469,9 @@ export default function HomePage() {
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-[8.5px] font-bold text-[#55447a]">
-                        <span>#파스텔오라 #달토처방</span>
-                        <span className="font-serif font-black tracking-widest">
-                          🐇 sajufact.kr
+                        <span>#달토사주카드 #달토처방</span>
+                        <span className="font-serif font-black tracking-wider">
+                          🐇 daltosaju.com
                         </span>
                       </div>
                     </div>
@@ -1488,7 +1483,7 @@ export default function HomePage() {
                 onClick={() => void runAnalysis("lifetime")}
                 className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-[#5c489b] via-[#c96a8b] to-[#f97316] hover:brightness-105 text-white text-xs sm:text-sm font-black shadow-md transition"
               >
-                🥕 990원 사주 보고 내 오라 카드 만들기 →
+                🥕 990원 사주 보고 내 사주 카드 만들기 →
               </button>
             </div>
           </section>

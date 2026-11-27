@@ -306,7 +306,7 @@ export function ResultView({
         <div className="flex items-center justify-between gap-2">
           <span className="inline-flex items-center gap-1 text-[11px] font-bold text-violet-700 bg-violet-100/80 px-2.5 py-0.5 rounded-full whitespace-nowrap">
             <Camera className="w-3 h-3" />
-            파스텔 오라 인스타 카드
+            달토 사주 카드
           </span>
           <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">
             9:16 · 4:5 PNG
@@ -323,7 +323,7 @@ export function ResultView({
             <div className="absolute inset-0 bg-gradient-to-b from-violet-950/25 via-violet-950/35 to-[#fff8fc]/90 flex flex-col items-center justify-center p-4 text-center">
               <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-[10.5px] font-extrabold text-violet-700 mb-1.5 shadow">
                 <Lock className="w-3 h-3" />
-                {tierKey} 티어 오라 카드 잠금됨
+                {tierKey} 티어 달토 사주 카드 잠금됨
               </span>
               <p className="font-serif text-sm font-black text-white drop-shadow">
                 {report.input.name}님 · {report.tierBadge}
@@ -332,7 +332,7 @@ export function ResultView({
           </div>
           <div className="p-3.5 bg-white/90 backdrop-blur-sm border-t border-white text-center space-y-2.5">
             <p className="text-xs text-slate-600 font-semibold break-keep">
-              👑 SSR · 💎 SR · 🎀 S · 🌙 A 티어별 전용 달토 카드 (9:16 & 4:5 저장)
+              👑 SSR · 💎 SR · 🎀 S · 🌙 A 티어별 전용 달토 사주 카드 (9:16 & 4:5 저장)
             </p>
             <button
               type="button"
@@ -341,7 +341,7 @@ export function ResultView({
             >
               {walletCoins >= coinCost
                 ? `🥕 당근 ${coinCost}개로 바로 열기 (보유 ${walletCoins}개)`
-                : `🥕 당근 충전하고 오라 카드 저장하기`}
+                : `🥕 당근 충전하고 달토 사주 카드 저장하기`}
             </button>
           </div>
         </div>
@@ -493,7 +493,7 @@ export function ResultView({
                 { id: "deep", label: "🎯 핵심 풀이" },
                 { id: "today", label: "☀️ 오늘 일진" },
                 { id: "core", label: "🧭 사주·오행" },
-                { id: "card", label: "✨ 오라 카드" },
+                { id: "card", label: "✨ 사주 카드" },
               ] as const
             ).map((tab) => {
               const active = activeTab === tab.id;
