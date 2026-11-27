@@ -26,7 +26,13 @@ import {
 import type { PaymentPlan, SajuReport } from "@/lib/saju-types";
 import { PaymentModal } from "./PaymentModal";
 import { ShareCardStudio } from "./ShareCardStudio";
-import { OrientalElementArt, TalismanSealSvg } from "./OrientalArtSvg";
+import {
+  FiveElementRadarSvg,
+  OrientalCardFrameSvg,
+  OrientalElementArt,
+  TalismanSealSvg,
+  VermilionSealSvg,
+} from "./OrientalArtSvg";
 
 interface ResultViewProps {
   initialReport: SajuReport;
@@ -184,20 +190,23 @@ export function ResultView({
           {/* ① 무료 맛보기 영역 (상단) */}
           <section className="glass-card rounded-3xl p-5 sm:p-6 space-y-4 relative overflow-hidden">
             <div className="flex items-center justify-between gap-2">
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-extrabold tracking-wide shadow-sm ${theme.badgeBg}`}
-              >
-                {report.tierBadge}
-              </span>
-              <span className="text-[11px] font-bold text-slate-500">
-                {report.percentileText}
-              </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-extrabold tracking-wide shadow-sm ${theme.badgeBg}`}
+                >
+                  {report.tierBadge}
+                </span>
+                <span className="text-[11px] font-bold text-slate-500">
+                  {report.percentileText}
+                </span>
+              </div>
+              <VermilionSealSvg label="사주印" className="w-9 h-9 shrink-0" />
             </div>
 
             {/* 한 줄 팩폭 타이틀 */}
             <div>
               <p className="text-xs font-bold text-slate-500 mb-1">
-                {report.input.name}님의 사주 팩트폭격 요약
+                {report.input.name}님의 사주 팩트폭격 요약 · {report.dayMasterHangul}({report.dayMasterHanja}) 일간
               </p>
               <h1 className="font-serif text-[21px] sm:text-2xl leading-snug font-black text-slate-900 break-keep">
                 “{report.oneLineFact}”
@@ -209,58 +218,81 @@ export function ResultView({
 
             {/* 사주 4주 8자 원국 표 */}
             <div className="grid grid-cols-4 gap-2 pt-1">
-              {report.pillars.map((pillar) => (
-                <div
-                  key={pillar.label}
-                  className="rounded-2xl bg-white/75 border border-white py-2.5 px-1 text-center shadow-sm"
-                >
-                  <p className="text-[10px] font-bold text-slate-400">{pillar.label}</p>
-                  <p className="font-serif text-lg sm:text-xl font-extrabold text-slate-900 tracking-wider mt-0.5">
-                    {pillar.hanja}
-                  </p>
-                  <p className="text-[11px] font-semibold text-slate-600">
-                    {pillar.hangul}
-                  </p>
-                </div>
-              ))}
+              {report.pillars.map((pillar) => {
+                const stemTheme = ELEMENT_THEMES[pillar.stemElement];
+                return (
+                  <div
+                    key={pillar.label}
+                    className="rounded-2xl bg-white/80 border border-white py-2.5 px-1 text-center shadow-sm relative overflow-hidden"
+                  >
+                    <p className="text-[10px] font-bold text-slate-400">{pillar.label}</p>
+                    <p className="font-serif text-lg sm:text-xl font-extrabold text-slate-900 tracking-wider mt-0.5">
+                      {pillar.hanja}
+                    </p>
+                    <p className="text-[11px] font-semibold text-slate-600">
+                      {pillar.hangul}
+                    </p>
+                    <span
+                      className="inline-block mt-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold"
+                      style={{
+                        background: stemTheme.cardBgStyle,
+                        color: stemTheme.textOnCard,
+                      }}
+                    >
+                      {stemTheme.nameKo}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* 오행 비율 미니 차트 */}
-            <div className="rounded-2xl bg-white/65 border border-white/80 p-4 space-y-2.5">
+            {/* 오행 비율 레이더 + 바 차트 듀얼 뷰 */}
+            <div className="rounded-2xl bg-white/70 border border-white/90 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-xs font-extrabold text-slate-800">
-                  내 사주 오행(木·火·土·金·水) 비율
+                  내 사주 오행(木·火·土·金·水) 밸런스 & 레이더 분석
                 </h2>
                 <span className="text-[11px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
                   핵심 오행: {theme.nameKo}
                 </span>
               </div>
 
-              <div className="space-y-2">
-                {report.elements.map((el) => {
-                  const elTheme = ELEMENT_THEMES[el.key];
-                  return (
-                    <div key={el.key} className="flex items-center gap-2.5">
-                      <span className="w-11 text-[11px] font-bold text-slate-700 shrink-0">
-                        {el.nameKo}({el.hanja})
-                      </span>
-                      <div className="flex-1 h-2.5 rounded-full bg-slate-200/80 overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${Math.max(6, el.percentage)}%` }}
-                          transition={{ duration: 0.7, ease: "easeOut" }}
-                          className={`h-full rounded-full bg-gradient-to-r ${elTheme.barColor}`}
-                        />
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div className="sm:col-span-5 flex justify-center">
+                  <FiveElementRadarSvg
+                    elements={report.elements}
+                    strokeColor={theme.goldPrimary}
+                    fillColor={`${theme.goldPrimary}40`}
+                    className="w-40 h-40"
+                  />
+                </div>
+
+                <div className="sm:col-span-7 space-y-2">
+                  {report.elements.map((el) => {
+                    const elTheme = ELEMENT_THEMES[el.key];
+                    return (
+                      <div key={el.key} className="flex items-center gap-2.5">
+                        <span className="w-11 text-[11px] font-bold text-slate-700 shrink-0">
+                          {el.nameKo}({el.hanja})
+                        </span>
+                        <div className="flex-1 h-2.5 rounded-full bg-slate-200/80 overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.max(6, el.percentage)}%` }}
+                            transition={{ duration: 0.7, ease: "easeOut" }}
+                            className={`h-full rounded-full bg-gradient-to-r ${elTheme.barColor}`}
+                          />
+                        </div>
+                        <span className="w-9 text-right text-[11px] font-extrabold text-slate-800">
+                          {el.percentage}%
+                        </span>
                       </div>
-                      <span className="w-9 text-right text-[11px] font-extrabold text-slate-800">
-                        {el.percentage}%
-                      </span>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
 
-              <p className="text-[11px] text-slate-600 pt-1 leading-relaxed">
+              <p className="text-[11px] text-slate-600 pt-1 leading-relaxed border-t border-slate-200/60">
                 {report.elementDiagnosis}
               </p>
             </div>
@@ -702,14 +734,16 @@ export function ResultView({
                   background: theme.cardBgStyle,
                   color: theme.textOnCard,
                 }}
-                className="w-full h-[320px] rounded-2xl relative overflow-hidden flex flex-col items-center justify-center p-6 text-center"
+                className="w-full h-[360px] rounded-2xl relative overflow-hidden flex flex-col items-center justify-center p-6 text-center"
               >
-                <div className="blur-[5px] opacity-80 flex flex-col items-center pointer-events-none select-none">
+                <OrientalCardFrameSvg color={theme.goldPrimary} />
+                <div className="blur-[4px] opacity-85 flex flex-col items-center pointer-events-none select-none">
                   <OrientalElementArt
                     element={report.dominantElement}
                     goldPrimary={theme.goldPrimary}
                     goldSecondary={theme.goldSecondary}
-                    className="w-32 h-32"
+                    dayMasterHanja={report.dayMasterHanja}
+                    className="w-36 h-36"
                     idPrefix="teaser"
                   />
                   <p className="font-serif text-base font-black mt-2">
@@ -717,20 +751,20 @@ export function ResultView({
                   </p>
                 </div>
 
-                <div className="absolute inset-0 bg-slate-950/30 backdrop-blur-[2px] flex flex-col items-center justify-center p-5 text-white">
+                <div className="absolute inset-0 bg-slate-950/35 backdrop-blur-[2px] flex flex-col items-center justify-center p-5 text-white">
                   <Lock className="w-6 h-6 text-amber-300 mb-2" />
                   <p className="font-serif text-base font-extrabold">
-                    내 {theme.nameKo} 오라 운명 카드
+                    3종 스킨 결과 카드 잠금됨
                   </p>
                   <p className="text-xs text-white/85 mt-1 mb-3">
-                    9:16 스토리 · 4:5 피드용 고화질 PNG 저장
+                    ✨ 오라 동양화 · 🧾 팩폭 영수증 · 🌙 홀로그램 타로
                   </p>
                   <button
                     type="button"
                     onClick={() => openPayModal("allinone")}
                     className="px-4 py-2 rounded-xl bg-amber-300 text-slate-950 text-xs font-extrabold hover:bg-amber-200 transition shadow-lg"
                   >
-                    잠금 해제하고 카드 저장하기
+                    잠금 해제하고 PNG 저장하기
                   </button>
                 </div>
               </div>

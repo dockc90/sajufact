@@ -32,6 +32,12 @@ import { AuraBackground } from "@/components/AuraBackground";
 import { AnalyzingView } from "@/components/AnalyzingView";
 import { ResultView } from "@/components/ResultView";
 import { TarotModal } from "@/components/TarotModal";
+import {
+  OrientalCardFrameSvg,
+  OrientalElementArt,
+  VermilionSealSvg,
+} from "@/components/OrientalArtSvg";
+import type { CardEdition } from "@/components/ShareCardStudio";
 
 type ScreenPhase = "home" | "analyzing" | "result";
 
@@ -65,6 +71,7 @@ export default function HomePage() {
   const [report, setReport] = useState<SajuReport | null>(null);
   const [tarotOpen, setTarotOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [showcaseEdition, setShowcaseEdition] = useState<CardEdition>("aura");
 
   // URL 쿼리 파라미터(궁합 초대 링크 / 저장된 리포트 복원) 처리
   useEffect(() => {
@@ -296,6 +303,151 @@ export default function HomePage() {
               )}
 
               {/* ① 5대 범용 메뉴 선택 카드 */}
+              {/* 인스타 소장용 3종 결과 카드 쇼케이스 (차별화 비주얼) */}
+              <section className="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5 border border-amber-200/70">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div>
+                    <span className="text-[10px] font-extrabold tracking-widest text-rose-600 uppercase">
+                      SIGNATURE RESULT CARD
+                    </span>
+                    <h2 className="font-serif text-sm sm:text-base font-black text-slate-900">
+                      스캔 즉시 3가지 컨셉 카드로 소장 & 인스타 공유
+                    </h2>
+                  </div>
+                  <div className="flex items-center gap-1 bg-slate-900/10 p-1 rounded-xl">
+                    {[
+                      { id: "aura" as const, label: "✨ 오라 동양화" },
+                      { id: "receipt" as const, label: "🧾 팩폭 영수증" },
+                      { id: "tarot" as const, label: "🌙 홀로그램 타로" },
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setShowcaseEdition(tab.id)}
+                        className={`px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-extrabold transition ${
+                          showcaseEdition === tab.id
+                            ? "bg-slate-900 text-amber-200 shadow-sm"
+                            : "text-slate-700 hover:bg-white/60"
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                  {/* 좌측 카드 미니어처 프리뷰 */}
+                  <div className="sm:col-span-6 flex justify-center">
+                    {showcaseEdition === "aura" && (
+                      <div
+                        style={{
+                          background: ELEMENT_THEMES.water.cardBgStyle,
+                          color: ELEMENT_THEMES.water.textOnCard,
+                        }}
+                        className="w-full max-w-[240px] rounded-2xl p-4 relative overflow-hidden shadow-xl flex flex-col items-center text-center"
+                      >
+                        <OrientalCardFrameSvg color="#f0d285" />
+                        <span className="relative z-10 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-300 text-slate-950 mb-1">
+                          TIER: SSR · 상위 4%
+                        </span>
+                        <OrientalElementArt
+                          element="water"
+                          goldPrimary="#f0d285"
+                          goldSecondary="#c49c42"
+                          dayMasterHanja="辛"
+                          className="w-24 h-24 relative z-10"
+                          idPrefix="home-aura"
+                        />
+                        <p className="relative z-10 font-serif text-xs font-black mt-1 leading-snug break-keep">
+                          “머리는 천재급인데 생각이 많아 실행이 늦는 팔자”
+                        </p>
+                        <div className="relative z-10 w-full grid grid-cols-2 gap-1 mt-2 text-[9px]">
+                          <div className="bg-white/10 rounded-lg py-1 px-1.5">💰 8월 횡재</div>
+                          <div className="bg-white/10 rounded-lg py-1 px-1.5">⚠️ 4월 주의</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {showcaseEdition === "receipt" && (
+                      <div className="w-full max-w-[240px] rounded-2xl p-4 bg-[#fdfaf2] text-slate-900 border border-stone-300 shadow-xl relative space-y-2">
+                        <div className="flex justify-between items-center border-b border-dashed border-slate-400 pb-1.5">
+                          <span className="font-serif text-xs font-black">SAJUFACT RECEIPT</span>
+                          <span className="text-[9px] font-mono bg-slate-900 text-amber-300 px-1.5 py-0.5 rounded">
+                            #SSR-04
+                          </span>
+                        </div>
+                        <p className="font-serif text-xs font-black leading-snug bg-white p-2 rounded-lg border border-stone-200 break-keep">
+                          “기분 좋으면 지갑 열고 스트레스 받으면 결제부터 누르는 타입”
+                        </p>
+                        <div className="space-y-1 text-[9px] font-mono">
+                          <div className="flex justify-between">
+                            <span>재물·횡재운</span>
+                            <span className="font-bold text-emerald-700">91%</span>
+                          </div>
+                          <div className="h-1.5 bg-stone-200 rounded-full overflow-hidden">
+                            <div className="h-full bg-emerald-600 w-[91%]" />
+                          </div>
+                          <div className="flex justify-between pt-0.5">
+                            <span>팩폭 적중률</span>
+                            <span className="font-bold">99%</span>
+                          </div>
+                        </div>
+                        <div className="absolute right-2 bottom-2 rotate-[-8deg]">
+                          <VermilionSealSvg label="팩폭印" className="w-8 h-8" />
+                        </div>
+                      </div>
+                    )}
+
+                    {showcaseEdition === "tarot" && (
+                      <div
+                        style={{
+                          background:
+                            "radial-gradient(circle at 30% 20%, #3b2667 0%, #16112b 55%, #090714 100%)",
+                        }}
+                        className="w-full max-w-[240px] rounded-2xl p-4 text-amber-50 border border-amber-300/40 shadow-xl relative overflow-hidden flex flex-col items-center text-center"
+                      >
+                        <OrientalCardFrameSvg color="#f0d285" />
+                        <span className="relative z-10 text-[9px] font-bold tracking-widest text-amber-300">
+                          ARCANA 辛亥 · 2027
+                        </span>
+                        <OrientalElementArt
+                          element="fire"
+                          goldPrimary="#f5db94"
+                          goldSecondary="#b8892c"
+                          dayMasterHanja="丙"
+                          className="w-24 h-24 relative z-10 my-1"
+                          idPrefix="home-tarot"
+                        />
+                        <p className="relative z-10 font-serif text-xs font-black leading-snug break-keep">
+                          “눈치 0% 직설 화법, 2027년엔 판을 뒤집는 주작의 해”
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 우측 핵심 차별점 리스트 */}
+                  <div className="sm:col-span-6 space-y-2.5 text-left">
+                    <div className="rounded-2xl bg-white/75 border border-white p-3 space-y-1">
+                      <p className="text-xs font-extrabold text-slate-900">
+                        🎨 1. 오행 자동 컬러 + 일간 한자 인장
+                      </p>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        내 사주에서 가장 강한 오행에 맞춰 배경 오라와 동양화 금박 일러스트가 자동 생성됩니다.
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-white/75 border border-white p-3 space-y-1">
+                      <p className="text-xs font-extrabold text-slate-900">
+                        📊 2. 오행 레이더 + 12개월 흐름 + 건강 처방
+                      </p>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        재물·이직·연애 궁합은 물론, 취약 장기와 2027 번아웃 시기까지 뼈 때리게 짚어줍니다.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
               <section className="space-y-3">
                 <div className="flex items-center justify-between px-1">
                   <h2 className="text-xs sm:text-sm font-extrabold text-slate-800 tracking-wide">
