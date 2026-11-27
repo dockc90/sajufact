@@ -241,8 +241,9 @@ async function callGeminiWithRetry(
   systemInstruction: string,
   userPrompt: string,
   mode: AnalyzeMode
-): Promise<GeminiSajuOutput> {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+): Promise<{ output: GeminiSajuOutput; model: string }> {
+  const model = "gemini-3.8-flash";
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
   const responseSchema =
     mode === "free" ? FREE_MODE_RESPONSE_SCHEMA : PAID_MODE_RESPONSE_SCHEMA;
 
@@ -295,7 +296,7 @@ async function callGeminiWithRetry(
         .replace(/```$/i, "")
         .trim();
       const parsed = JSON.parse(cleanJson) as GeminiSajuOutput;
-      return parsed;
+      return { output: parsed, model };
     } catch (err) {
       clearTimeout(timeoutId);
       lastError = err;
@@ -471,19 +472,19 @@ export async function POST(req: NextRequest) {
 
     const apiKey = process.env.GEMINI_API_KEY;
     let aiResult: GeminiSajuOutput;
-    let sourceEngine: "gemini-2.5-flash" | "manseryeok-fallback" =
-      "manseryeok-fallback";
+    let sourceEngine = "manseryeok-fallback";
 
-    // 2단계 + 3단계: Gemini 2.5 Flash Strict JSON (최대 1회 자동 재시도)
+    // 2단계 + 3단계: Gemini Flash Strict JSON (최대 1회 자동 재시도)
     if (apiKey) {
       try {
-        aiResult = await callGeminiWithRetry(
+        const res = await callGeminiWithRetry(
           apiKey,
           systemInstruction,
           userPrompt,
           mode
         );
-        sourceEngine = "gemini-2.5-flash";
+        aiResult = res.output;
+        sourceEngine = res.model;
       } catch (err) {
         console.warn(
           "[SajuAnalyze] Gemini failed after retry, falling back cleanly:",
