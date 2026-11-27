@@ -1,18 +1,22 @@
 import { Lunar, Solar } from "lunar-javascript";
 import type {
   CompatibilityReport,
+  DaeunDecadeItem,
   ElementKey,
   ElementStat,
   ElementTheme,
+  LoveReport,
   MenuCategory,
   MonthlyScore,
   PillarInfo,
   SajuInput,
   SajuReport,
+  TaekilDateItem,
   TarotCardData,
   TodayFortuneReport,
   TodaySignalItem,
   WorryTopic,
+  YeonunYearItem,
 } from "./saju-types";
 
 export const MENU_ITEMS: Array<{
@@ -22,66 +26,176 @@ export const MENU_ITEMS: Array<{
   title: string;
   subtitle: string;
   emoji: string;
+  coinCost: number;
   highlight?: boolean;
 }> = [
   {
+    id: "lifetime",
+    badge: "기본 사주 · 1개",
+    badgeStyle: "bg-slate-900 text-amber-200",
+    title: "기본 사주 원국",
+    subtitle: "타고난 기질, 돈 새는 습관, 피해야 할 인연",
+    emoji: "⚡",
+    coinCost: 1,
+  },
+  {
     id: "newyear2027",
-    badge: "HOT · 12~2월 폭주",
+    badge: "HOT · 1개",
     badgeStyle: "bg-rose-500/90 text-white",
     title: "2027 정미년 신년운세",
     subtitle: "월별 재물·이직·피해야 할 시기 정밀 분석",
     emoji: "🔥",
+    coinCost: 1,
     highlight: true,
   },
   {
+    id: "love",
+    badge: "솔로·연애 · 1개",
+    badgeStyle: "bg-pink-500/90 text-white",
+    title: "내 사주 연애운",
+    subtitle: "끌리는 이성 유형, 도화살 시기, 연애 처방",
+    emoji: "💘",
+    coinCost: 1,
+  },
+  {
+    id: "compatibility",
+    badge: "바이럴 1위 · 1개",
+    badgeStyle: "bg-rose-600/90 text-white",
+    title: "연애·인간 궁합 스캔",
+    subtitle: "썸·연인·직장상사 속마음 & 관계 역학 스캔",
+    emoji: "💕",
+    coinCost: 1,
+  },
+  {
+    id: "daeun",
+    badge: "인생 10년 · 2개",
+    badgeStyle: "bg-amber-600/95 text-white",
+    title: "인생 10년 대운 풀이",
+    subtitle: "10년마다 바뀌는 황금 대운 & 인생 전성기",
+    emoji: "🌌",
+    coinCost: 2,
+  },
+  {
+    id: "yeonun",
+    badge: "3년 흐름 · 1개",
+    badgeStyle: "bg-indigo-600/90 text-white",
+    title: "2026~2028 연운 스캔",
+    subtitle: "올해·내년·후년 3년간 커리어·재물 상승곡선",
+    emoji: "📆",
+    coinCost: 1,
+  },
+  {
+    id: "taekil",
+    badge: "길일 추천 · 1개",
+    badgeStyle: "bg-emerald-700/90 text-white",
+    title: "계약·이직·연애 택일",
+    subtitle: "계약·면접·고백·이사하기 가장 좋은 대박 길일",
+    emoji: "🗓️",
+    coinCost: 1,
+  },
+  {
+    id: "wealth",
+    badge: "재물·이직 · 1개",
+    badgeStyle: "bg-amber-700/90 text-white",
+    title: "재물·직업·천직운",
+    subtitle: "월급 vs 사업 루트, 연봉 점프 타이밍",
+    emoji: "💰",
+    coinCost: 1,
+  },
+  {
+    id: "health",
+    badge: "체질·멘탈 · 1개",
+    badgeStyle: "bg-teal-600/90 text-white",
+    title: "건강·체력·번아웃",
+    subtitle: "타고난 취약 장기, 멘탈 번아웃 신호, 개운 루틴",
+    emoji: "💪",
+    coinCost: 1,
+  },
+  {
     id: "today",
-    badge: "DAILY · 매일 리셋",
+    badge: "무료 · 매일 리셋",
     badgeStyle: "bg-amber-500/95 text-white",
     title: "오늘의 일진 운세",
     subtitle: "오늘 일진 간지와 시간대별 흐름·행동 지침",
     emoji: "☀️",
-  },
-  {
-    id: "lifetime",
-    badge: "상시 BEST",
-    badgeStyle: "bg-slate-900 text-amber-200",
-    title: "평생 사주 원국 풀이",
-    subtitle: "타고난 기질, 돈 새는 습관, 피해야 할 인연",
-    emoji: "⚡",
-  },
-  {
-    id: "wealth",
-    badge: "커리어·재물",
-    badgeStyle: "bg-emerald-700/90 text-white",
-    title: "재물·직업·이직운",
-    subtitle: "월급 vs 사업 루트, 이직·횡재수 타이밍",
-    emoji: "💰",
-  },
-  {
-    id: "compatibility",
-    badge: "바이럴 1위",
-    badgeStyle: "bg-pink-500/90 text-white",
-    title: "연애·궁합 스캔",
-    subtitle: "썸·연인·직장상사 속마음 & 관계 역학 스캔",
-    emoji: "💕",
-  },
-  {
-    id: "health",
-    badge: "체질·멘탈",
-    badgeStyle: "bg-teal-600/90 text-white",
-    title: "건강·체력·번아웃 진단",
-    subtitle: "타고난 취약 장기, 멘탈 번아웃 신호, 개운 루틴",
-    emoji: "💪",
+    coinCost: 0,
   },
   {
     id: "tarot",
     badge: "100% FREE",
-    badgeStyle: "bg-indigo-600/90 text-white",
+    badgeStyle: "bg-violet-600/90 text-white",
     title: "오늘의 1장 타로",
     subtitle: "카드 1장으로 보는 오늘의 핵심 메시지",
     emoji: "🃏",
+    coinCost: 0,
   },
 ];
+
+export const CORE_SEVEN_MENUS: MenuCategory[] = [
+  "lifetime",
+  "newyear2027",
+  "love",
+  "compatibility",
+  "daeun",
+  "yeonun",
+  "taekil",
+];
+
+export const BENCHMARK_REVIEWS = [
+  {
+    user: "김*연 · 28세 직장인",
+    tag: "2027 신년운세 + 수다방",
+    text: "듣고 싶은 말만 안 하고 4월 계약서 조심하라는 거 소름… 복고양이랑 톡하다 보니 현실 위로까지 받아서 눈물 날 뻔했어요.",
+  },
+  {
+    user: "박*준 · 32세 마케터",
+    tag: "10년 대운 + 아기 백호 카드",
+    text: "매번 카드 결제 안 하고 복주머니 충전해 두니까 궁금할 때마다 바로 열어보고, 아기 백호 카드 인스타 스토리 올리자마자 DM 폭주함ㅋㅋ",
+  },
+  {
+    user: "이*은 · 26세 프리랜서",
+    tag: "연애·궁합 스캔",
+    text: "썸남이랑 궁합 봤는데 누가 을인지 1초 만에 짚어줌ㅋㅋ 밤 11시마다 무료 수다권 들어와서 자기 전에 매일 들어와요.",
+  },
+  {
+    user: "최*훈 · 34세 개발자",
+    tag: "계약·이직 택일",
+    text: "기계적인 복붙 답장이 아니라 내 원국이랑 십성 비율 짚어가면서 연봉 협상 날짜까지 딱 찍어주니까 신뢰도가 다름.",
+  },
+  {
+    user: "정*아 · 30세 디자이너",
+    tag: "기본 사주 + 수호 영물 화보",
+    text: "단점 뼈 때려주고 바로 따뜻한 처방전 주는 거 진짜 힐링… 수호신 아기 주작 너무 귀여워서 폰 배경화면으로 박제했습니다.",
+  },
+];
+
+// 매일 밤 11시(23:00 KST) 기준 리셋 사이클 키 반환
+export function getKst23ResetCycleKey(now = new Date()): string {
+  const kstMs = now.getTime() + 9 * 60 * 60 * 1000;
+  const kst = new Date(kstMs);
+  // 23시(밤 11시) 이전이면 전날 밤 11시 사이클에 속함
+  if (kst.getUTCHours() < 23) {
+    kst.setUTCDate(kst.getUTCDate() - 1);
+  }
+  const y = kst.getUTCFullYear();
+  const m = String(kst.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(kst.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}-23h`;
+}
+
+export function getNext23KstCountdown(now = new Date()): string {
+  const kstNowMs = now.getTime() + 9 * 60 * 60 * 1000;
+  const kst = new Date(kstNowMs);
+  const next = new Date(kstNowMs);
+  next.setUTCHours(23, 0, 0, 0);
+  if (kst.getUTCHours() >= 23) {
+    next.setUTCDate(next.getUTCDate() + 1);
+  }
+  const diffMin = Math.max(1, Math.floor((next.getTime() - kstNowMs) / 60000));
+  const h = Math.floor(diffMin / 60);
+  const m = diffMin % 60;
+  return `${h}시간 ${m}분 후 밤 11시 충전`;
+}
 
 export const BIRTH_HOUR_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "unknown", label: "태어난 시간 모름 (삼주 분석)" },
@@ -1405,9 +1519,13 @@ export function generateSajuReport(input: SajuInput, targetDate?: Date): SajuRep
   const menuSubHooks: Record<MenuCategory, string> = {
     newyear2027: `2027 정미년(丁未年)과 ${cleanName}님의 ${dayIlju} 일주가 만나 '${branchTrait.jeongMiRelationBadge}' 흐름을 만듭니다.`,
     today: `${todayReport.dateLabel} 오늘의 ${todayReport.todayGanZhiHangul}(${todayReport.todayGanZhiHanja}) 일진과 ${cleanName}님 원국의 정밀 스캔 결과입니다.`,
-    lifetime: `${cleanName}님의 타고난 ${dayIlju} 일주와 ${stemTrait.symbol} 기질을 뼈대까지 분해한 냉정한 리포트입니다.`,
+    lifetime: `${cleanName}님의 타고난 ${dayIlju} 일주와 ${stemTrait.symbol} 기질을 뼈대까지 분해한 정밀 리포트입니다.`,
     wealth: `${cleanName}님(${dayIlju})에게 맞는 돈 버는 루트(${branchTrait.windfallStyle})를 돈 되는 기준 100%로 스캔했습니다.`,
+    love: `${cleanName}님의 ${dayIlju} 일주 도화살 시기와 끌리는 인연 패턴을 정밀 분석했습니다.`,
     compatibility: `${cleanName}님과 ${input.partnerName?.trim() || "상대방"}님의 사주 기운 충돌과 끌림을 정밀 스캔했습니다.`,
+    daeun: `${cleanName}님의 10년 단위 대운 흐름과 인생 최고의 황금 전성기 나이대를 산출했습니다.`,
+    yeonun: `${cleanName}님의 2026~2028년 3개년 세운 상승·주의 곡선을 대조했습니다.`,
+    taekil: `${cleanName}님의 ${dayIlju} 일주와 가장 잘 맞는 계약·이직·연애 대박 길일을 선별했습니다.`,
     health: `${cleanName}님의 오행 과다(${domTheme.nameKo})·결핍(${weakTheme.nameKo}) 데이터로 취약 장기와 멘탈 번아웃 신호를 정밀 스캔했습니다.`,
     tarot: `오늘의 타로 기운과 ${cleanName}님의 타고난 오행 흐름을 교차 검증한 결과입니다.`,
   };
@@ -1484,11 +1602,88 @@ export function generateSajuReport(input: SajuInput, targetDate?: Date): SajuRep
     newyear2027: `[2027 ${branchTrait.jeongMiRelationBadge}] ${bestMonth.month}월 대운 상승 · ${worstMonth.month}월 주의 — ${baseOneLine}`,
     lifetime: `${dayIlju} 타고난 ${stemTrait.symbol} 팔자 — ${stemTrait.outerMask}, ${baseOneLine}`,
     wealth: `${dayIlju} 재물·천직 스캔 — '${branchTrait.windfallStyle}'로 ${bestMonth.month}월 몸값 터지는 구조`,
+    love: `${dayIlju} 연애 사주 — 겉으론 쿨해도 내 사람에겐 올인하다 상처받기 쉬운 팔자`,
     compatibility: `${cleanName} × ${compatibility?.partnerName || "상대방"} 궁합 ${compatibility?.score ?? 84}점 — ${compatibility?.gradeLabel || "끌림과 긴장이 공존하는 케미"}`,
+    daeun: `${cleanName}님의 황금 대운은 ${seed % 2 === 0 ? "30대 중반~40대" : "20대 후반~30대 후반"}에 정점을 찍습니다`,
+    yeonun: `2026~2028년 3년 운세 — 2027년 ${bestMonth.month}월을 기점으로 우상향 급등 구간 진입`,
+    taekil: `${dayIlju} 맞춤 길일 스캔 완료 — 중요 계약·이직·고백에 딱 맞는 대박 날짜 3선`,
     health: `${domTheme.nameKo} 과열·${weakTheme.nameKo} 결핍 체질 — ${pick(ONE_LINE_FACTS[calc.dominantElement].health, seed, 1)}`,
     tarot: `${stemTrait.symbol} 기질의 ${baseOneLine}`,
   };
   const oneLineFact = oneLineByMenu[input.menu] || `${stemTrait.symbol} 기질의 ${baseOneLine}`;
+
+  // 대운 / 연운 / 택일 / 연애 전용 리포트 생성
+  const ageLabels = ["10대 (12~21세)", "20대 (22~31세)", "30대 (32~41세)", "40대 (42~51세)", "50대 (52~61세)"];
+  const daeunGanZhis = ["갑자(甲子)", "을축(乙丑)", "병인(丙寅)", "정묘(丁卯)", "무진(戊辰)", "기사(己巳)", "경오(庚午)", "신미(辛未)"];
+  const daeunElements = ["수(水)", "토(土)", "목(木)", "목(木)", "토(土)", "토(土)", "화(火)", "토(土)"];
+  const daeunDecades: DaeunDecadeItem[] = ageLabels.map((ageRange, idx) => {
+    const gzIdx = (seed + idx) % daeunGanZhis.length;
+    const score = Math.min(96, Math.max(58, 70 + (((seed >> idx) % 24) - 6) + (idx === 2 ? 10 : 0)));
+    return {
+      ageRange,
+      ganZhi: daeunGanZhis[gzIdx],
+      elementKo: daeunElements[gzIdx],
+      score,
+      keyword: score >= 85 ? "황금 대운" : score >= 75 ? "상승 기반" : "내공 축적",
+      summary:
+        score >= 85
+          ? `${daeunGanZhis[gzIdx]} 대운으로 ${branchTrait.windfallStyle} 기회가 크게 열리며 자산과 커리어 급이 달라지는 시기입니다.`
+          : `${stemTrait.outerMask} 기질이 단단해지며 사람·경력을 걸러내고 다음 도약을 준비하는 10년입니다.`,
+    };
+  });
+  const bestDecade = [...daeunDecades].sort((a, b) => b.score - a.score)[0];
+
+  const yeonunYears: YeonunYearItem[] = [
+    {
+      year: 2026,
+      ganZhi: "병오(丙午)",
+      score: Math.min(92, Math.max(62, 74 + (seed % 14) - 5)),
+      badge: "판 짜기 · 준비",
+      summary: "변화의 전조가 들어오며 기존 관계·직무에서 비효율을 걷어내고 새 무대를 고르는 해입니다.",
+    },
+    {
+      year: 2027,
+      ganZhi: "정미(丁未)",
+      score: bestMonth.score,
+      badge: branchTrait.jeongMiRelationBadge,
+      summary: `${stemTrait.jeongMi2027Note} 특히 ${bestMonth.month}월 전후 결정적 제안과 수익 기회가 집중됩니다.`,
+    },
+    {
+      year: 2028,
+      ganZhi: "무신(戊申)",
+      score: Math.min(96, Math.max(68, 81 + (seed % 12) - 3)),
+      badge: "결실 · 확장",
+      summary: "2027년에 뿌린 씨앗이 안정적 캐시카우와 명예·지위 상승으로 굳어지는 수확기입니다.",
+    },
+  ];
+
+  // 실제 KST 기준 향후 60일 중 만세력 길일 3개 선별
+  const kstNowMs = (targetDate ? targetDate.getTime() : Date.now()) + 9 * 60 * 60 * 1000;
+  const recommendedDates: TaekilDateItem[] = [];
+  const purposes = ["계약 · 연봉 협상 · 이직 지원", "고백 · 소개팅 · 중요한 만남", "목돈 정산 · 이사 · 새 프로젝트 시작"];
+  for (let offsetDays = 3; offsetDays <= 55 && recommendedDates.length < 3; offsetDays += 11) {
+    const dObj = new Date(kstNowMs + offsetDays * 86400000);
+    const y = dObj.getUTCFullYear();
+    const m = dObj.getUTCMonth() + 1;
+    const d = dObj.getUTCDate();
+    const gz = Solar.fromYmdHms(y, m, d, 12, 0, 0).getLunar().getEightChar().getDay() || "丙寅";
+    if (!CLASH_PAIRS.has(`${calc.dayBranchHanja}${gz[1]}`)) {
+      const idx = recommendedDates.length;
+      recommendedDates.push({
+        dateLabel: `${y}년 ${m}월 ${d}일`,
+        ganZhi: `${toHangul(gz)}(${gz})일`,
+        purpose: purposes[idx],
+        reason: `${cleanName}님의 일주(${dayIlju})와 충돌 없이 ${domTheme.nameKo}·${weakTheme.nameKo} 균형을 보태주는 길일입니다.`,
+      });
+    }
+  }
+
+  const loveReport: LoveReport = {
+    patternTitle: `${dayIlju} 일주의 연애 본성: '${stemTrait.outerMask}'`,
+    attractionTrigger: `겉으로는 무덤덤해 보여도, 내 ${stemTrait.innerDrive} 기질을 알아봐 주고 말 한마디를 섬세하게 기억해 주는 상대에게 무장해제됩니다.`,
+    goldenTiming: `2027년 ${bestMonth.month}월과 ${((bestMonth.month + 4) % 12) + 1}월에 도화·인연운이 가장 강하게 열립니다.`,
+    lovePrescription: `상대방 비위를 맞추다 지쳐 혼자 잠수 타는 습관만 버리세요. 서운함은 다음 날 낮 1시 전에 담백한 1문장으로 말해야 오래 갑니다.`,
+  };
 
   const elementDiagnosis = `${dayIlju} 일주 기준, 가장 강한 기운은 ${domTheme.nameKo}(${calc.elements.find((e) => e.key === calc.dominantElement)?.percentage}%)이며 보완할 기운은 ${weakTheme.nameKo}(${calc.elements.find((e) => e.key === calc.weakestElement)?.percentage}%)입니다.`;
 
@@ -1529,6 +1724,21 @@ export function generateSajuReport(input: SajuInput, targetDate?: Date): SajuRep
       cautionSeason2027: `${HEALTH_PROFILE_MAP[calc.weakestElement].cautionSeason2027} · ${branchTrait.jeongMiRelationBadge} 시기`,
       dailyPrescription: HEALTH_PROFILE_MAP[calc.weakestElement].dailyPrescription,
     },
+    daeunReport: {
+      goldenAge: bestDecade.ageRange,
+      headline: `${cleanName}님의 10년 대운 중 '${bestDecade.ageRange} ${bestDecade.ganZhi}' 구간이 가장 강한 황금기입니다.`,
+      decades: daeunDecades,
+    },
+    yeonunReport: {
+      headline: "2026년 준비 → 2027년 정미년 돌파 → 2028년 결실로 이어지는 3개년 운세 곡선입니다.",
+      years: yeonunYears,
+    },
+    taekilReport: {
+      headline: `${cleanName}님의 일주(${dayIlju})와 상충 없이 합을 이루는 향후 60일 내 최적의 길일 3선입니다.`,
+      avoidDatesNote: `일지(${calc.dayBranchHanja})와 정면 충돌(충)하는 날과 2027년 ${worstMonth.month}월 큰돈 계약은 피하세요.`,
+      recommendedDates,
+    },
+    loveReport,
     monthlyFlow,
     talisman: {
       missingElement: calc.weakestElement,

@@ -6,6 +6,7 @@ import {
   Activity,
   AlertTriangle,
   ArrowLeft,
+  CalendarCheck,
   Camera,
   Check,
   Clock,
@@ -21,6 +22,7 @@ import {
   ShieldAlert,
   Sparkles,
   Sun,
+  Ticket,
   TrendingUp,
 } from "lucide-react";
 import {
@@ -46,19 +48,38 @@ interface ResultViewProps {
   initialPaidPlan?: PaymentPlan | null;
   initialPhone?: string;
   isInvitedFriendMode?: boolean;
+  walletCoins?: number;
+  freeChatTickets?: number;
+  onUnlockWithCoins?: (reportId: string, coinCost: number) => boolean;
+  onOpenChargeModal?: () => void;
+  onOpenChat?: (contextText?: string) => void;
   onPaidPlanChange?: (plan: PaymentPlan, phone?: string) => void;
   onOpenArchive?: () => void;
   onResetHome: () => void;
 }
 
 type MainTab = "deep" | "today" | "core" | "card";
-type DeepSubTab = "risk" | "temperament" | "health" | "flow" | "compat";
+type DeepSubTab =
+  | "risk"
+  | "temperament"
+  | "health"
+  | "flow"
+  | "compat"
+  | "daeun"
+  | "yeonun"
+  | "taekil"
+  | "love";
 
 export function ResultView({
   initialReport,
   initialPaidPlan = null,
   initialPhone = "",
   isInvitedFriendMode = false,
+  walletCoins = 1,
+  freeChatTickets = 1,
+  onUnlockWithCoins,
+  onOpenChargeModal,
+  onOpenChat,
   onPaidPlanChange,
   onOpenArchive,
   onResetHome,
@@ -69,19 +90,31 @@ export function ResultView({
   const [payModalOpen, setPayModalOpen] = useState(false);
   const [modalInitialPlan, setModalInitialPlan] = useState<PaymentPlan>("allinone");
 
-  const defaultMainTab: MainTab =
-    initialReport.input.menu === "today" ? "today" : "deep";
-  const defaultSubTab: DeepSubTab =
-    initialReport.input.menu === "health"
-      ? "health"
-      : initialReport.input.menu === "lifetime"
-      ? "temperament"
-      : initialReport.input.menu === "compatibility"
-      ? "compat"
-      : "risk";
+  const getInitialSubTab = (): DeepSubTab => {
+    switch (initialReport.input.menu) {
+      case "daeun":
+        return "daeun";
+      case "yeonun":
+        return "yeonun";
+      case "taekil":
+        return "taekil";
+      case "love":
+        return "love";
+      case "health":
+        return "health";
+      case "lifetime":
+        return "temperament";
+      case "compatibility":
+        return "compat";
+      default:
+        return "risk";
+    }
+  };
 
-  const [activeTab, setActiveTab] = useState<MainTab>(defaultMainTab);
-  const [deepSubTab, setDeepSubTab] = useState<DeepSubTab>(defaultSubTab);
+  const [activeTab, setActiveTab] = useState<MainTab>(
+    initialReport.input.menu === "today" ? "today" : "deep"
+  );
+  const [deepSubTab, setDeepSubTab] = useState<DeepSubTab>(getInitialSubTab);
   const [previewBabyThumb, setPreviewBabyThumb] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<number>(4);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -92,7 +125,9 @@ export function ResultView({
   const theme = ELEMENT_THEMES[report.dominantElement];
   const guardian = GUARDIAN_BEAST_META[report.dominantElement];
   const activeMenuMeta =
-    MENU_ITEMS.find((m) => m.id === report.input.menu) ?? MENU_ITEMS[0];
+    MENU_ITEMS.find((m) => m.id === report.input.menu) ?? MENU_ITEMS[1];
+  const coinCost = Math.max(1, activeMenuMeta.coinCost || 1);
+
   const liveToday =
     report.todayReport ??
     calculateTodayFortune(
@@ -110,6 +145,32 @@ export function ResultView({
   const openPayModal = (plan: PaymentPlan) => {
     setModalInitialPlan(plan);
     setPayModalOpen(true);
+  };
+
+  const handleUnlockByCoins = () => {
+    if (!onUnlockWithCoins) {
+      openPayModal("allinone");
+      return;
+    }
+    const unlocked = onUnlockWithCoins(report.id, coinCost);
+    if (!unlocked) {
+      onOpenChargeModal?.();
+      return;
+    }
+    setPaidPlan("allinone");
+    onPaidPlanChange?.("allinone", keeperPhone || undefined);
+    upsertLocalArchive(report, "allinone", keeperPhone || undefined);
+    void fetch("/api/reports", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: report.id,
+        paidPlan: "allinone",
+        keeperPhone: keeperPhone || null,
+        report,
+      }),
+    }).catch(() => {});
+    showToast(`👝 복주머니 ${coinCost}개로 전체 리포트 & 수호신 카드가 열렸습니다!`);
   };
 
   const handlePaymentComplete = (
@@ -156,9 +217,7 @@ export function ResultView({
     showToast(
       amount === 1910
         ? "차액 1,910원 결제로 올인원 업그레이드가 완료되었습니다!"
-        : plan === "allinone"
-        ? "올인원 패키지 잠금이 해제되었습니다!"
-        : "단건 테마 리포트 잠금이 해제되었습니다!"
+        : "전체 리포트 잠금이 해제되었습니다!"
     );
   };
 
@@ -184,7 +243,7 @@ export function ResultView({
       await navigator.clipboard.writeText(url);
       showToast("평생 보관 URL이 클립보드에 복사되었습니다.");
     } catch {
-      showToast("결과가 현재 브라우저에 안전하게 보관되었습니다.");
+      showToast("결과가 안전하게 보관되었습니다.");
     }
   };
 
@@ -208,6 +267,16 @@ export function ResultView({
     report.monthlyFlow.find((m) => m.month === selectedMonth) ??
     report.monthlyFlow[3];
   const shortSummaryFact = toShortCardFact(report.oneLineFact, 56);
+  const previewSnippet =
+    report.input.menu === "daeun" && report.daeunReport
+      ? report.daeunReport.headline
+      : report.input.menu === "yeonun" && report.yeonunReport
+      ? report.yeonunReport.headline
+      : report.input.menu === "taekil" && report.taekilReport
+      ? report.taekilReport.headline
+      : report.input.menu === "love" && report.loveReport
+      ? report.loveReport.patternTitle
+      : report.criticalMistake2027.detail.slice(0, 75) + "…";
 
   const renderTeaserCard = (mobileVisible = false) => (
     <section
@@ -225,9 +294,8 @@ export function ResultView({
         </span>
       </div>
 
-      {/* 오버랩 없이 상단 이미지 + 하단 잠금 카드 분리 */}
       <div className="rounded-2xl overflow-hidden border border-amber-200/80 bg-slate-950 text-white shadow-lg">
-        <div className="relative h-56 overflow-hidden">
+        <div className="relative h-52 overflow-hidden">
           <img
             src={previewBabyThumb ? guardian.babyImage : guardian.image}
             alt={guardian.nameKo}
@@ -246,10 +314,12 @@ export function ResultView({
           </p>
           <button
             type="button"
-            onClick={() => openPayModal("allinone")}
+            onClick={handleUnlockByCoins}
             className="w-full py-2.5 rounded-xl bg-amber-300 text-slate-950 text-xs font-extrabold hover:bg-amber-200 transition shadow"
           >
-            잠금 해제하고 고화질 PNG 저장
+            {walletCoins >= coinCost
+              ? `👝 복주머니 ${coinCost}개로 바로 열기 (보유 ${walletCoins}개)`
+              : `👝 복주머니 충전하고 카드 저장하기`}
           </button>
         </div>
       </div>
@@ -266,7 +336,7 @@ export function ResultView({
           className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass-pill text-xs font-bold text-slate-700 hover:bg-white transition whitespace-nowrap"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          다시 입력하기
+          홈 대시보드
         </button>
         <div className="flex items-center gap-2">
           {onOpenArchive && (
@@ -296,9 +366,8 @@ export function ResultView({
 
       {/* 반응형 2단 그리드 */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-7 items-start">
-        {/* 좌측 메인 영역 */}
         <div className="lg:col-span-7 space-y-4">
-          {/* ① 상단 히어로 요약 카드 (간결한 좌측 정렬 + 수호신 썸네일 토글) */}
+          {/* ① 상단 히어로 요약 카드 */}
           <section className="glass-card rounded-3xl p-4 sm:p-5 space-y-3">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div className="flex items-center gap-1.5 flex-wrap">
@@ -315,7 +384,6 @@ export function ResultView({
             </div>
 
             <div className="flex items-center gap-3.5">
-              {/* 깔끔히 분리된 수호신 썸네일 + 아기 토글 */}
               <button
                 type="button"
                 onClick={() => setPreviewBabyThumb((v) => !v)}
@@ -351,7 +419,6 @@ export function ResultView({
               </div>
             </div>
 
-            {/* 궁합 선택 시 무료 점수 1줄 바 */}
             {(isInvitedFriendMode || report.input.menu === "compatibility") &&
               report.compatibility && (
                 <div className="rounded-2xl bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 px-3.5 py-2.5 flex items-center justify-between gap-2">
@@ -368,9 +435,40 @@ export function ResultView({
                   </span>
                 </div>
               )}
+
+            {/* 복고양이 수다방 락인 CTA */}
+            {onOpenChat && (
+              <button
+                type="button"
+                onClick={() =>
+                  onOpenChat(`[${activeMenuMeta.title}] ${report.oneLineFact}`)
+                }
+                className="w-full rounded-2xl bg-gradient-to-r from-amber-100/90 via-rose-50 to-amber-50 border border-amber-300/80 px-3.5 py-2.5 flex items-center justify-between gap-2 hover:brightness-98 transition"
+              >
+                <div className="flex items-center gap-2 min-w-0 text-left">
+                  <img
+                    src="/mascot/lucky-cat.jpg"
+                    alt="복고양이"
+                    className="w-8 h-8 rounded-full object-cover border border-amber-400 shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-xs font-extrabold text-slate-900 truncate">
+                      🐱 복고양이에게 이 결과로 꼬리 질문하기
+                    </p>
+                    <p className="text-[10.5px] text-slate-600 truncate">
+                      내 원국을 기억한 채 직언+처방 상담 (무료 수다권 우선 사용)
+                    </p>
+                  </div>
+                </div>
+                <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-slate-900 text-amber-200 px-2.5 py-1 text-[10px] font-extrabold whitespace-nowrap">
+                  <Ticket className="w-3 h-3" />
+                  {freeChatTickets > 0 ? `무료 ${freeChatTickets}장` : "수다방"}
+                </span>
+              </button>
+            )}
           </section>
 
-          {/* ② 메인 4탭 바 — 한 화면에 한 영역만 깔끔하게 표시 */}
+          {/* ② 메인 4탭 바 */}
           <div className="sticky top-[58px] sm:top-[66px] z-20 rounded-2xl bg-white/85 backdrop-blur-xl border border-slate-200/80 p-1.5 shadow-sm grid grid-cols-4 gap-1">
             {(
               [
@@ -402,35 +500,41 @@ export function ResultView({
           {activeTab === "deep" && (
             <div className="space-y-4">
               {!paidPlan ? (
-                /* 잠금 페이월 (간결하고 깔끔한 구성) */
-                <section className="glass-card rounded-3xl p-5 space-y-4 border border-amber-200/80">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="text-left space-y-1">
+                /* 앞부분 20% 무료 티저 + 복주머니 코인 1클릭 잠금 해제 */
+                <section className="glass-card rounded-3xl p-5 space-y-4 border border-amber-200/80 text-left">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[11px] font-extrabold">
                         <Lock className="w-3 h-3" />
-                        {activeMenuMeta.title} 상세 풀이 잠금
+                        20% 무료 미리보기
                       </span>
-                      <h2 className="font-serif text-lg font-black text-slate-900 break-keep">
-                        {report.input.name}님의 핵심 운세와 수호신 카드를 확인하세요
-                      </h2>
+                      <span className="text-[11px] font-bold text-amber-800">
+                        보유 복주머니 👝 {walletCoins}개
+                      </span>
                     </div>
+                    <h2 className="font-serif text-base sm:text-lg font-black text-slate-900">
+                      {activeMenuMeta.emoji} {activeMenuMeta.title} 핵심 미리보기
+                    </h2>
+                    <p className="text-xs text-slate-700 leading-relaxed bg-white/85 rounded-2xl p-3 border border-white">
+                      {previewSnippet}
+                    </p>
                   </div>
 
-                  <ul className="space-y-2 text-xs font-semibold text-slate-800 bg-slate-50/90 rounded-2xl p-3.5 border border-slate-200/70">
+                  <ul className="space-y-1.5 text-xs font-semibold text-slate-800 bg-slate-50/90 rounded-2xl p-3.5 border border-slate-200/70">
                     <li className="flex items-center gap-2">
                       <span>🔒</span>
                       <span>
-                        {report.criticalMistake2027.dangerMonth} 주의보 & 횡재 피크 타이밍
+                        {report.criticalMistake2027.dangerMonth} 주의보 & 횡재 타이밍 전체 공개
                       </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span>🔒</span>
-                      <span>타고난 본성 · 돈 새는 습관 · 체질 번아웃 진단</span>
+                      <span>대운·연운·택일·12개월 흐름 & 맞춤형 액땜 부적</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span>🔒</span>
                       <span>
-                        {guardian.nameKo} & {guardian.babyNameKo} 고화질 PNG 카드 3종 저장
+                        {guardian.nameKo} · {guardian.babyNameKo} PNG 결과 카드 3종 저장
                       </span>
                     </li>
                   </ul>
@@ -438,46 +542,53 @@ export function ResultView({
                   <div className="space-y-2">
                     <button
                       type="button"
-                      onClick={() => openPayModal("allinone")}
+                      onClick={handleUnlockByCoins}
                       className="w-full py-3.5 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white shadow-xl flex items-center justify-between transition"
                     >
                       <div className="text-left">
-                        <span className="inline-block text-[10px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full mb-0.5">
-                          BEST · 12개월 그래프 + 궁합권 + 부적
+                        <span className="inline-block text-[10px] font-bold bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full mb-0.5">
+                          {walletCoins >= coinCost
+                            ? "즉시 1클릭 잠금 해제"
+                            : "복주머니 충전 필요"}
                         </span>
                         <p className="text-sm font-extrabold">
-                          올인원 패키지 전체 열기
+                          👝 복주머니 {coinCost}개로 전체 열기
                         </p>
                       </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-[11px] line-through text-slate-400 block">
-                          5,900원
-                        </span>
-                        <span className="text-base font-black text-amber-300">
-                          2,900원 →
-                        </span>
-                      </div>
+                      <span className="text-xs font-extrabold text-amber-300 shrink-0">
+                        {walletCoins >= coinCost
+                          ? `보유 ${walletCoins}개 →`
+                          : "충전하기 →"}
+                      </span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => openPayModal("single")}
-                      className="w-full py-3 px-4 rounded-2xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 flex items-center justify-between transition"
+                      className="w-full py-2.5 px-4 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 flex items-center justify-between text-xs font-bold transition"
                     >
-                      <span className="text-xs font-bold">
-                        단건 테마 리포트 (전체 풀이 + 수호 영물 카드)
-                      </span>
-                      <span className="text-sm font-extrabold text-slate-900 shrink-0">
-                        990원 →
-                      </span>
+                      <span>단건 카드 결제로 바로 열기</span>
+                      <span className="text-slate-900 font-extrabold">990원 →</span>
                     </button>
                   </div>
                 </section>
               ) : (
-                /* 해제된 상세 풀이 — 세부 서브탭으로 한눈에 보기 */
+                /* 해제된 상세 풀이 — 세부 서브탭 */
                 <div className="space-y-3">
                   <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
                     {[
+                      ...(report.input.menu === "daeun"
+                        ? [{ id: "daeun" as const, label: "🌌 10년 대운" }]
+                        : []),
+                      ...(report.input.menu === "yeonun"
+                        ? [{ id: "yeonun" as const, label: "📆 3년 연운" }]
+                        : []),
+                      ...(report.input.menu === "taekil"
+                        ? [{ id: "taekil" as const, label: "🗓️ 대박 길일" }]
+                        : []),
+                      ...(report.input.menu === "love"
+                        ? [{ id: "love" as const, label: "💘 연애운" }]
+                        : []),
                       { id: "risk" as const, label: "⚠️ 주의·횡재" },
                       { id: "temperament" as const, label: "⚡ 본성·관계" },
                       { id: "health" as const, label: "🩺 체질·건강" },
@@ -500,6 +611,118 @@ export function ResultView({
                       </button>
                     ))}
                   </div>
+
+                  {deepSubTab === "daeun" && report.daeunReport && (
+                    <section className="glass-card rounded-3xl p-5 space-y-3 text-left">
+                      <h3 className="font-serif text-base font-black text-slate-900">
+                        🌌 인생 10년 대운 흐름 · 황금기 {report.daeunReport.goldenAge}
+                      </h3>
+                      <p className="text-xs font-semibold text-amber-900 bg-amber-50 p-3 rounded-xl border border-amber-200">
+                        {report.daeunReport.headline}
+                      </p>
+                      <div className="space-y-2">
+                        {report.daeunReport.decades.map((d) => (
+                          <div
+                            key={d.ageRange}
+                            className="rounded-2xl bg-white/85 border border-slate-200/70 p-3 space-y-1"
+                          >
+                            <div className="flex items-center justify-between text-xs font-extrabold">
+                              <span className="text-slate-900">
+                                {d.ageRange} · {d.ganZhi} ({d.elementKo})
+                              </span>
+                              <span className="rounded-full bg-slate-900 text-amber-200 px-2 py-0.5 text-[10px]">
+                                {d.keyword} {d.score}점
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-600 leading-relaxed">
+                              {d.summary}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {deepSubTab === "yeonun" && report.yeonunReport && (
+                    <section className="glass-card rounded-3xl p-5 space-y-3 text-left">
+                      <h3 className="font-serif text-base font-black text-slate-900">
+                        📆 2026~2028 3년 연운 스캔
+                      </h3>
+                      <p className="text-xs text-slate-600">{report.yeonunReport.headline}</p>
+                      <div className="space-y-2.5">
+                        {report.yeonunReport.years.map((y) => (
+                          <div
+                            key={y.year}
+                            className="rounded-2xl bg-white/85 border border-slate-200/70 p-3.5 space-y-1"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-black text-slate-900">
+                                {y.year}년 {y.ganZhi}
+                              </span>
+                              <span className="rounded-full bg-indigo-100 text-indigo-800 px-2.5 py-0.5 text-[11px] font-bold">
+                                {y.badge} · {y.score}점
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-700 leading-relaxed">
+                              {y.summary}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {deepSubTab === "taekil" && report.taekilReport && (
+                    <section className="glass-card rounded-3xl p-5 space-y-3 text-left">
+                      <h3 className="font-serif text-base font-black text-slate-900 flex items-center gap-1.5">
+                        <CalendarCheck className="w-4 h-4 text-emerald-600" />
+                        중요 계약·이직·연애 대박 길일
+                      </h3>
+                      <p className="text-xs text-slate-600">{report.taekilReport.headline}</p>
+                      <div className="space-y-2.5">
+                        {report.taekilReport.recommendedDates.map((item) => (
+                          <div
+                            key={item.dateLabel}
+                            className="rounded-2xl bg-emerald-50/75 border border-emerald-200 p-3.5 space-y-1"
+                          >
+                            <div className="flex items-center justify-between text-xs font-extrabold">
+                              <span className="text-emerald-900">
+                                {item.dateLabel} ({item.ganZhi})
+                              </span>
+                              <span className="rounded-full bg-emerald-600 text-white px-2 py-0.5 text-[10px]">
+                                {item.purpose}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-700 leading-relaxed">
+                              {item.reason}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs font-bold text-rose-900">
+                        ⚠️ 피할 날: {report.taekilReport.avoidDatesNote}
+                      </p>
+                    </section>
+                  )}
+
+                  {deepSubTab === "love" && report.loveReport && (
+                    <section className="glass-card rounded-3xl p-5 border-l-4 border-l-pink-500 space-y-3 text-left">
+                      <h3 className="font-serif text-base font-black text-slate-900">
+                        💘 {report.loveReport.patternTitle}
+                      </h3>
+                      <p className="text-[13px] text-slate-700 leading-relaxed">
+                        <strong className="text-slate-900">✨ 끌리는 포인트:</strong>{" "}
+                        {report.loveReport.attractionTrigger}
+                      </p>
+                      <p className="text-[13px] text-slate-700 leading-relaxed">
+                        <strong className="text-slate-900">📅 도화 타이밍:</strong>{" "}
+                        {report.loveReport.goldenTiming}
+                      </p>
+                      <div className="rounded-xl bg-pink-50 border border-pink-200 p-3 text-xs font-bold text-rose-900">
+                        💌 복고양이 연애 처방: {report.loveReport.lovePrescription}
+                      </div>
+                    </section>
+                  )}
 
                   {deepSubTab === "risk" && (
                     <div className="space-y-3">
@@ -621,7 +844,6 @@ export function ResultView({
                     <>
                       {paidPlan === "allinone" ? (
                         <div className="space-y-4">
-                          {/* 12개월 그래프 */}
                           <section className="glass-card rounded-3xl p-5 space-y-3">
                             <div className="flex items-center justify-between">
                               <h3 className="font-serif text-base font-black text-slate-900 flex items-center gap-1.5">
@@ -677,7 +899,6 @@ export function ResultView({
                             </div>
                           </section>
 
-                          {/* 맞춤형 액땜 부적 */}
                           <section className="rounded-3xl p-5 bg-gradient-to-br from-slate-900 via-[#1f1c38] to-slate-900 text-white shadow-xl border border-amber-300/30 space-y-3 text-left">
                             <div className="flex items-center justify-between">
                               <div>
@@ -715,7 +936,6 @@ export function ResultView({
                             </div>
                           </section>
 
-                          {/* 궁합 1회권 */}
                           {!report.compatibility && (
                             <section className="glass-card rounded-3xl p-4 space-y-2.5 text-left">
                               <p className="text-xs font-extrabold text-slate-900">
@@ -957,7 +1177,7 @@ export function ResultView({
           )}
         </div>
 
-        {/* 우측 스티키 컬럼 (PC: 카드 스튜디오 + 공유/보관 버튼, 모바일: 하단 공유/보관 버튼) */}
+        {/* 우측 스티키 컬럼 */}
         <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-4">
           <div className="hidden lg:block">
             {paidPlan ? (
@@ -1011,7 +1231,7 @@ export function ResultView({
               className="w-full py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 flex items-center justify-center gap-1"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              다른 테마 / 다른 사람 사주 보기
+              홈에서 다른 7종 운세 보기
             </button>
           </section>
         </div>

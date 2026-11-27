@@ -3,7 +3,11 @@ export type MenuCategory =
   | "today"
   | "lifetime"
   | "wealth"
+  | "love"
   | "compatibility"
+  | "daeun"
+  | "yeonun"
+  | "taekil"
   | "health"
   | "tarot";
 
@@ -122,6 +126,62 @@ export interface TodayFortuneReport {
   avoidAction: string;
 }
 
+export interface DaeunDecadeItem {
+  ageRange: string;
+  ganZhi: string;
+  elementKo: string;
+  score: number;
+  keyword: string;
+  summary: string;
+}
+
+export interface YeonunYearItem {
+  year: number;
+  ganZhi: string;
+  score: number;
+  badge: string;
+  summary: string;
+}
+
+export interface TaekilDateItem {
+  dateLabel: string;
+  ganZhi: string;
+  purpose: string;
+  reason: string;
+}
+
+export interface LoveReport {
+  patternTitle: string;
+  attractionTrigger: string;
+  goldenTiming: string;
+  lovePrescription: string;
+}
+
+export interface WalletProfile {
+  name: string;
+  gender: GenderType;
+  birthDate: string;
+  calendarType: CalendarType;
+  birthHour: string;
+}
+
+export interface WalletState {
+  walletId: string;
+  profile: WalletProfile;
+  coins: number; // 복주머니 개수
+  freeChatTickets: number; // 매일 밤 11시 리셋 무료 수다권
+  lastFreeResetKey: string;
+  unlockedReportIds: string[];
+}
+
+export interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  createdAt: string;
+  suggestions?: string[];
+}
+
 export interface SajuReport {
   id: string;
   createdAt: string;
@@ -165,6 +225,21 @@ export interface SajuReport {
     cautionSeason2027: string;
     dailyPrescription: string;
   };
+  daeunReport?: {
+    goldenAge: string;
+    headline: string;
+    decades: DaeunDecadeItem[];
+  };
+  yeonunReport?: {
+    headline: string;
+    years: YeonunYearItem[];
+  };
+  taekilReport?: {
+    headline: string;
+    avoidDatesNote: string;
+    recommendedDates: TaekilDateItem[];
+  };
+  loveReport?: LoveReport;
   // All-in-one sections
   monthlyFlow: MonthlyScore[];
   talisman: LuckyTalisman;
