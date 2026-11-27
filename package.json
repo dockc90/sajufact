@@ -6,12 +6,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "deploy:preview": "npx vercel",
+    "deploy:prod": "npx vercel --prod"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^14.14.0",
+    "html-to-image": "^1.11.13",
+    "lucide-react": "^1.81.0",
+    "lunar-javascript": "^1.7.8",
     "next": "16.4.6",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "tailwind-merge": "^3.7.1"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",
