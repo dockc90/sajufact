@@ -146,7 +146,7 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
             key={mKey}
             type="button"
             onClick={() => setMood(mKey)}
-            className={`py-2 px-1 rounded-xl text-[11px] font-extrabold transition whitespace-nowrap ${
+            className={`py-2 px-1 rounded-xl text-[10.5px] sm:text-[11px] font-extrabold transition whitespace-nowrap ${
               mood === mKey
                 ? "bg-white text-[#4c3787] shadow-sm"
                 : "text-slate-600 hover:bg-white/60"
@@ -239,7 +239,7 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
             {/* 달토 핵심 총평 */}
             <div className="rounded-2xl bg-white/90 border border-white px-3 py-2 text-center shadow-2xs">
               <h4
-                className={`font-serif font-black leading-snug line-clamp-2 break-keep text-[#2b2242] ${
+                className={`font-serif font-black leading-snug break-keep text-balance text-[#2b2242] ${
                   ratio === "9:16" ? "text-[13px]" : "text-[12px]"
                 }`}
               >
@@ -279,15 +279,15 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
                     />
                   ))}
                 </div>
-                <p className="rounded-xl bg-white/80 border border-violet-100/80 px-2.5 py-1 text-[9.5px] font-semibold text-slate-700 truncate">
+                <p className="rounded-xl bg-white/80 border border-violet-100/80 px-2.5 py-1 text-[9.5px] font-semibold text-slate-700 leading-snug break-keep text-balance">
                   💌 {report.talisman.talismanMantra}
                 </p>
               </div>
             )}
 
             {/* 하단 워터마크 */}
-            <div className="flex items-center justify-between pt-0.5 text-[9.5px] text-[#55447a]">
-              <span className="flex items-center gap-1 truncate font-bold">
+            <div className="flex items-center justify-between gap-2 pt-0.5 text-[9.5px] text-[#55447a]">
+              <span className="flex items-center gap-1 font-bold break-keep leading-tight">
                 <Sparkles className="w-2.5 h-2.5 text-orange-500 shrink-0" />
                 {report.hashtags.slice(0, 2).join(" ")}
               </span>

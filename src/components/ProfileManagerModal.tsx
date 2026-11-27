@@ -291,7 +291,7 @@ export function ProfileManagerModal({
                 <ChevronLeft className="w-5 h-5" />
               </button>
             )}
-            <h3 className="text-base font-black text-slate-900 truncate">
+            <h3 className="text-base font-black text-slate-900 break-keep">
               {formOpen ? "새로운 사주 추가" : "🐇 내 사주 프로필 수첩"}
             </h3>
           </div>
@@ -454,7 +454,7 @@ export function ProfileManagerModal({
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-slate-500 truncate">
+                            <p className="text-[11px] text-slate-500 leading-snug break-keep">
                               {prof.gender === "female" ? "여자" : "남자"} ·{" "}
                               {prof.birthDate} (
                               {prof.calendarType === "solar" ? "양력" : "음력"} ·{" "}

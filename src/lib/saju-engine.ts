@@ -1810,8 +1810,8 @@ export function generateDailyCatcherDraw(
     quote: poetic.quote,
     quoteSub: poetic.sub,
     luckyNumber: report.talisman.luckyNumber,
-    luckyColor: report.talisman.luckyColor.split("·")[0].trim(),
-    luckyItem: report.talisman.luckyItem.split("·")[0].trim(),
+    luckyColor: report.talisman.luckyColor.split(/[·&,]/)[0].trim(),
+    luckyItem: report.talisman.luckyItem.split(/[·&,]/)[0].trim(),
   };
 }
 

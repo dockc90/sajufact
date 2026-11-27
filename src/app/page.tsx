@@ -582,21 +582,12 @@ export default function HomePage() {
             title="홈으로 이동"
             className="group flex items-center gap-2 text-left shrink-0"
           >
-            <span className="w-8 h-8 rounded-2xl bg-white/95 border border-slate-200/80 shadow-2xs flex items-center justify-center group-hover:scale-105 active:scale-95 transition">
-              <svg
-                viewBox="0 0 32 32"
-                className="w-5 h-5 text-[#141418]"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                {/* 토끼 발가락 4개 (아치형 길쭉한 타원) */}
-                <ellipse cx="8.2" cy="12.2" rx="2.3" ry="3.7" transform="rotate(-20 8.2 12.2)" />
-                <ellipse cx="13.2" cy="8.8" rx="2.4" ry="4.2" transform="rotate(-7 13.2 8.8)" />
-                <ellipse cx="18.8" cy="8.8" rx="2.4" ry="4.2" transform="rotate(7 18.8 8.8)" />
-                <ellipse cx="23.8" cy="12.2" rx="2.3" ry="3.7" transform="rotate(20 23.8 12.2)" />
-                {/* 토끼 뒷꿈치 도톰한 하트-타원 패드 */}
-                <path d="M 16 14.5 C 12.4 14.5 9.2 17.5 9.4 21.4 C 9.5 24.4 12.0 26.2 14.3 25.5 C 15.2 25.2 15.6 24.7 16 24.7 C 16.4 24.7 16.8 25.2 17.7 25.5 C 20.0 26.2 22.5 24.4 22.6 21.4 C 22.8 17.5 19.6 14.5 16 14.5 Z" />
-              </svg>
+            <span className="w-9 h-9 rounded-2xl bg-white/95 border border-violet-100/90 shadow-2xs flex items-center justify-center p-1 group-hover:scale-105 active:scale-95 transition">
+              <img
+                src="/logo/dalto-logo.png"
+                alt="사주팩트 로고"
+                className="w-7 h-7 object-contain"
+              />
             </span>
             <span className="font-serif text-base sm:text-lg font-black tracking-tight text-[#1c1b22]">
               사주팩트
@@ -647,7 +638,7 @@ export default function HomePage() {
               {accountSession?.loggedIn || activeProfile ? (
                 <>
                   <UserRound className="w-3.5 h-3.5 text-violet-500 shrink-0" />
-                  <span className="max-w-[84px] truncate">
+                  <span className="max-w-[116px] sm:max-w-[160px] truncate">
                     {activeProfile
                       ? `${activeProfile.name}(${activeProfile.relation})`
                       : accountSession?.label}
@@ -747,7 +738,7 @@ export default function HomePage() {
                   onClick={() => setSocialLoginOpen(true)}
                   className="inline-flex items-center gap-1 text-xs font-extrabold text-slate-700 hover:text-violet-700 transition"
                 >
-                  ⬆ 로그인하면 기기가 켜진다토!
+                  ⬆ 로그인하면 보름달이 켜진다토!
                 </button>
               </div>
             ) : !currentProfileDraw || !activeProfile ? (
@@ -828,7 +819,7 @@ export default function HomePage() {
                     </span>
                   </button>
 
-                  <p className="text-sm sm:text-base font-black text-[#2b2242] leading-snug line-clamp-2">
+                  <p className="text-sm sm:text-base font-black text-[#2b2242] leading-snug break-keep text-balance">
                     &ldquo;{currentProfileDraw.quote}&rdquo;
                   </p>
 
@@ -837,10 +828,10 @@ export default function HomePage() {
                       # {currentProfileDraw.luckyNumber}
                     </span>
                     <span className="rounded-full bg-white/95 border border-white px-2.5 py-1 text-[11px] font-extrabold text-slate-700 shadow-2xs">
-                      🎨 {currentProfileDraw.luckyColor}
+                      🎨 {currentProfileDraw.luckyColor.split(/[·&,]/)[0].trim()}
                     </span>
                     <span className="rounded-full bg-white/95 border border-white px-2.5 py-1 text-[11px] font-extrabold text-slate-700 shadow-2xs">
-                      🍀 {currentProfileDraw.luckyItem}
+                      🍀 {currentProfileDraw.luckyItem.split(/[·&,]/)[0].trim()}
                     </span>
                   </div>
 
@@ -884,10 +875,10 @@ export default function HomePage() {
               className="w-full rounded-2xl bg-gradient-to-r from-[#fff8fb] via-white to-[#fff5f8] hover:from-rose-50 hover:to-pink-50 border border-pink-100/90 px-4 py-3 flex items-center justify-between gap-3 shadow-2xs transition text-left"
             >
               <div className="space-y-0.5 min-w-0">
-                <p className="text-sm sm:text-[15px] font-black text-slate-900 truncate">
+                <p className="text-sm sm:text-[15px] font-black text-slate-900 leading-snug break-keep">
                   <span className="text-rose-500">무료 수다권</span>이 도착했어요!
                 </p>
-                <p className="text-[11px] font-medium text-slate-500 truncate">
+                <p className="text-[11px] font-medium text-slate-500 leading-snug break-keep">
                   매일 밤 11시에 1장 자동 충전돼요
                 </p>
               </div>
@@ -953,8 +944,8 @@ export default function HomePage() {
 
                     {/* 하단 큰 타이틀 + 당근 가격 배지 */}
                     <div className="px-0.5 space-y-0.5">
-                      <div className="flex items-center justify-between gap-1">
-                        <h3 className="text-[15px] sm:text-base font-black text-slate-900 tracking-tight truncate">
+                      <div className="flex items-start justify-between gap-1">
+                        <h3 className="text-[14px] sm:text-base font-black text-slate-900 tracking-tight leading-snug break-keep">
                           {card.title}
                         </h3>
                         <span
@@ -963,7 +954,7 @@ export default function HomePage() {
                           🥕 {card.coinCost}
                         </span>
                       </div>
-                      <p className="text-[11px] sm:text-xs font-medium text-slate-600 truncate">
+                      <p className="text-[11px] sm:text-xs font-medium text-slate-600 leading-snug break-keep">
                         {card.subtitle}
                       </p>
                     </div>
@@ -987,15 +978,15 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="px-0.5 space-y-0.5">
-                  <div className="flex items-center justify-between gap-1">
-                    <h3 className="text-[15px] sm:text-base font-black text-slate-700 tracking-tight truncate">
+                  <div className="flex items-start justify-between gap-1">
+                    <h3 className="text-[14px] sm:text-base font-black text-slate-700 tracking-tight leading-snug break-keep">
                       시험·합격운
                     </h3>
                     <span className="shrink-0 rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-[10px] font-extrabold">
                       12월
                     </span>
                   </div>
-                  <p className="text-[11px] sm:text-xs font-medium text-slate-500 truncate">
+                  <p className="text-[11px] sm:text-xs font-medium text-slate-500 leading-snug break-keep">
                     오픈 준비 중이에요
                   </p>
                 </div>
@@ -1108,10 +1099,10 @@ export default function HomePage() {
                       {countdownLabel}
                     </span>
                   </div>
-                  <h2 className="font-serif text-base font-black text-white truncate">
+                  <h2 className="font-serif text-base font-black text-white leading-snug break-keep">
                     💬 달토에게 무엇이든 물어보세요
                   </h2>
-                  <p className="text-xs text-white/90 truncate">
+                  <p className="text-xs text-white/90 leading-snug break-keep">
                     1:1 사주 수다방 (무료수다권{" "}
                     <strong className="text-amber-200">{wallet.freeChatTickets}장</strong>)
                   </p>
@@ -1203,7 +1194,7 @@ export default function HomePage() {
                     <p className="text-[10.5px] font-extrabold text-slate-900">
                       {rev.user}
                     </p>
-                    <p className="text-[11.5px] text-slate-700 leading-relaxed line-clamp-3">
+                    <p className="text-[11.5px] text-slate-700 leading-relaxed break-keep">
                       “{rev.text}”
                     </p>
                   </div>

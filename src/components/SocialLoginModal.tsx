@@ -54,7 +54,7 @@ export function SocialLoginModal({
         </div>
 
         <p className="text-xs text-slate-600 leading-relaxed text-left bg-white/85 rounded-2xl p-3.5 border border-violet-100">
-          로그인하면 나만의 운세 기기가 켜지고, 본인·가족·연인·친구·동료의 사주를 저장해 언제든 꺼내볼 수 있어요!
+          로그인하면 나만의 달토 보름달이 켜지고, 본인·가족·연인·친구·동료의 사주를 저장해 언제든 꺼내볼 수 있어요!
         </p>
 
         <div className="space-y-2.5">

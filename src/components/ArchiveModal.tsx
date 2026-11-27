@@ -316,7 +316,7 @@ export function ArchiveModal({
                               </div>
                               {getPlanBadge(item.paidPlan)}
                             </div>
-                            <p className="line-clamp-1 text-xs font-semibold text-slate-700">
+                            <p className="line-clamp-2 break-keep leading-snug text-xs font-semibold text-slate-700">
                               [{getMenuLabel(item.report.input.menu)}]{" "}
                               {item.report.oneLineFact}
                             </p>
@@ -419,7 +419,7 @@ export function ArchiveModal({
                             {getPlanBadge(item.paidPlan)}
                           </div>
 
-                          <p className="mb-2 line-clamp-1 text-xs font-semibold text-slate-700">
+                          <p className="mb-2 line-clamp-2 break-keep leading-snug text-xs font-semibold text-slate-700">
                             [{getMenuLabel(item.report.input.menu)}]{" "}
                             {item.report.oneLineFact}
                           </p>

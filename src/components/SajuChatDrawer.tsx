@@ -191,7 +191,7 @@ export function SajuChatDrawer({
                   만세력 연동
                 </span>
               </div>
-              <p className="text-[10.5px] text-slate-500 truncate">
+              <p className="text-[10.5px] text-slate-500 leading-snug break-keep">
                 {profile.name}님 ({profile.birthDate}) · {countdownLabel}
               </p>
             </div>
@@ -249,7 +249,7 @@ export function SajuChatDrawer({
                     />
                   )}
                   <div
-                    className={`rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap shadow-xs ${
+                    className={`rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap break-keep shadow-xs ${
                       isUser
                         ? "bg-gradient-to-br from-[#6248a8] to-[#c96a8b] text-white rounded-br-sm"
                         : "bg-white/95 text-slate-800 border border-violet-100 rounded-bl-sm"
@@ -266,7 +266,7 @@ export function SajuChatDrawer({
                         key={sug}
                         type="button"
                         onClick={() => void handleSend(sug)}
-                        className="rounded-full bg-white hover:bg-orange-50 border border-orange-200/90 px-2.5 py-1 text-[11px] font-bold text-slate-800 transition flex items-center gap-1"
+                        className="rounded-full bg-white hover:bg-orange-50 border border-orange-200/90 px-2.5 py-1 text-[11px] font-bold text-slate-800 text-left break-keep transition flex items-center gap-1"
                       >
                         <Sparkles className="w-3 h-3 text-orange-500 shrink-0" />
                         {sug}

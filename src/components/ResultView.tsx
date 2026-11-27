@@ -405,10 +405,10 @@ export function ResultView({
                     {theme.nameKo} 오라
                   </span>
                 </p>
-                <h1 className="font-serif text-base sm:text-xl font-black text-slate-900 leading-snug break-keep">
+                <h1 className="font-serif text-base sm:text-xl font-black text-slate-900 leading-snug break-keep text-balance">
                   “{shortSummaryFact}”
                 </h1>
-                <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-slate-600 leading-relaxed break-keep">
                   {report.subHook}
                 </p>
               </div>
@@ -421,7 +421,7 @@ export function ResultView({
                     <span className="text-[11px] font-extrabold text-pink-700 block">
                       💕 {report.input.name} × {report.compatibility.partnerName} 궁합
                     </span>
-                    <span className="text-xs font-bold text-slate-700 truncate block">
+                    <span className="text-xs font-bold text-slate-700 leading-snug break-keep block">
                       {report.compatibility.gradeLabel}
                     </span>
                   </div>
@@ -447,10 +447,10 @@ export function ResultView({
                     className="w-8 h-8 rounded-2xl object-cover border border-orange-300 shrink-0"
                   />
                   <div className="min-w-0">
-                    <p className="text-xs font-extrabold text-slate-900 truncate">
+                    <p className="text-xs font-extrabold text-slate-900 leading-snug break-keep">
                       🐇 달토에게 이 결과로 꼬리 질문하기
                     </p>
-                    <p className="text-[10.5px] text-slate-600 truncate">
+                    <p className="text-[10.5px] text-slate-600 leading-snug break-keep">
                       내 원국을 기억한 채 뼈 때리는 채찍+따뜻한 처방 (무료수다권 우선 사용)
                     </p>
                   </div>
@@ -479,7 +479,7 @@ export function ResultView({
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-2 px-1 rounded-xl text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap ${
+                  className={`py-2 px-0.5 rounded-xl text-[10.5px] sm:text-xs font-extrabold transition whitespace-nowrap ${
                     active
                       ? "bg-gradient-to-r from-[#5b469c] to-[#d96b8a] text-white shadow-sm"
                       : "text-slate-600 hover:bg-violet-50"

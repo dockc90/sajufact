@@ -182,7 +182,7 @@ export function FortuneCatcherModal({
               <p className="text-xs font-extrabold text-emerald-700">
                 🍀 {draw.dateDisplay} · {profile.name}님
               </p>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug break-keep">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug break-keep text-balance">
                 “{draw.quote}”
               </h2>
               <p className="text-xs font-bold text-slate-500">— {draw.quoteSub}</p>
@@ -202,7 +202,7 @@ export function FortuneCatcherModal({
             </motion.div>
 
             {/* 행운 숫자 / 행운 컬러 / 행운 아이템 3칸 */}
-            <div className="w-full grid grid-cols-3 rounded-2xl bg-white/95 border border-amber-200/70 shadow-sm divide-x divide-amber-100 py-3 px-1">
+            <div className="w-full grid grid-cols-[0.75fr_1.1fr_1.15fr] items-center rounded-2xl bg-white/95 border border-amber-200/70 shadow-sm divide-x divide-amber-100 py-3 px-1">
               <div className="px-1.5 space-y-0.5">
                 <span className="block text-[10px] font-bold text-amber-600">
                   # 행운 숫자
@@ -215,16 +215,16 @@ export function FortuneCatcherModal({
                 <span className="block text-[10px] font-bold text-rose-500">
                   🎨 행운 컬러
                 </span>
-                <span className="block text-sm font-black text-slate-900 truncate">
-                  {draw.luckyColor}
+                <span className="block text-xs sm:text-sm font-black text-slate-900 leading-snug break-keep text-balance">
+                  {draw.luckyColor.split(/[·&,]/)[0].trim()}
                 </span>
               </div>
               <div className="px-1.5 space-y-0.5">
                 <span className="block text-[10px] font-bold text-emerald-600">
                   🍀 행운 아이템
                 </span>
-                <span className="block text-xs sm:text-sm font-black text-slate-900 truncate">
-                  {draw.luckyItem}
+                <span className="block text-xs sm:text-sm font-black text-slate-900 leading-snug break-keep text-balance">
+                  {draw.luckyItem.split(/[·&,]/)[0].trim()}
                 </span>
               </div>
             </div>
