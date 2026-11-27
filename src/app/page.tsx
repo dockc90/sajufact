@@ -547,6 +547,25 @@ export default function HomePage() {
     return true;
   };
 
+  const handleGoHome = () => {
+    setPhase("home");
+    setProfileModalOpen(false);
+    setProfileInitialForm(false);
+    setSocialLoginOpen(false);
+    setCatcherModalOpen(false);
+    setTarotOpen(false);
+    setArchiveOpen(false);
+    setChargeOpen(false);
+    setChatOpen(false);
+    setCompatSheetOpen(false);
+    setPolicyModal(null);
+    setPendingAction(null);
+    try {
+      window.history.replaceState(null, "", "/");
+    } catch {}
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <>
       <AuraBackground
@@ -558,25 +577,29 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-2">
           <button
             type="button"
-            onClick={() => {
-              setPhase("home");
-              try {
-                window.history.replaceState(null, "", "/");
-              } catch {}
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            className="flex items-center gap-1.5 text-left shrink-0"
+            onClick={handleGoHome}
+            aria-label="사주팩트 홈으로 이동"
+            title="홈으로 이동"
+            className="group flex items-center gap-2 text-left shrink-0"
           >
-            <img
-              src="/mascot/dalto-party.jpg"
-              alt="달토끼 달토"
-              className="w-8 h-8 rounded-2xl object-cover border border-orange-200 shadow-2xs"
-            />
-            <span className="font-serif text-base sm:text-lg font-black tracking-tight text-[#3d2d66]">
-              사주팩트
+            <span className="w-8 h-8 rounded-2xl bg-white/95 border border-slate-200/80 shadow-2xs flex items-center justify-center group-hover:scale-105 active:scale-95 transition">
+              <svg
+                viewBox="0 0 32 32"
+                className="w-5 h-5 text-[#141418]"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                {/* 토끼 발가락 4개 (아치형 길쭉한 타원) */}
+                <ellipse cx="8.2" cy="12.2" rx="2.3" ry="3.7" transform="rotate(-20 8.2 12.2)" />
+                <ellipse cx="13.2" cy="8.8" rx="2.4" ry="4.2" transform="rotate(-7 13.2 8.8)" />
+                <ellipse cx="18.8" cy="8.8" rx="2.4" ry="4.2" transform="rotate(7 18.8 8.8)" />
+                <ellipse cx="23.8" cy="12.2" rx="2.3" ry="3.7" transform="rotate(20 23.8 12.2)" />
+                {/* 토끼 뒷꿈치 도톰한 하트-타원 패드 */}
+                <path d="M 16 14.5 C 12.4 14.5 9.2 17.5 9.4 21.4 C 9.5 24.4 12.0 26.2 14.3 25.5 C 15.2 25.2 15.6 24.7 16 24.7 C 16.4 24.7 16.8 25.2 17.7 25.5 C 20.0 26.2 22.5 24.4 22.6 21.4 C 22.8 17.5 19.6 14.5 16 14.5 Z" />
+              </svg>
             </span>
-            <span className="hidden xs:inline-block rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-[10px] font-extrabold">
-              달토끼
+            <span className="font-serif text-base sm:text-lg font-black tracking-tight text-[#1c1b22]">
+              사주팩트
             </span>
           </button>
 
@@ -809,12 +832,16 @@ export default function HomePage() {
                     &ldquo;{currentProfileDraw.quote}&rdquo;
                   </p>
 
-                  <div className="inline-flex flex-wrap items-center gap-2 rounded-2xl bg-white/95 border border-white px-3 py-1.5 text-[11px] font-extrabold text-slate-700 shadow-xs">
-                    <span># {currentProfileDraw.luckyNumber}</span>
-                    <span className="text-slate-300">|</span>
-                    <span>🎨 {currentProfileDraw.luckyColor}</span>
-                    <span className="text-slate-300">|</span>
-                    <span>🍀 {currentProfileDraw.luckyItem}</span>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="rounded-full bg-white/95 border border-white px-2.5 py-1 text-[11px] font-extrabold text-slate-700 shadow-2xs">
+                      # {currentProfileDraw.luckyNumber}
+                    </span>
+                    <span className="rounded-full bg-white/95 border border-white px-2.5 py-1 text-[11px] font-extrabold text-slate-700 shadow-2xs">
+                      🎨 {currentProfileDraw.luckyColor}
+                    </span>
+                    <span className="rounded-full bg-white/95 border border-white px-2.5 py-1 text-[11px] font-extrabold text-slate-700 shadow-2xs">
+                      🍀 {currentProfileDraw.luckyItem}
+                    </span>
                   </div>
 
                   <div>

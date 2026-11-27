@@ -17,9 +17,19 @@ export function FortuneCatcherDevice({
 }: FortuneCatcherDeviceProps) {
   const uid = useId().replace(/:/g, "");
   const isSmall = size === "sm";
-  const bodyClipId = `bok-body-${uid}`;
-  const coralGradId = `bok-coral-${uid}`;
-  const haloGradId = `bok-halo-${uid}`;
+
+  const bodyClipId = `royal-body-${uid}`;
+  const cameoClipId = `royal-cameo-${uid}`;
+  const coralSilkId = `royal-coral-${uid}`;
+  const indigoSilkId = `royal-indigo-${uid}`;
+  const roseSilkId = `royal-rose-${uid}`;
+  const lavenderSilkId = `royal-lavender-${uid}`;
+  const velvetInnerId = `royal-velvet-${uid}`;
+  const goldMetalId = `royal-gold-${uid}`;
+  const pearlMedallionId = `royal-pearl-${uid}`;
+  const brocadePatternId = `royal-brocade-${uid}`;
+  const haloGradId = `royal-halo-${uid}`;
+  const satinSheenId = `royal-sheen-${uid}`;
 
   return (
     <button
@@ -27,361 +37,425 @@ export function FortuneCatcherDevice({
       onClick={onPress}
       aria-label="DALTO CATCHER 달토 복주머니"
       className={`group relative inline-flex flex-col items-center select-none focus:outline-none transition-transform duration-200 hover:scale-[1.03] active:scale-[0.97] ${
-        isSmall ? "w-[132px]" : "w-[224px] sm:w-[244px]"
+        isSmall ? "w-[138px]" : "w-[236px] sm:w-[258px]"
       }`}
     >
       <div className="relative w-full">
         <svg
-          viewBox="0 0 260 272"
-          className="w-full h-auto drop-shadow-[0_10px_22px_rgba(124,92,168,0.16)]"
+          viewBox="0 0 280 296"
+          className="w-full h-auto drop-shadow-[0_14px_26px_rgba(124,84,160,0.22)]"
           aria-hidden="true"
         >
           <defs>
+            {/* 복주머니 실루엣 클립패스 */}
             <clipPath id={bodyClipId}>
-              <path d="M 80 112 C 102 120 158 120 180 112 C 218 126 236 164 234 196 C 231 232 192 252 130 252 C 68 252 29 232 26 196 C 24 164 42 126 80 112 Z" />
+              <path d="M 86 122 C 110 132 170 132 194 122 C 234 138 256 178 252 214 C 248 254 206 274 140 274 C 74 274 32 254 28 214 C 24 178 46 138 86 122 Z" />
             </clipPath>
-            <linearGradient id={coralGradId} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#ff928b" />
-              <stop offset="100%" stopColor="#ff768f" />
-            </linearGradient>
-            <radialGradient id={haloGradId} cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#fff4b8" stopOpacity="0.95" />
-              <stop offset="65%" stopColor="#ffd7e8" stopOpacity="0.4" />
+
+            {/* 3D 달토끼 카메오(복주머니 입구 안쪽) 클립패스 */}
+            <clipPath id={cameoClipId}>
+              <path d="M 90 112 L 90 66 C 90 30 190 30 190 66 L 190 112 Q 140 124 90 112 Z" />
+            </clipPath>
+
+            {/* 파스텔 오라 광채 */}
+            <radialGradient id={haloGradId} cx="50%" cy="46%" r="50%">
+              <stop offset="0%" stopColor="#fff6c7" stopOpacity="0.95" />
+              <stop offset="55%" stopColor="#ffd7e8" stopOpacity="0.48" />
               <stop offset="100%" stopColor="#ffd7e8" stopOpacity="0" />
             </radialGradient>
+
+            {/* 실크 브로케이드(금박 구름·꽃) 패턴 */}
+            <pattern
+              id={brocadePatternId}
+              width="28"
+              height="28"
+              patternUnits="userSpaceOnUse"
+            >
+              <circle
+                cx="14"
+                cy="14"
+                r="8.5"
+                fill="none"
+                stroke="#ffe9b3"
+                strokeWidth="0.9"
+                strokeDasharray="2.5 2"
+                opacity="0.35"
+              />
+              <circle cx="14" cy="14" r="2.2" fill="#ffe9b3" opacity="0.32" />
+              <circle cx="0" cy="0" r="1.5" fill="#fff4d1" opacity="0.28" />
+              <circle cx="28" cy="28" r="1.5" fill="#fff4d1" opacity="0.28" />
+              <circle cx="28" cy="0" r="1.5" fill="#fff4d1" opacity="0.28" />
+              <circle cx="0" cy="28" r="1.5" fill="#fff4d1" opacity="0.28" />
+            </pattern>
+
+            {/* 3D 새틴 실크 그라데이션 */}
+            <linearGradient id={coralSilkId} x1="15%" y1="0%" x2="85%" y2="100%">
+              <stop offset="0%" stopColor="#ffabb0" />
+              <stop offset="48%" stopColor="#f46885" />
+              <stop offset="100%" stopColor="#d9486b" />
+            </linearGradient>
+
+            <linearGradient id={indigoSilkId} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#656cb8" />
+              <stop offset="100%" stopColor="#434886" />
+            </linearGradient>
+
+            <linearGradient id={roseSilkId} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#f8a7c5" />
+              <stop offset="100%" stopColor="#e5759e" />
+            </linearGradient>
+
+            <linearGradient id={lavenderSilkId} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#9c7de0" />
+              <stop offset="100%" stopColor="#7251b3" />
+            </linearGradient>
+
+            <linearGradient id={velvetInnerId} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#832140" />
+              <stop offset="100%" stopColor="#c43f64" />
+            </linearGradient>
+
+            {/* 입체 샴페인 골드 금속/매듭 그라데이션 */}
+            <linearGradient id={goldMetalId} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#fff2c6" />
+              <stop offset="48%" stopColor="#e8be66" />
+              <stop offset="100%" stopColor="#ba8832" />
+            </linearGradient>
+
+            {/* 진주 크림 메달 배경 */}
+            <radialGradient id={pearlMedallionId} cx="42%" cy="35%" r="65%">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="68%" stopColor="#fffaf0" />
+              <stop offset="100%" stopColor="#f8e8ca" />
+            </radialGradient>
+
+            {/* 비단 광택 하이라이트 */}
+            <linearGradient id={satinSheenId} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.34" />
+              <stop offset="55%" stopColor="#ffffff" stopOpacity="0.06" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+            </linearGradient>
           </defs>
 
-          {/* 바닥 부드러운 그림자 */}
+          {/* 다층 스튜디오 그림자 */}
           <ellipse
-            cx="130"
-            cy="255"
-            rx="88"
+            cx="140"
+            cy="279"
+            rx="94"
             ry="11"
-            fill="rgba(124, 98, 168, 0.14)"
+            fill="rgba(104, 72, 146, 0.14)"
+          />
+          <ellipse
+            cx="140"
+            cy="275"
+            rx="68"
+            ry="6.5"
+            fill="rgba(104, 72, 146, 0.12)"
           />
 
-          {/* 행운 뽑기 완료/로딩 시 은은한 뒤 광채 */}
-          {(mode === "loading" || mode === "result") && (
-            <circle cx="130" cy="76" r="64" fill={`url(#${haloGradId})`} />
-          )}
+          {/* 뒤쪽 파스텔 오라 후광 */}
+          <circle
+            cx="140"
+            cy="88"
+            r={mode === "off" ? 56 : 74}
+            fill={`url(#${haloGradId})`}
+            opacity={mode === "off" ? 0.45 : 0.95}
+          />
 
-          {/* 복주머니 뒷주름 & 깊은 안쪽 */}
+          {/* 복주머니 뒷단 실크 셔링 & 벨벳 안쪽 */}
           <path
-            d="M 66 76 C 74 68 88 78 96 71 C 106 64 118 75 130 69 C 142 75 154 64 164 71 C 172 78 186 68 194 76 L 180 118 L 80 118 Z"
-            fill="#f45d7b"
+            d="M 68 82 C 78 72 94 84 104 75 C 115 66 127 79 140 72 C 153 79 165 66 176 75 C 186 84 202 72 212 82 L 194 128 L 86 128 Z"
+            fill="#df4e6f"
           />
-          <ellipse cx="130" cy="96" rx="46" ry="20" fill="#c93e5d" />
+          <ellipse cx="140" cy="100" rx="52" ry="24" fill={`url(#${velvetInnerId})`} />
 
-          {/* 복주머니 안에서 빼꼼 고개 내민 달토끼 달토 */}
+          {/* 보송보송 3D 실사 달토끼 카메오 (복주머니 입구에서 빼꼼) */}
           <g className={mode === "loading" ? "animate-pixel-hop" : ""}>
-            {/* 왼쪽 귀 */}
-            <g transform="rotate(-11 104 52)">
-              <rect
-                x="92"
-                y="14"
-                width="22"
-                height="50"
-                rx="11"
-                fill="#ffffff"
-                stroke="#efe6f4"
-                strokeWidth="2"
-              />
-              <rect x="97" y="22" width="12" height="34" rx="6" fill="#ffacc4" />
-            </g>
-
-            {/* 오른쪽 귀 */}
-            <g transform="rotate(11 156 52)">
-              <rect
-                x="146"
-                y="14"
-                width="22"
-                height="50"
-                rx="11"
-                fill="#ffffff"
-                stroke="#efe6f4"
-                strokeWidth="2"
-              />
-              <rect x="151" y="22" width="12" height="34" rx="6" fill="#ffacc4" />
-            </g>
-
-            {/* 토끼 얼굴 */}
-            <ellipse
-              cx="130"
-              cy="80"
-              rx="41"
-              ry="32"
-              fill="#ffffff"
-              stroke="#efe6f4"
-              strokeWidth="2"
+            {/* 금실·진주 아치 프레임 */}
+            <path
+              d="M 88 112 L 88 65 C 88 26 192 26 192 65 L 192 112"
+              fill="#fff7fa"
+              stroke={`url(#${goldMetalId})`}
+              strokeWidth="4"
+              strokeLinejoin="round"
             />
+            <g clipPath={`url(#${cameoClipId})`}>
+              <image
+                href="/mascot/dalto-basic.jpg"
+                x="84"
+                y="24"
+                width="112"
+                height="112"
+                preserveAspectRatio="xMidYMid slice"
+                opacity={mode === "off" ? 0.68 : 1}
+              />
+              {mode === "off" && (
+                <rect
+                  x="84"
+                  y="24"
+                  width="112"
+                  height="112"
+                  fill="rgba(76, 62, 108, 0.24)"
+                />
+              )}
+            </g>
 
-            {/* 볼터치 */}
-            <ellipse cx="101" cy="84" rx="7" ry="4.5" fill="#ffabc2" opacity="0.8" />
-            <ellipse cx="159" cy="84" rx="7" ry="4.5" fill="#ffabc2" opacity="0.8" />
+            {/* 아치 위 진주 장식 비즈 */}
+            <circle cx="110" cy="41" r="2.6" fill="#fffdf9" stroke="#e4c274" strokeWidth="1" />
+            <circle cx="140" cy="34" r="3.1" fill="#fffdf9" stroke="#e4c274" strokeWidth="1.1" />
+            <circle cx="170" cy="41" r="2.6" fill="#fffdf9" stroke="#e4c274" strokeWidth="1" />
 
-            {/* 상태별 표정 */}
+            {/* 오프 상태일 때 잠든 zZ / 로딩일 때 반짝 별 */}
             {mode === "off" && (
               <g>
-                <path
-                  d="M 105 76 Q 111 81 117 76"
-                  fill="none"
-                  stroke="#5f4e77"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M 143 76 Q 149 81 155 76"
-                  fill="none"
-                  stroke="#5f4e77"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
+                <rect
+                  x="179"
+                  y="32"
+                  width="26"
+                  height="17"
+                  rx="8.5"
+                  fill="#ffffff"
+                  stroke="#ddd6fe"
+                  strokeWidth="1.2"
                 />
                 <text
-                  x="174"
+                  x="192"
                   y="44"
-                  fill="#8c75b3"
-                  fontSize="12"
+                  textAnchor="middle"
+                  fill="#7c63a6"
+                  fontSize="10"
                   fontWeight="800"
-                  opacity="0.85"
                 >
                   zZ
                 </text>
               </g>
             )}
-
-            {(mode === "idle" || mode === "result") && (
-              <g>
-                <circle cx="111" cy="76" r="4.5" fill="#35264c" />
-                <circle cx="149" cy="76" r="4.5" fill="#35264c" />
-                <circle cx="109.5" cy="74.2" r="1.6" fill="#ffffff" />
-                <circle cx="147.5" cy="74.2" r="1.6" fill="#ffffff" />
-              </g>
-            )}
-
             {mode === "loading" && (
-              <g>
-                <path
-                  d="M 105 78 Q 111 71 117 78"
-                  fill="none"
-                  stroke="#35264c"
-                  strokeWidth="2.8"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M 143 78 Q 149 71 155 78"
-                  fill="none"
-                  stroke="#35264c"
-                  strokeWidth="2.8"
-                  strokeLinecap="round"
-                />
-                <text x="64" y="42" fontSize="14">
-                  ✨
+              <g fill="#f5c451">
+                <text x="64" y="48" fontSize="15">
+                  ✦
                 </text>
-                <text x="182" y="40" fontSize="14">
-                  ✨
+                <text x="200" y="48" fontSize="15">
+                  ✦
                 </text>
               </g>
             )}
+          </g>
 
-            {/* 분홍 코 & 오밀조밀 입 */}
-            <ellipse cx="130" cy="83" rx="3.4" ry="2.4" fill="#ff6b93" />
+          {/* 복주머니 앞쪽 입체 비단 셔링 칼라 */}
+          <path
+            d="M 68 102 Q 80 114 92 106 Q 105 117 118 108 Q 129 118 140 110 Q 151 118 162 108 Q 175 117 188 106 Q 200 114 212 102 L 195 126 C 166 135 114 135 85 126 Z"
+            fill={`url(#${coralSilkId})`}
+            stroke="#f7d794"
+            strokeWidth="1.2"
+          />
+          <path
+            d="M 96 108 L 101 125 M 118 110 L 121 128 M 140 112 L 140 130 M 162 110 L 159 128 M 184 108 L 179 125"
+            stroke="#c73759"
+            strokeWidth="1.9"
+            strokeLinecap="round"
+            opacity="0.55"
+          />
+
+          {/* 비단 조각보 복주머니 몸통 (금박 브로케이드 + 금실 파이핑) */}
+          <g clipPath={`url(#${bodyClipId})`}>
+            {/* 메인 코랄 비단 */}
+            <rect x="20" y="116" width="240" height="164" fill={`url(#${coralSilkId})`} />
+
+            {/* 좌측 로열 인디고 비단 조각 */}
             <path
-              d="M 124 87 Q 127 90 130 87 Q 133 90 136 87"
+              d="M 20 176 C 52 182 70 208 74 276 L 20 276 Z"
+              fill={`url(#${indigoSilkId})`}
+            />
+            {/* 중앙 하단 블러시 로즈 비단 조각 */}
+            <path
+              d="M 60 186 C 110 198 170 198 220 186 L 206 278 L 74 278 Z"
+              fill={`url(#${roseSilkId})`}
+            />
+            {/* 우측 로열 아메시스트 라벤더 비단 조각 */}
+            <path
+              d="M 260 176 C 228 182 210 208 206 276 L 260 276 Z"
+              fill={`url(#${lavenderSilkId})`}
+            />
+
+            {/* 전통 금박 구름/꽃 브로케이드 질감 */}
+            <rect x="20" y="116" width="240" height="164" fill={`url(#${brocadePatternId})`} />
+
+            {/* 조각보 이음새 금실 자수 파이핑 */}
+            <path
+              d="M 22 176 C 54 182 70 208 74 275"
               fill="none"
-              stroke="#6b5278"
-              strokeWidth="1.8"
+              stroke="#f5d488"
+              strokeWidth="2.2"
+              opacity="0.85"
+            />
+            <path
+              d="M 258 176 C 226 182 210 208 206 275"
+              fill="none"
+              stroke="#f5d488"
+              strokeWidth="2.2"
+              opacity="0.85"
+            />
+            <path
+              d="M 60 186 C 110 198 170 198 220 186"
+              fill="none"
+              stroke="#f8dfa0"
+              strokeWidth="2"
+              opacity="0.8"
+            />
+
+            {/* 비단 3D 곡면 광택 */}
+            <path
+              d="M 42 152 C 74 134 128 134 176 146 C 138 158 92 178 48 212 C 34 190 34 166 42 152 Z"
+              fill={`url(#${satinSheenId})`}
+            />
+          </g>
+
+          {/* 샴페인 골드 노리개 술 (양 어깨 쪽으로 흘러내려 중앙 메달을 가리지 않음) */}
+          <g>
+            {/* 좌측 금끈 & 태슬 */}
+            <path
+              d="M 86 126 Q 68 152 66 184"
+              fill="none"
+              stroke={`url(#${goldMetalId})`}
+              strokeWidth="3.5"
               strokeLinecap="round"
             />
-
-            {/* 복주머니 입구에 올려놓은 작은 당근 & 토끼 앞발 */}
-            <g transform="translate(88, 86) rotate(-22)">
-              <path
-                d="M 0 10 C 0 3 12 3 12 10 L 9 28 C 8 32 4 32 3 28 Z"
-                fill="#ff8838"
-              />
-              <path
-                d="M 4 5 C 1 -2 5 -4 6 4 C 7 -4 12 -2 8 5 Z"
-                fill="#66c97f"
-              />
-            </g>
-            <ellipse
-              cx="102"
-              cy="101"
-              rx="8.5"
-              ry="6"
-              fill="#ffffff"
-              stroke="#efe6f4"
-              strokeWidth="1.6"
+            <circle cx="66" cy="186" r="4.2" fill="#fffdf9" stroke="#d4a44e" strokeWidth="1.5" />
+            <path d="M 62 190 L 58 210 L 74 210 L 70 190 Z" fill={`url(#${goldMetalId})`} />
+            <path
+              d="M 62 192 L 60 209 M 66 192 L 66 209 M 70 192 L 72 209"
+              stroke="#a87624"
+              strokeWidth="1"
+              opacity="0.6"
             />
-            <ellipse
-              cx="158"
-              cy="101"
-              rx="8.5"
-              ry="6"
-              fill="#ffffff"
-              stroke="#efe6f4"
-              strokeWidth="1.6"
+
+            {/* 우측 금끈 & 태슬 */}
+            <path
+              d="M 194 126 Q 212 152 214 184"
+              fill="none"
+              stroke={`url(#${goldMetalId})`}
+              strokeWidth="3.5"
+              strokeLinecap="round"
+            />
+            <circle cx="214" cy="186" r="4.2" fill="#fffdf9" stroke="#d4a44e" strokeWidth="1.5" />
+            <path d="M 210 190 L 206 210 L 222 210 L 218 190 Z" fill={`url(#${goldMetalId})`} />
+            <path
+              d="M 210 192 L 208 209 M 214 192 L 214 209 M 218 192 L 220 209"
+              stroke="#a87624"
+              strokeWidth="1"
+              opacity="0.6"
             />
           </g>
 
-          {/* 복주머니 앞주름 칼라 */}
+          {/* 허리 조임 샴페인 골드 끈 & 입체 전통 매듭 리본 */}
           <path
-            d="M 66 94 Q 77 104 88 97 Q 99 107 110 99 Q 120 108 130 101 Q 140 108 150 99 Q 161 107 172 97 Q 183 104 194 94 L 181 116 C 155 124 105 124 79 116 Z"
-            fill="#ff738f"
+            d="M 80 123 Q 140 144 200 123"
+            fill="none"
+            stroke={`url(#${goldMetalId})`}
+            strokeWidth="7.5"
+            strokeLinecap="round"
           />
           <path
-            d="M 96 101 L 100 116 M 118 103 L 120 118 M 142 103 L 140 118 M 164 101 L 160 116"
-            stroke="#eb5877"
-            strokeWidth="2"
+            d="M 80 123 Q 140 144 200 123"
+            fill="none"
+            stroke="#b5832c"
+            strokeWidth="1.5"
             strokeLinecap="round"
-            opacity="0.7"
+            opacity="0.55"
           />
 
-          {/* 복주머니 통통한 파스텔 색동 몸통 */}
-          <g clipPath={`url(#${bodyClipId})`}>
-            <rect x="20" y="108" width="220" height="150" fill={`url(#${coralGradId})`} />
-            {/* 좌측 파스텔 인디고 조각 */}
+          {/* 리본 나비 매듭 (cy=134, 하단 메달 cy=208과 충분한 간격 확보) */}
+          <g>
+            {/* 왼쪽 루프 */}
             <path
-              d="M 18 164 C 46 168 62 192 66 254 L 18 254 Z"
-              fill="#5360a8"
+              d="M 134 134 C 102 120 92 148 116 155 C 125 157 132 146 136 139 Z"
+              fill={`url(#${goldMetalId})`}
+              stroke="#b8842d"
+              strokeWidth="2"
+              strokeLinejoin="round"
             />
-            {/* 중앙 하단 파스텔 로즈핑크 조각 */}
+            {/* 오른쪽 루프 */}
             <path
-              d="M 52 174 C 102 184 158 184 208 174 L 196 256 L 64 256 Z"
-              fill="#f18fb1"
+              d="M 146 134 C 178 120 188 148 164 155 C 155 157 148 146 144 139 Z"
+              fill={`url(#${goldMetalId})`}
+              stroke="#b8842d"
+              strokeWidth="2"
+              strokeLinejoin="round"
             />
-            {/* 우측 파스텔 라벤더 보라 조각 */}
+            {/* 짧은 리본 끝 (메달 테두리 바깥 위쪽까지만) */}
             <path
-              d="M 242 164 C 214 168 198 192 194 254 L 242 254 Z"
-              fill="#8a68c8"
+              d="M 134 143 Q 124 156 114 166"
+              fill="none"
+              stroke={`url(#${goldMetalId})`}
+              strokeWidth="5.5"
+              strokeLinecap="round"
             />
-            {/* 윗부분 은은한 광택 */}
-            <ellipse
-              cx="84"
-              cy="148"
-              rx="22"
-              ry="10"
-              transform="rotate(-24 84 148)"
-              fill="#ffffff"
-              opacity="0.18"
+            <path
+              d="M 146 143 Q 156 156 166 166"
+              fill="none"
+              stroke={`url(#${goldMetalId})`}
+              strokeWidth="5.5"
+              strokeLinecap="round"
             />
+            {/* 중앙 매듭 + 진주 3알 장식 */}
+            <circle
+              cx="140"
+              cy="135"
+              r="7.5"
+              fill={`url(#${goldMetalId})`}
+              stroke="#b8842d"
+              strokeWidth="2"
+            />
+            <circle cx="131" cy="136" r="2.7" fill="#fffdf9" stroke="#d4a44e" strokeWidth="1" />
+            <circle cx="149" cy="136" r="2.7" fill="#fffdf9" stroke="#d4a44e" strokeWidth="1" />
+            <circle cx="140" cy="135" r="3" fill="#fffdf9" stroke="#d4a44e" strokeWidth="1" />
           </g>
 
-          {/* 샴페인 골드 조임 끈 */}
-          <path
-            d="M 76 113 Q 130 132 184 113"
-            fill="none"
-            stroke="#f1cb7e"
-            strokeWidth="7"
-            strokeLinecap="round"
-          />
-          <path
-            d="M 76 113 Q 130 132 184 113"
-            fill="none"
-            stroke="#d4a44e"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            opacity="0.65"
-          />
-
-          {/* 중앙 크림·골드 복(福) 메달 (리본 아래) */}
+          {/* 하단 중앙 주얼 베젤 진주-크림 福 메달 (노리개·매듭과 절대 겹치지 않음) */}
           <circle
-            cx="130"
-            cy="196"
-            r="44"
-            fill="#fffdf9"
-            stroke="#e3bd72"
+            cx="140"
+            cy="208"
+            r="49"
+            fill="#d9ad54"
+            opacity="0.35"
+          />
+          <circle
+            cx="140"
+            cy="208"
+            r="46"
+            fill={`url(#${pearlMedallionId})`}
+            stroke={`url(#${goldMetalId})`}
             strokeWidth="5.5"
           />
           <circle
-            cx="130"
-            cy="196"
-            r="38"
+            cx="140"
+            cy="208"
+            r="39.5"
             fill="none"
-            stroke="#f6e5be"
-            strokeWidth="1.5"
+            stroke="#f0d394"
+            strokeWidth="1.4"
           />
-
-          {/* 메달 위로 늘어지는 샴페인 골드 리본 매듭 & 꼬리 */}
-          <g>
-            {/* 왼쪽 리본 루프 */}
-            <path
-              d="M 126 128 C 94 114 82 146 108 156 C 118 159 124 144 128 134 Z"
-              fill="#f3cf87"
-              stroke="#d4a44e"
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M 121 134 C 103 128 97 143 111 149"
-              fill="none"
-              stroke="#d4a44e"
-              strokeWidth="2"
-              strokeLinecap="round"
-              opacity="0.7"
-            />
-
-            {/* 오른쪽 리본 루프 */}
-            <path
-              d="M 134 128 C 166 114 178 146 152 156 C 142 159 136 144 132 134 Z"
-              fill="#f3cf87"
-              stroke="#d4a44e"
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M 139 134 C 157 128 163 143 149 149"
-              fill="none"
-              stroke="#d4a44e"
-              strokeWidth="2"
-              strokeLinecap="round"
-              opacity="0.7"
-            />
-
-            {/* 아래로 드리운 두 리본 꼬리 */}
-            <path
-              d="M 124 137 Q 108 170 96 206"
-              fill="none"
-              stroke="#f1cb7e"
-              strokeWidth="6.5"
-              strokeLinecap="round"
-            />
-            <path
-              d="M 136 137 Q 152 170 164 206"
-              fill="none"
-              stroke="#f1cb7e"
-              strokeWidth="6.5"
-              strokeLinecap="round"
-            />
-
-            {/* 중앙 매듭 */}
-            <circle
-              cx="130"
-              cy="131"
-              r="7.5"
-              fill="#f5d593"
-              stroke="#d4a44e"
-              strokeWidth="2.5"
-            />
-          </g>
+          <circle cx="140" cy="166" r="2" fill="#fffdf9" />
+          <circle cx="140" cy="250" r="2" fill="#fffdf9" />
         </svg>
 
-        {/* 중앙 메달 안쪽 상태 텍스트 오버레이 */}
+        {/* 중앙 메달 안쪽 상태 UI (한 줄 보장 · 겹침 0%) */}
         <div
           className="pointer-events-none absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center text-center leading-none"
-          style={{ top: "56.5%", width: "31%", height: "30%" }}
+          style={{ top: "54.2%", width: "35%", height: "32.2%" }}
         >
           {mode === "off" && (
             <div className="flex flex-col items-center justify-center gap-0.5">
               <span
-                className={`font-serif font-black text-[#d8b46d] ${
+                className={`font-serif font-black text-[#c99b44] ${
                   isSmall ? "text-xl" : "text-4xl"
                 }`}
               >
                 福
               </span>
               {!isSmall && (
-                <span className="text-[9.5px] font-extrabold text-slate-400 tracking-tight">
+                <span className="text-[9.5px] font-extrabold text-slate-500 whitespace-nowrap">
                   터치해 켜기
                 </span>
               )}
@@ -391,14 +465,14 @@ export function FortuneCatcherDevice({
           {mode === "idle" && (
             <div className="flex flex-col items-center justify-center gap-0.5">
               <span
-                className={`font-serif font-black text-[#d8983e] drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] ${
+                className={`font-serif font-black text-[#d49635] drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] ${
                   isSmall ? "text-xl" : "text-4xl"
                 }`}
               >
                 福
               </span>
               {!isSmall && (
-                <span className="rounded-full bg-rose-100/90 text-rose-600 px-2 py-0.5 text-[9px] font-black animate-pulse">
+                <span className="rounded-full bg-rose-100/95 border border-rose-200 text-rose-600 px-2 py-0.5 text-[9px] font-black whitespace-nowrap animate-pulse">
                   뽑기!
                 </span>
               )}
@@ -408,7 +482,7 @@ export function FortuneCatcherDevice({
           {mode === "loading" && (
             <div className="flex flex-col items-center justify-center gap-0.5 animate-pulse">
               <span
-                className={`font-serif font-black text-[#d8983e] ${
+                className={`font-serif font-black text-[#d49635] ${
                   isSmall ? "text-xl" : "text-4xl"
                 }`}
               >
@@ -419,10 +493,10 @@ export function FortuneCatcherDevice({
           )}
 
           {mode === "result" && (
-            <div className="relative flex flex-col items-center justify-center">
+            <div className="relative flex flex-col items-center justify-center w-full">
               <span
                 aria-hidden="true"
-                className={`font-serif font-black text-[#f5dfb2]/55 leading-none select-none ${
+                className={`font-serif font-black text-[#f4dcb0]/50 leading-none select-none ${
                   isSmall ? "text-2xl" : "text-5xl"
                 }`}
               >
@@ -430,15 +504,15 @@ export function FortuneCatcherDevice({
               </span>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span
-                  className={`font-extrabold text-slate-600 ${
-                    isSmall ? "text-[7.5px] mb-0.5" : "text-[10.5px] mb-0.5"
+                  className={`font-extrabold text-slate-600 whitespace-nowrap tracking-tight ${
+                    isSmall ? "text-[8.5px] mb-0.5" : "text-[11px] mb-0.5"
                   }`}
                 >
                   행운점수
                 </span>
                 <span
-                  className={`font-mono font-black tracking-tight text-[#e94e7c] drop-shadow-[0_1px_0_rgba(255,255,255,0.95)] ${
-                    isSmall ? "text-lg" : "text-3xl sm:text-4xl"
+                  className={`font-mono font-black tracking-tight text-[#e84b7a] whitespace-nowrap drop-shadow-[0_1px_0_rgba(255,255,255,0.95)] ${
+                    isSmall ? "text-[22px]" : "text-3xl sm:text-4xl"
                   }`}
                 >
                   {score ?? 88}
@@ -454,7 +528,7 @@ export function FortuneCatcherDevice({
         className={
           isSmall
             ? "sr-only"
-            : "-mt-1 inline-flex items-center gap-1 rounded-full bg-white/85 border border-rose-200/80 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-rose-500 shadow-2xs"
+            : "-mt-1 inline-flex items-center gap-1 rounded-full bg-white/90 border border-rose-200/80 px-3 py-0.5 text-[10px] font-black tracking-wider text-rose-500 shadow-2xs"
         }
       >
         DALTO CATCHER
