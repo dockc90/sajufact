@@ -962,7 +962,7 @@ export default function HomePage() {
 
                   <div className="space-y-1">
                     <span className="block text-[10.5px] font-extrabold text-[#6b4f8c]">
-                      ✨ 오늘의 행운 컬러 · 아이템
+                      ✨ 부족한 기운을 채워주는 오늘의 컬러 · 사물
                     </span>
                     <div className="flex flex-wrap items-center gap-1.5">
                       <span className="rounded-full bg-white/95 border border-white px-2.5 py-1 text-[11px] font-extrabold text-slate-700 shadow-2xs">
@@ -1376,7 +1376,7 @@ export default function HomePage() {
                 📌 어떤 기능에서 만들 수 있나요?
               </p>
               <p className="text-[11.5px] text-slate-600 leading-relaxed">
-                상단의 <strong className="text-slate-900">7종 사주 메뉴(990원 사주·신년운세·연애운·궁합 등)</strong>를 열어보면, 결과 화면의 <strong className="text-violet-700">[✨ 사주 카드]</strong> 탭에서 내 사주에 맞춘 나만의 카드를 9:16 스토리·4:5 피드 PNG로 바로 저장할 수 있어요!{" "}
+                상단의 <strong className="text-slate-900">7종 사주 메뉴(990원 사주·신년운세·연애운·궁합 등)</strong>를 열면, 내 사주가 어떤 자연 물상(큰 나무·태양·보석·바다 등)인지와 <strong className="text-violet-700">부족한 기운을 채우는 색·숫자·사물</strong>이 담긴 나만의 사주 카드를 9:16·4:5 PNG로 저장할 수 있어요!{" "}
                 <span className="text-slate-500 font-semibold">(아래는 예시 이미지입니다)</span>
               </p>
             </div>
@@ -1424,9 +1424,9 @@ export default function HomePage() {
                         alt={`${showcaseTier} 티어 달토 카드`}
                         className="w-full h-full object-cover object-center"
                       />
-                      <div className="absolute inset-x-0 top-0 px-2.5 pt-2.5 flex items-center justify-between gap-1 pointer-events-none">
+                      <div className="inset-x-0 top-0 px-2.5 pt-2.5 flex items-center justify-between gap-1 pointer-events-none absolute">
                         <span className="inline-flex items-center gap-1 bg-white/90 rounded-full px-2 py-0.5 text-[9px] font-extrabold text-[#4b3880] shadow-2xs">
-                          🐇 예시 카드 · SAMPLE
+                          💎 영롱한 보석 · 예시
                         </span>
                         <span
                           className={`rounded-full px-2 py-0.5 text-[8.5px] font-extrabold shadow-2xs ${previewTheme.accentPill}`}
@@ -1447,31 +1447,34 @@ export default function HomePage() {
                         <span className={`text-[9.5px] font-extrabold ${previewTheme.accentText}`}>
                           예시) 김민지 · 신해(辛亥)일주
                         </span>
+                        <span className="text-[8.5px] font-bold text-slate-500">
+                          금(金) 38% 강세
+                        </span>
                       </div>
                       <div className="rounded-xl bg-white/90 border border-white px-2.5 py-1.5 text-center">
-                        <p className="font-serif text-[11px] font-black leading-snug break-keep">
-                          “겉은 무덤덤해도 속은 불꽃, 결정타 한 방이 있는 팔자”
+                        <p className="font-serif text-[10.5px] font-black leading-snug break-keep">
+                          “섬세하게 빛나는 영롱한 보석 팔자”
                         </p>
                         <p className="text-[8.5px] text-slate-600 font-medium leading-snug break-keep mt-0.5">
-                          신해(辛亥) 일주 기준, 가장 강한 기운은 수(水)(36%)이며 보완할 기운은 화(火)(8%)입니다.
+                          금(金)(38%)이 강한 보석 사주예요. 차갑게 굳지 않으려면 따뜻한 불(화 6%) 기운을 보완해야 빛나요.
                         </p>
                       </div>
                       <div className="grid grid-cols-2 gap-1 text-[8.5px] text-left">
                         <div className="rounded-lg bg-[#fff7ef] px-2 py-1 border border-orange-100">
                           <span className="block text-[7.5px] font-bold text-orange-600">
-                            🥕 횡재 피크
+                            ☀️ 부족한 불(화) 보완
                           </span>
-                          <span className="font-extrabold">9월 (94점)</span>
+                          <span className="font-extrabold">코랄 피치 · 숫자 2, 7</span>
                         </div>
-                        <div className="rounded-lg bg-[#fff1f4] px-2 py-1 border border-rose-100">
-                          <span className="block text-[7.5px] font-bold text-rose-600">
-                            ⚠️ 주의 시기
+                        <div className="rounded-lg bg-[#f5f3ff] px-2 py-1 border border-violet-100">
+                          <span className="block text-[7.5px] font-bold text-violet-700">
+                            🎒 지닐 행운 사물
                           </span>
-                          <span className="font-extrabold">2027년 4월</span>
+                          <span className="font-extrabold">골드 주얼리 · 캔들</span>
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-[8.5px] font-bold text-[#55447a]">
-                        <span>#달토사주카드 #달토처방</span>
+                        <span>#달토사주카드 #개운사물</span>
                         <span className="font-serif font-black tracking-wider">
                           🐇 daltosaju.com
                         </span>

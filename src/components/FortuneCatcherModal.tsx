@@ -202,30 +202,35 @@ export function FortuneCatcherModal({
             </motion.div>
 
             {/* 행운 숫자 / 행운 컬러 / 행운 아이템 3칸 */}
-            <div className="w-full grid grid-cols-[0.75fr_1.1fr_1.15fr] items-center rounded-2xl bg-white/95 border border-amber-200/70 shadow-sm divide-x divide-amber-100 py-3 px-1">
-              <div className="px-1.5 space-y-0.5">
-                <span className="block text-[10px] font-bold text-amber-600">
-                  # 행운 숫자
-                </span>
-                <span className="block text-sm font-black text-slate-900">
-                  {draw.luckyNumber}
-                </span>
-              </div>
-              <div className="px-1.5 space-y-0.5">
-                <span className="block text-[10px] font-bold text-rose-500">
-                  🎨 행운 컬러
-                </span>
-                <span className="block text-xs sm:text-sm font-black text-slate-900 leading-snug break-keep text-balance">
-                  {draw.luckyColor.split(/[·&,]/)[0].trim()}
-                </span>
-              </div>
-              <div className="px-1.5 space-y-0.5">
-                <span className="block text-[10px] font-bold text-emerald-600">
-                  🍀 행운 아이템
-                </span>
-                <span className="block text-xs sm:text-sm font-black text-slate-900 leading-snug break-keep text-balance">
-                  {draw.luckyItem.split(/[·&,]/)[0].trim()}
-                </span>
+            <div className="w-full space-y-1.5">
+              <p className="text-[11px] font-extrabold text-[#5c489b]">
+                ✨ 내 사주의 부족한 기운을 채워주는 오늘의 행운 처방
+              </p>
+              <div className="w-full grid grid-cols-[0.75fr_1.1fr_1.15fr] items-center rounded-2xl bg-white/95 border border-amber-200/70 shadow-sm divide-x divide-amber-100 py-3 px-1">
+                <div className="px-1.5 space-y-0.5">
+                  <span className="block text-[10px] font-bold text-amber-600">
+                    # 행운 숫자
+                  </span>
+                  <span className="block text-sm font-black text-slate-900">
+                    {draw.luckyNumber}
+                  </span>
+                </div>
+                <div className="px-1.5 space-y-0.5">
+                  <span className="block text-[10px] font-bold text-rose-500">
+                    🎨 보완 컬러
+                  </span>
+                  <span className="block text-xs sm:text-sm font-black text-slate-900 leading-snug break-keep text-balance">
+                    {draw.luckyColor.split(/[·&,]/)[0].trim()}
+                  </span>
+                </div>
+                <div className="px-1.5 space-y-0.5">
+                  <span className="block text-[10px] font-bold text-emerald-600">
+                    🎒 지닐 사물
+                  </span>
+                  <span className="block text-xs sm:text-sm font-black text-slate-900 leading-snug break-keep text-balance">
+                    {draw.luckyItem.split(/[·&,]/)[0].trim()}
+                  </span>
+                </div>
               </div>
             </div>
 

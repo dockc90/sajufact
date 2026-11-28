@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { buildNatureStory } from "@/lib/nature-story";
 import { generateSajuReport } from "@/lib/saju-engine";
 import { calculateDetailedSaju } from "@/lib/sajuCalculator";
 import type { SajuInput } from "@/lib/saju-types";
@@ -75,6 +76,7 @@ export async function POST(req: NextRequest) {
     // 2단계: GEMINI_API_KEY가 설정되어 있을 경우 Gemini Strict JSON Schema(0.85 temperature + 모델 폴백)로 문구 고도화
     const apiKey = process.env.GEMINI_API_KEY;
     if (apiKey) {
+      const nature = buildNatureStory(baseReport);
       const topMonths = [...baseReport.monthlyFlow]
         .sort((a, b) => b.score - a.score)
         .slice(0, 2)
@@ -86,9 +88,11 @@ export async function POST(req: NextRequest) {
         .map((m) => `${m.label}(${m.score}점)`)
         .join(", ");
 
-      const prompt = `당신은 '달토사주(SajuFact)'의 예리하고 성심성의껏 깊이 상담하는 AI 명리학 마스터입니다.
-"노력하면 잘 될 것이다", "건강 조심하라" 같은 뻔하고 추상적인 덕담은 100% 금지하며, 계산된 원국·오행·십성·월별 점수 근거를 구체적으로 녹여 사용자가 '돈이 전혀 아깝지 않다'고 느낄 만큼 밀도 높게 작성하세요.
+      const prompt = `당신은 '달토사주(DaltoSaju)'의 예리하고 성심성의껏 깊이 상담하는 AI 명리학 마스터입니다.
+"노력하면 잘 될 것이다", "건강 조심하라" 같은 뻔하고 추상적인 덕담은 100% 금지하며, 계산된 원국·오행·십성·월별 점수 근거와 자연 물상(예: '${nature.stemObjectName}') 스토리텔링을 자연스럽게 녹여 사용자가 '돈이 전혀 아깝지 않다'고 느낄 만큼 밀도 높게 작성하세요.
 유저: ${baseReport.input.name} (${input.gender === "male" ? "남성" : "여성"})
+자연 물상 비유: ${nature.stemObjectName} (${nature.balanceStory})
+부족 기운 보완 처방: ${nature.carryAdviceLong}
 원국: ${detailedCalc.saju_summary.pillars}
 일간: ${detailedCalc.saju_summary.day_master} (${detailedCalc.strengthLabel})
 오행 비율: 목 ${detailedCalc.saju_summary.five_elements_ratio.wood}%, 화 ${detailedCalc.saju_summary.five_elements_ratio.fire}%, 토 ${detailedCalc.saju_summary.five_elements_ratio.earth}%, 금 ${detailedCalc.saju_summary.five_elements_ratio.metal}%, 수 ${detailedCalc.saju_summary.five_elements_ratio.water}%

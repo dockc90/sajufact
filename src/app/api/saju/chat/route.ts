@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getChatPersona } from "@/lib/chat-personas";
+import { buildNatureStory } from "@/lib/nature-story";
 import { generateSajuReport } from "@/lib/saju-engine";
 import type { ChatPersonaId, SajuReport } from "@/lib/saju-types";
 import {
@@ -138,6 +139,7 @@ function buildIntentAwareFallbackReply(
   combinedTopic: string
 ): { reply: string; suggestions: string[] } {
   const intent = detectIntent(message, historyText, combinedTopic);
+  const nature = buildNatureStory(report);
   const dom = calc.saju_summary.dominant_element;
   const domPct = calc.saju_summary.five_elements_ratio[calc.dominantKey];
   const miss = calc.saju_summary.missing_element;
@@ -336,17 +338,15 @@ function buildIntentAwareFallbackReply(
     const today = report.todayReport;
     return {
       reply: wrapByPersonaTone(personaId, name, calc.dayIlju, {
-        factLead: `${name}님(${calc.dayIlju}), 오늘 하루 흐름과 기운을 끌어올리는 치트키만 쏙 뽑아드릴게요.`,
-        masterLead: `${name}님(${calc.dayIlju}) 명식에 부족한 ${miss} 기운을 보완하는 개운 방책을 전하오.`,
-        warmLead: `${name}님(${calc.dayIlju}), 오늘 하루가 한결 가볍고 행운이 잘 붙도록 도와드릴게요.`,
-        strategistLead: `${name}님(${calc.dayIlju}) 오늘 일진 & 개운 치트시트입니다.`,
+        factLead: `${name}님(${calc.dayIlju})은 **${nature.stemObjectName}** 사주예요! 오늘 기운을 채우는 치트키만 쏙 뽑아드릴게요.`,
+        masterLead: `${name}님(${calc.dayIlju}, ${nature.stemShortName}) 명식에 부족한 ${miss} 기운을 보완하는 개운 방책을 전하오.`,
+        warmLead: `${name}님(${calc.dayIlju}), ${nature.stemShortName}의 빛이 더욱 편안하게 살아나도록 도와드릴게요.`,
+        strategistLead: `${name}님(${calc.dayIlju}) 자연 물상 & 개운 치트시트입니다.`,
         coreBody:
+          `• 물상 진단: ${nature.balanceStory}\n` +
           `• 오늘 일진 요약: ${today ? `${today.dateLabel} (${today.todayGanZhiHangul}) · ${today.score}점 — ${today.headline}` : report.oneLineFact}\n` +
-          `• 부족한 ${miss} 채우는 개운 컬러/아이템: **${report.talisman.luckyColor}** / **${report.talisman.luckyItem}**\n` +
-          `• 행운 숫자 & 방향: **#${report.talisman.luckyNumber}** · **${report.talisman.luckyDirection}**`,
-        actionTail:
-          today?.avoidAction ||
-          report.talisman.talismanMantra,
+          `• 부족한 ${miss} 채우는 컬러/숫자/사물: **${nature.missingColorShort}** · 숫자 **${nature.missingNumbers}** · **${nature.missingCarryFull}**`,
+        actionTail: nature.carryAdviceLong,
       }),
       suggestions: [
         "2027년 꼭 피해야 할 달 몇 월?",
@@ -355,19 +355,19 @@ function buildIntentAwareFallbackReply(
     };
   }
 
-  // general (포괄 질문일 때도 구체적 월/점수/핵심 포인트를 모두 담아 정성껏 답변)
+  // general (포괄 질문일 때도 물상 비유 + 구체적 월/점수 + 보완 사물까지 정성껏 답변)
   return {
     reply: wrapByPersonaTone(personaId, name, calc.dayIlju, {
-      factLead: `${name}님(${calc.dayIlju}) 사주를 펼쳐 핵심만 빈틈없이 정리해 드릴게요.`,
-      masterLead: `${name}님(${calc.dayIlju}) 명식과 2027 정미년 세운(${seunRel})의 요체를 짚어드리겠소.`,
-      warmLead: `${name}님(${calc.dayIlju}), 지금 궁금하신 흐름이 한눈에 잡히도록 차근차근 풀어드릴게요.`,
-      strategistLead: `${name}님(${calc.dayIlju}) 2027년 핵심 판세 요약입니다.`,
+      factLead: `${name}님(${calc.dayIlju})은 **${nature.stemObjectName}** 사주예요. 핵심만 빈틈없이 정리해 드릴게요.`,
+      masterLead: `${name}님(${calc.dayIlju}, ${nature.stemShortName}) 명식과 2027 정미년 세운(${seunRel})의 요체를 짚어드리겠소.`,
+      warmLead: `${name}님(${calc.dayIlju}), ${nature.stemShortName} 같은 사주 흐름이 한눈에 잡히도록 차근차근 풀어드릴게요.`,
+      strategistLead: `${name}님(${calc.dayIlju}) 물상 & 2027년 핵심 판세 요약입니다.`,
       coreBody:
-        `원국에서 ${dom} 기운이 ${domPct}%로 강하고 ${miss} 기운이 비어 있는 ${calc.strengthLabel} 구조입니다.\n` +
+        `${nature.balanceStory}\n` +
         `• 가장 조심할 달: **${worst1.label}(${worst1.score}점)** · **${worst2.label}(${worst2.score}점)** — ${report.criticalMistake2027.title}\n` +
         `• 가장 좋은 달(횡재·도약): **${best1.label}(${best1.score}점)** · **${best2.label}(${best2.score}점)** — ${report.windfallTiming.moneyRoute}\n` +
-        `• 핵심 성향 포인트: ${report.oneLineFact}`,
-      actionTail: report.criticalMistake2027.actionRule,
+        `• 보완 컬러·숫자·사물: **${nature.missingColorShort}** · 숫자 **${nature.missingNumbers}** · **${nature.missingCarryShort}**`,
+      actionTail: `${report.criticalMistake2027.actionRule} (${nature.carryAdviceOneLine})`,
     }),
     suggestions: [
       `${worst1.label}에 구체적으로 뭘 조심해?`,
@@ -424,8 +424,9 @@ export async function POST(req: NextRequest) {
     const monthlySummary = fullReport.monthlyFlow
       .map((m) => `${m.label}:${m.score}점(${m.tag})`)
       .join(", ");
+    const nature = buildNatureStory(fullReport);
 
-    const systemInstruction = `너는 달토사주(SajuFact)의 사주 상담사 '${persona.name}' (${persona.badge})다.
+    const systemInstruction = `너는 달토사주(DaltoSaju)의 사주 상담사 '${persona.name}' (${persona.badge})다.
 사용자는 소중한 수다권/당근을 사용해 진심 어린 맞춤 상담을 요청했다. 절대 성의 없는 뻔한 말이나 추상적인 "상반기/하반기" 회피성 답변을 하지 말고, 사용자가 쓴 비용과 시간이 아깝지 않을 만큼 구체적이고 깊이 있는 답변을 작성하라.
 
 [상담사 페르소나 & 말투]
@@ -433,12 +434,15 @@ ${persona.systemPromptStyle}
 
 [필수 답변 원칙]
 1. **질문 직답 최우선**: 사용자가 "몇 월을 피해야 해?", "이직할까?", "재회 가능성?"처럼 구체적으로 물으면 첫 1~2문장에서 바로 정확한 달(예: ${sortedLow[0].label}, ${sortedHigh[0].label}), 점수, 예/아니오 또는 조건부 결론을 먼저 답하라. "상반기/하반기" 같은 두루뭉술한 표현으로 얼버무리지 마라.
-2. **만세력·월운 근거 인용**: 아래 12개월 흐름, 원국 오행 비율, 십성, 2027 정미년 세운을 최소 2가지 이상 자연스럽게 녹여 '내 사주를 꿰뚫어 보고 답한다'는 신뢰감을 줘라.
-3. **밀도 높은 구성**: 모바일에서 읽기 좋게 줄바꿈(2~3단락)을 활용해 공백 포함 **380~620자** 내외로 정성껏 작성하고, 마지막에는 오늘 당장 실행할 수 있는 현실 처방 1~2가지를 반드시 제시하라.
-4. **꼬리 질문 추천**: suggestions에는 방금 답변에서 자연스럽게 이어지는 구체적 꼬리 질문 2개(각 22자 이내)를 반환하라.
+2. **자연 물상 & 보완 사물 스토리텔링**: 내담자의 사주를 '${nature.stemObjectName}' 같은 자연 물상으로 쉽게 비유해 설명하고, 부족한 ${nature.missingNameKo} 기운을 채워줄 색(${nature.missingColorShort}), 숫자(${nature.missingNumbers}), 들고 다닐 사물(${nature.missingCarryShort}) 처방을 처방전 말미에 자연스럽게 녹여라.
+3. **만세력·월운 근거 인용**: 아래 12개월 흐름, 원국 오행 비율, 십성, 2027 정미년 세운을 최소 2가지 이상 자연스럽게 녹여 '내 사주를 꿰뚫어 보고 답한다'는 신뢰감을 줘라.
+4. **밀도 높은 구성**: 모바일에서 읽기 좋게 줄바꿈(2~3단락)을 활용해 공백 포함 **380~620자** 내외로 정성껏 작성하라.
+5. **꼬리 질문 추천**: suggestions에는 방금 답변에서 자연스럽게 이어지는 구체적 꼬리 질문 2개(각 22자 이내)를 반환하라.
 
-[내담자 정밀 만세력 데이터]
+[내담자 정밀 만세력 & 물상 데이터]
 - 이름/성별: ${profile.name} (${profile.gender === "male" ? "남성" : "여성"})
+- 자연 물상 비유: ${nature.stemObjectName} (${nature.dominantSummary}) — ${nature.balanceStory}
+- 부족 오행 보완 사물: ${nature.carryAdviceLong}
 - 사주 원국: ${calc.saju_summary.pillars}
 - 일간/강약: ${calc.saju_summary.day_master} (${calc.strengthLabel})
 - 오행 분포: 목 ${calc.saju_summary.five_elements_ratio.wood}%, 화 ${calc.saju_summary.five_elements_ratio.fire}%, 토 ${calc.saju_summary.five_elements_ratio.earth}%, 금 ${calc.saju_summary.five_elements_ratio.metal}%, 수 ${calc.saju_summary.five_elements_ratio.water}%

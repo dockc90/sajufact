@@ -32,6 +32,7 @@ import {
   calculateTodayFortune,
   toShortCardFact,
 } from "@/lib/saju-engine";
+import { buildNatureStory } from "@/lib/nature-story";
 import type { MenuCategory, PaymentPlan, SajuReport } from "@/lib/saju-types";
 
 const MENU_COVER_IMAGE: Record<MenuCategory, string> = {
@@ -139,6 +140,7 @@ export function ResultView({
   const [extraPartnerBirth, setExtraPartnerBirth] = useState("1995-08-20");
 
   const theme = ELEMENT_THEMES[report.dominantElement];
+  const nature = buildNatureStory(report);
   const activeMenuMeta =
     MENU_ITEMS.find((m) => m.id === report.input.menu) ?? MENU_ITEMS[1];
   const coinCost = Math.max(1, activeMenuMeta.coinCost || 1);
@@ -424,8 +426,8 @@ export function ResultView({
                   {report.dayBranchHangul ?? ""}(
                   {report.dayMasterHanja}
                   {report.dayBranchHanja ?? ""})일주 ·{" "}
-                  <span className="text-violet-700">
-                    {theme.nameKo} 오라
+                  <span className="text-violet-700 font-extrabold">
+                    {nature.stemEmoji} {nature.stemShortName} ({theme.nameKo} {nature.dominantPct}%)
                   </span>
                 </p>
                 <h1 className="font-serif text-base sm:text-xl font-black text-slate-900 leading-snug break-keep text-balance">
@@ -434,6 +436,16 @@ export function ResultView({
                 <p className="text-xs text-slate-600 leading-relaxed break-keep">
                   {report.subHook}
                 </p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-white/85 border border-violet-100/90 px-3.5 py-2.5 text-left flex items-center justify-between gap-2 flex-wrap">
+              <div className="text-[11px] text-slate-700 font-semibold leading-snug break-keep">
+                <span className="font-extrabold text-[#4c3787]">
+                  {nature.missingEmoji} 부족한 {nature.missingShortKo} 보완:
+                </span>{" "}
+                {nature.missingColorShort} · 숫자 {nature.missingNumbers} ·{" "}
+                <strong className="text-slate-900">{nature.missingCarryShort}</strong>
               </div>
             </div>
 
@@ -1110,78 +1122,201 @@ export function ResultView({
           )}
 
           {activeTab === "core" && (
-            <section className="glass-card rounded-3xl p-5 space-y-4 text-left">
-              <div className="flex items-center justify-between">
-                <h2 className="font-serif text-base font-black text-slate-900">
-                  만세력 사주 원국 & 오행 비율
+            <div className="space-y-4">
+              {/* A. 나의 사주 자연 물상 풀이 */}
+              <section className="glass-card rounded-3xl p-5 space-y-3 border-l-4 border-l-violet-500 text-left">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 text-violet-800 px-2.5 py-0.5 text-[10.5px] font-extrabold">
+                    {nature.stemEmoji} 나의 사주 물상 풀이
+                  </span>
+                  <span className="text-[11px] font-bold text-slate-500">
+                    {nature.dominantNameKo} {nature.dominantPct}% 강세
+                  </span>
+                </div>
+                <h2 className="font-serif text-base sm:text-lg font-black text-slate-900 leading-snug break-keep">
+                  {report.input.name}님은{" "}
+                  <span className="text-[#5c489b]">‘{nature.stemObjectName}’</span> 사주예요
                 </h2>
-                <div className="flex flex-wrap gap-1">
-                  {report.hashtags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-700"
+                <p className="text-[13px] text-slate-700 leading-relaxed break-keep">
+                  {nature.metaphorDesc}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                  <div className="rounded-2xl bg-emerald-50/80 border border-emerald-200/80 p-3 space-y-1">
+                    <p className="text-[11px] font-extrabold text-emerald-800">
+                      ✨ 타고난 강점
+                    </p>
+                    <p className="text-xs text-slate-700 leading-relaxed break-keep">
+                      {nature.strengthNote}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl bg-amber-50/80 border border-amber-200/80 p-3 space-y-1">
+                    <p className="text-[11px] font-extrabold text-amber-800">
+                      ⚠️ 넘칠 때 주의할 점
+                    </p>
+                    <p className="text-xs text-slate-700 leading-relaxed break-keep">
+                      {nature.cautionNote}
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* B. 만세력 4기둥 & 오행 비율 + 기둥별 상세 사주 풀이 */}
+              <section className="glass-card rounded-3xl p-5 space-y-4 text-left">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <h2 className="font-serif text-base font-black text-slate-900">
+                    만세력 사주 원국 &amp; 오행 비율
+                  </h2>
+                  <div className="flex flex-wrap gap-1">
+                    {report.hashtags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-700"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  {report.pillars.map((p) => (
+                    <div
+                      key={p.label}
+                      className="rounded-2xl bg-white/85 border border-white py-2.5 px-1 shadow-xs"
                     >
-                      {tag}
-                    </span>
+                      <span className="block text-[10px] font-semibold text-slate-400">
+                        {p.label}
+                      </span>
+                      <span className="block font-serif text-lg font-extrabold text-slate-900 mt-0.5">
+                        {p.hanja}
+                      </span>
+                      <span className="block text-[11px] font-bold text-slate-500">
+                        {p.hangul}
+                      </span>
+                    </div>
                   ))}
                 </div>
-              </div>
 
-              <div className="grid grid-cols-4 gap-2 text-center">
-                {report.pillars.map((p) => (
-                  <div
-                    key={p.label}
-                    className="rounded-2xl bg-white/85 border border-white py-2.5 px-1 shadow-xs"
-                  >
-                    <span className="block text-[10px] font-semibold text-slate-400">
-                      {p.label}
-                    </span>
-                    <span className="block font-serif text-lg font-extrabold text-slate-900 mt-0.5">
-                      {p.hanja}
-                    </span>
-                    <span className="block text-[11px] font-bold text-slate-500">
-                      {p.hangul}
-                    </span>
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-white/60 rounded-2xl p-3.5 border border-white">
+                  <div className="sm:col-span-5 flex justify-center">
+                    <FiveElementRadarSvg
+                      elements={report.elements}
+                      strokeColor={theme.goldPrimary}
+                      fillColor={`${theme.goldPrimary}40`}
+                      className="w-36 h-36"
+                    />
                   </div>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-white/60 rounded-2xl p-3.5 border border-white">
-                <div className="sm:col-span-5 flex justify-center">
-                  <FiveElementRadarSvg
-                    elements={report.elements}
-                    strokeColor={theme.goldPrimary}
-                    fillColor={`${theme.goldPrimary}40`}
-                    className="w-36 h-36"
-                  />
-                </div>
-                <div className="sm:col-span-7 space-y-2">
-                  {report.elements.map((el) => {
-                    const elTheme = ELEMENT_THEMES[el.key];
-                    return (
-                      <div key={el.key} className="flex items-center gap-2">
-                        <span className="w-12 text-[11px] font-bold text-slate-700 shrink-0">
-                          {el.nameKo}
-                        </span>
-                        <div className="flex-1 h-2 rounded-full bg-slate-200 overflow-hidden">
-                          <div
-                            style={{ width: `${Math.max(6, el.percentage)}%` }}
-                            className={`h-full rounded-full bg-gradient-to-r ${elTheme.barColor}`}
-                          />
+                  <div className="sm:col-span-7 space-y-2">
+                    {report.elements.map((el) => {
+                      const elTheme = ELEMENT_THEMES[el.key];
+                      return (
+                        <div key={el.key} className="flex items-center gap-2">
+                          <span className="w-12 text-[11px] font-bold text-slate-700 shrink-0">
+                            {el.nameKo}
+                          </span>
+                          <div className="flex-1 h-2 rounded-full bg-slate-200 overflow-hidden">
+                            <div
+                              style={{ width: `${Math.max(6, el.percentage)}%` }}
+                              className={`h-full rounded-full bg-gradient-to-r ${elTheme.barColor}`}
+                            />
+                          </div>
+                          <span className="w-8 text-right text-[11px] font-extrabold text-slate-800">
+                            {el.percentage}%
+                          </span>
                         </div>
-                        <span className="w-8 text-right text-[11px] font-extrabold text-slate-800">
-                          {el.percentage}%
-                        </span>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
 
-              <p className="text-xs text-slate-600 leading-relaxed">
-                {report.elementDiagnosis}
-              </p>
-            </section>
+                {/* 기둥별 쉬운 사주풀이 */}
+                <div className="space-y-2 pt-1">
+                  <p className="text-xs font-black text-slate-900">
+                    📜 내 사주 4기둥 한눈에 풀어보기
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {nature.pillarReadings.map((pr) => (
+                      <div
+                        key={pr.label}
+                        className="rounded-2xl bg-white/85 border border-violet-100/80 p-3 space-y-1"
+                      >
+                        <div className="flex items-center justify-between gap-1.5">
+                          <span className="text-[11px] font-extrabold text-[#4c3787]">
+                            {pr.roleTitle}
+                          </span>
+                          <span className="rounded-md bg-violet-50 border border-violet-100 px-1.5 py-0.5 text-[10px] font-serif font-black text-slate-800 shrink-0">
+                            {pr.hanja}({pr.hangul})
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600 leading-relaxed break-keep">
+                          {pr.summary}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* C. 부족한 기운 보완 & 개운 사물 처방전 */}
+              <section className="glass-card rounded-3xl p-5 space-y-3 border-l-4 border-l-orange-400 text-left">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 text-orange-800 px-2.5 py-0.5 text-[10.5px] font-extrabold">
+                    {nature.missingEmoji} 부족한 {nature.missingShortKo} 보완 처방
+                  </span>
+                  <span className="text-[11px] font-bold text-rose-600">
+                    현재 {nature.missingNameKo} {nature.missingPct}%
+                  </span>
+                </div>
+                <h3 className="font-serif text-base font-black text-slate-900 leading-snug break-keep">
+                  {nature.balanceStory}
+                </h3>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div className="rounded-2xl bg-[#fff8f0] border border-orange-200/70 p-3 space-y-0.5">
+                    <span className="text-[10.5px] font-bold text-orange-700 block">
+                      🎨 보완 컬러
+                    </span>
+                    <strong className="text-xs font-black text-slate-900 break-keep">
+                      {nature.missingColorShort}
+                    </strong>
+                  </div>
+                  <div className="rounded-2xl bg-[#fff5f8] border border-rose-200/70 p-3 space-y-0.5">
+                    <span className="text-[10.5px] font-bold text-rose-700 block">
+                      🔢 행운 숫자
+                    </span>
+                    <strong className="text-xs font-black text-slate-900">
+                      {nature.missingNumbers}
+                    </strong>
+                  </div>
+                  <div className="rounded-2xl bg-[#f5f3ff] border border-violet-200/70 p-3 space-y-0.5">
+                    <span className="text-[10.5px] font-bold text-violet-700 block">
+                      🎒 지닐 사물
+                    </span>
+                    <strong className="text-xs font-black text-slate-900 break-keep">
+                      {nature.missingCarryShort}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl bg-white/90 border border-orange-100 p-3.5 text-xs text-slate-700 leading-relaxed break-keep">
+                  <strong className="text-slate-900">💡 달토의 일상 개운 팁:</strong>{" "}
+                  {nature.carryAdviceLong}
+                </div>
+              </section>
+
+              {/* D. 타고난 본성 & 2027년 핵심 해석 */}
+              <section className="glass-card rounded-3xl p-5 space-y-2.5 text-left">
+                <h3 className="font-serif text-sm sm:text-base font-black text-slate-900">
+                  🧭 {report.input.name}님의 타고난 기질 종합 풀이
+                </h3>
+                <p className="text-xs sm:text-[13px] text-slate-700 leading-relaxed break-keep">
+                  {report.coreFactReport.temperament}
+                </p>
+                <p className="rounded-xl bg-white/85 border border-violet-100 px-3 py-2 text-xs font-semibold text-slate-700 leading-relaxed break-keep">
+                  {report.elementDiagnosis}
+                </p>
+              </section>
+            </div>
           )}
 
           {activeTab === "card" && (

@@ -3,7 +3,8 @@
 import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { Camera, Check, Download, Sparkles } from "lucide-react";
-import { ELEMENT_THEMES, toShortCardFact } from "@/lib/saju-engine";
+import { buildNatureStory } from "@/lib/nature-story";
+import { ELEMENT_THEMES } from "@/lib/saju-engine";
 import type { ElementKey, SajuReport } from "@/lib/saju-types";
 
 interface ShareCardStudioProps {
@@ -98,16 +99,12 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
   const [savedToast, setSavedToast] = useState<string | null>(null);
 
   const theme = ELEMENT_THEMES[report.dominantElement];
+  const nature = buildNatureStory(report);
   const cardTier = resolveCardTier(report.tierBadge);
   const tierTheme = TIER_CARD_THEMES[cardTier];
 
   const dayPillar =
     report.pillars.find((p) => p.label === "일주") ?? report.pillars[1];
-  const bestMonth = [...report.monthlyFlow].sort((a, b) => b.score - a.score)[0];
-  const shortFact = toShortCardFact(report.oneLineFact, 40);
-  const shortDangerMonth = report.criticalMistake2027.dangerMonth
-    .split("(")[0]
-    .trim();
 
   const handleDownload = async (targetRatio: CardRatio) => {
     setRatio(targetRatio);
@@ -161,11 +158,11 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
             티어별 달토 사주 카드
           </span>
           <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">
-            {theme.auraLabel.replace(" 오라", " 기운")}
+            {nature.stemEmoji} {nature.stemShortName} · {theme.nameKo} 기운
           </span>
         </div>
         <h3 className="font-serif text-base sm:text-lg font-black text-slate-900 leading-snug break-keep">
-          {report.input.name}님의 {cardTier} 티어 카드 · {theme.nameKo}
+          {report.input.name}님의 {cardTier} 티어 카드 · {nature.stemShortName}
         </h3>
       </div>
 
@@ -195,7 +192,7 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
         </button>
       </div>
 
-      {/* PNG 저장 캡처 영역 — 티어 전용 달토 일러스트 + 하단 파스텔 오라 정보 패널 */}
+      {/* PNG 저장 캡처 영역 — 티어 전용 달토 일러스트 + 물상/보완 처방 패널 */}
       <div className="flex justify-center">
         <div
           ref={cardRef}
@@ -213,7 +210,7 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
             {/* 상단 가장자리 작은 배지 2개 */}
             <div className="absolute inset-x-0 top-0 px-3 pt-3 flex items-center justify-between gap-2 pointer-events-none">
               <span className="inline-flex items-center gap-1 bg-white/88 backdrop-blur-sm border border-white rounded-full px-2.5 py-0.5 text-[10px] font-extrabold text-[#4b3880] shadow-xs whitespace-nowrap">
-                🐇 달토 사주 카드 · {theme.nameKo}
+                {nature.stemEmoji} {nature.stemShortName}
               </span>
               <span
                 className={`px-2.5 py-0.5 rounded-full text-[9.5px] font-extrabold whitespace-nowrap shadow-xs ${tierTheme.accentPill}`}
@@ -227,56 +224,59 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
             />
           </div>
 
-          {/* 2) 하단 컴팩트 파스텔 정보 패널 */}
+          {/* 2) 하단 컴팩트 사주 물상 & 개운 처방 패널 */}
           <div
             className={`shrink-0 px-3.5 py-2.5 space-y-2 border-t border-white/90 ${tierTheme.panelBg}`}
           >
-            {/* 이름 + 일주 */}
+            {/* 이름 + 일주 + 주된 기운 */}
             <div className="flex items-center justify-between gap-2">
               <span className={`text-[10.5px] font-extrabold ${tierTheme.accentText}`}>
                 {report.input.name} · {dayPillar.hangul}({dayPillar.hanja})일주
               </span>
+              <span className="text-[9.5px] font-bold text-slate-600 whitespace-nowrap">
+                {nature.dominantSummary}
+              </span>
             </div>
 
-            {/* 달토 핵심 총평 + 작은 설명 */}
+            {/* 자연 물상 핵심 문구 + 부족한 기운 설명 */}
             <div className="rounded-2xl bg-white/90 border border-white px-3 py-2 text-center shadow-2xs">
               <h4
                 className={`font-serif font-black leading-snug break-keep text-balance text-[#2b2242] ${
-                  ratio === "9:16" ? "text-[13px]" : "text-[12px]"
+                  ratio === "9:16" ? "text-[12.5px]" : "text-[11.5px]"
                 }`}
               >
-                “{shortFact}”
+                “{nature.cardHeadline}”
               </h4>
               <p
                 className={`text-slate-600 font-medium leading-snug break-keep text-balance mt-1 ${
-                  ratio === "9:16" ? "text-[9.5px]" : "text-[9px]"
+                  ratio === "9:16" ? "text-[9.5px]" : "text-[8.5px]"
                 }`}
               >
-                {report.elementDiagnosis}
+                {nature.cardStorySub}
               </p>
             </div>
 
-            {/* 횡재 & 주의 2칸 미니 지표 */}
+            {/* 부족한 기운 보완 컬러·숫자 & 추천 사물 2칸 */}
             <div className="grid grid-cols-2 gap-1.5 text-left">
               <div className="rounded-xl px-2.5 py-1.5 bg-[#fff7ef] border border-orange-200/60">
                 <span className="text-[8px] font-bold text-orange-600 block">
-                  🥕 횡재 피크
+                  {nature.missingEmoji} 부족한 {nature.missingShortKo} 보완
                 </span>
-                <span className="text-[10px] font-extrabold text-slate-900 whitespace-nowrap">
-                  {bestMonth.label} ({bestMonth.score}점)
+                <span className="text-[9.5px] font-extrabold text-slate-900 leading-snug break-keep block">
+                  {nature.missingColorShort} · 숫자 {nature.missingNumbers}
                 </span>
               </div>
-              <div className="rounded-xl px-2.5 py-1.5 bg-[#fff1f4] border border-rose-200/60">
-                <span className="text-[8px] font-bold text-rose-600 block">
-                  ⚠️ 주의 시기
+              <div className="rounded-xl px-2.5 py-1.5 bg-[#f5f3ff] border border-violet-200/60">
+                <span className="text-[8px] font-bold text-violet-700 block">
+                  🎒 지닐 행운 사물
                 </span>
-                <span className="text-[10px] font-extrabold text-slate-900 whitespace-nowrap">
-                  {shortDangerMonth}
+                <span className="text-[9.5px] font-extrabold text-slate-900 leading-snug break-keep block">
+                  {nature.missingCarryShort}
                 </span>
               </div>
             </div>
 
-            {/* 9:16 스토리 전용 — 얇은 오행 오라 바 + 달토 1줄 처방 */}
+            {/* 9:16 스토리 전용 — 오행 분포 바 + 사물 소지 조언 */}
             {ratio === "9:16" && (
               <div className="space-y-1.5">
                 <div className="h-1.5 w-full rounded-full overflow-hidden flex bg-white border border-white">
@@ -288,8 +288,8 @@ export function ShareCardStudio({ report }: ShareCardStudioProps) {
                     />
                   ))}
                 </div>
-                <p className="rounded-xl bg-white/80 border border-violet-100/80 px-2.5 py-1 text-[9.5px] font-semibold text-slate-700 leading-snug break-keep text-balance">
-                  💌 {report.talisman.talismanMantra}
+                <p className="rounded-xl bg-white/85 border border-violet-100/80 px-2.5 py-1 text-[9px] font-semibold text-slate-700 leading-snug break-keep text-balance">
+                  💡 {nature.carryAdviceOneLine}
                 </p>
               </div>
             )}
