@@ -175,7 +175,7 @@ export function ShareCardStudio({
 
       setSavedToast(
         cardKind === "today"
-          ? `${targetRatio} 오늘의 카드 (${todayStory.score}점)가 고화질 PNG로 저장되었습니다!`
+          ? `${targetRatio} 오늘의 행운카드 (${todayStory.score}점)가 고화질 PNG로 저장되었습니다!`
           : `${targetRatio} ${cardTier} 티어 달토 사주 카드가 고화질 PNG로 저장되었습니다!`
       );
       setTimeout(() => setSavedToast(null), 3000);
@@ -193,7 +193,7 @@ export function ShareCardStudio({
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-violet-700 bg-violet-100/80 px-2.5 py-0.5 rounded-full">
             <Camera className="w-3 h-3" />
-            {cardKind === "today" ? "오늘의 달토 카드" : "티어별 달토 사주 카드"}
+            {cardKind === "today" ? "오늘의 행운카드" : "티어별 달토 사주 카드"}
           </span>
           <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">
             {cardKind === "today"
@@ -203,12 +203,12 @@ export function ShareCardStudio({
         </div>
         <h3 className="font-serif text-base sm:text-lg font-black text-slate-900 leading-snug break-keep">
           {cardKind === "today"
-            ? `${report.input.name}님의 오늘의 카드 · ${todayStory.score}점`
+            ? `${report.input.name}님의 오늘의 행운카드 · ${todayStory.score}점`
             : `${report.input.name}님의 ${cardTier} 티어 사주 카드 · ${nature.stemShortName}`}
         </h3>
       </div>
 
-      {/* 1차 탭: 오늘의 카드 / 사주 카드 */}
+      {/* 1차 탭: 오늘의 행운카드 / 사주 카드 */}
       <div className="grid grid-cols-2 gap-1.5 p-1 bg-violet-100/70 rounded-2xl">
         <button
           type="button"
@@ -219,7 +219,7 @@ export function ShareCardStudio({
               : "text-slate-600 hover:text-slate-900"
           }`}
         >
-          ☀️ 오늘의 카드
+          ☀️ 오늘의 행운카드
         </button>
         <button
           type="button"

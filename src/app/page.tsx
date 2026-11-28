@@ -147,11 +147,11 @@ const SAJU_CATALOG_ITEMS: Array<{
 const HOME_FAQ_ITEMS = [
   {
     q: "달토사주는 다른 사주 사이트와 무엇이 다른가요?",
-    a: "딱딱한 한자 풀이 대신 내 사주가 큰 소나무·태양·보석 중 어떤 자연 물상인지, 부족한 오행을 채울 행운 숫자·컬러·사물이 무엇인지 스토리텔링해 드리고 9:16·4:5 달토 사주 카드와 오늘의 카드로 소장할 수 있습니다.",
+    a: "딱딱한 한자 풀이 대신 내 사주가 큰 소나무·태양·보석 중 어떤 자연 물상인지, 부족한 오행을 채울 행운 숫자·컬러·사물이 무엇인지 스토리텔링해 드리고 9:16·4:5 달토 사주 카드와 오늘의 행운카드로 소장할 수 있습니다.",
   },
   {
     q: "태어난 시간을 몰라도 이용할 수 있나요?",
-    a: "네, 가능합니다. '시간 모름 (삼주 분석)' 상태에서도 년주·월주·일주 6글자를 기준으로 오행 분포, 2027 정미년 세운, 달토 사주 카드 및 오늘의 카드를 정밀하게 생성해 드립니다.",
+    a: "네, 가능합니다. '시간 모름 (삼주 분석)' 상태에서도 년주·월주·일주 6글자를 기준으로 오행 분포, 2027 정미년 세운, 달토 사주 카드 및 오늘의 행운카드를 정밀하게 생성해 드립니다.",
   },
   {
     q: "달빛 톡권은 언제 충전되나요?",
@@ -910,7 +910,7 @@ export default function HomePage() {
                           생년월일 한 번 입력하면 바로 완성!
                         </p>
                         <p className="text-[11px] text-violet-100/85 leading-snug break-keep">
-                          오늘의 카드(무료)와 나만의 달토 사주 카드를 즉시 만들어
+                          오늘의 행운카드(무료)와 나만의 달토 사주 카드를 즉시 만들어
                           보세요.
                         </p>
                       </div>
@@ -1020,7 +1020,7 @@ export default function HomePage() {
                         onClick={() => void runAnalysis("today", activeProfile)}
                         className="py-2.5 px-3 rounded-xl bg-white text-[#2a1d4f] hover:bg-amber-50 text-xs font-black transition"
                       >
-                        ☀️ 오늘의 카드 보기
+                        ☀️ 오늘의 행운카드 보기
                       </button>
                       <button
                         type="button"
@@ -1183,7 +1183,7 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* ② 매일 무료 데일리 허브 (오늘의 카드 · 오늘의 타로 · 달토 1:1 상담실) */}
+          {/* ② 매일 무료 데일리 허브 (오늘의 행운카드 · 오늘의 타로 · 달토 1:1 상담실) */}
           <section className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button
               type="button"
@@ -1198,7 +1198,7 @@ export default function HomePage() {
                   </span>
                 </div>
                 <p className="text-sm font-black text-slate-900">
-                  오늘의 카드 &amp; 일진
+                  오늘의 행운카드 &amp; 일진
                 </p>
                 <p className="text-[11px] text-slate-500 leading-snug break-keep">
                   점수별 달토 카드 · 오늘 체크/주의
@@ -1300,7 +1300,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3.5 sm:gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-5">
               {SAJU_CATALOG_ITEMS.filter(
                 (item) =>
                   catalogFilter === "all" || item.category === catalogFilter
@@ -1311,13 +1311,13 @@ export default function HomePage() {
                   whileHover={{ y: -3, scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => void runAnalysis(item.id)}
-                  className="text-left rounded-[28px] bg-white/95 border border-violet-100 hover:border-violet-300 p-3 sm:p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-3"
+                  className="text-left rounded-[26px] bg-white/95 border border-violet-100 hover:border-violet-300 p-2.5 sm:p-3.5 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-2.5"
                 >
-                  <div className="relative aspect-square w-full rounded-[22px] overflow-hidden bg-violet-50 border border-violet-100/80">
+                  <div className="relative aspect-[3/4] w-full rounded-[20px] overflow-hidden bg-violet-50 border border-violet-100/80">
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-full object-cover object-center"
+                      className="w-full h-full object-cover object-top"
                     />
                     {item.badge && (
                       <span
@@ -1333,13 +1333,13 @@ export default function HomePage() {
                       </span>
                     )}
                   </div>
-                  <div className="px-0.5 space-y-1.5 flex-1 flex flex-col justify-between">
+                  <div className="px-0.5 space-y-1 flex-1 flex flex-col justify-between">
                     <div className="space-y-1">
                       <div className="flex items-start justify-between gap-1.5">
-                        <h3 className="text-[15px] sm:text-lg font-black text-slate-900 leading-snug break-keep">
+                        <h3 className="text-[14px] sm:text-base font-black text-slate-900 leading-snug break-keep">
                           {item.title}
                         </h3>
-                        <span className="shrink-0 rounded-full bg-orange-50 border border-orange-200 text-orange-700 px-2.5 py-0.5 text-[11px] font-black whitespace-nowrap">
+                        <span className="shrink-0 rounded-full bg-orange-50 border border-orange-200 text-orange-700 px-2 py-0.5 text-[10.5px] font-black whitespace-nowrap">
                           🥕 {item.coinCost}
                           <span className="hidden sm:inline">
                             {" "}
@@ -1347,11 +1347,11 @@ export default function HomePage() {
                           </span>
                         </span>
                       </div>
-                      <p className="text-xs sm:text-[13px] text-slate-600 leading-snug break-keep">
+                      <p className="text-[11.5px] sm:text-xs text-slate-600 leading-snug break-keep">
                         {item.subtitle}
                       </p>
                     </div>
-                    <p className="text-[10.5px] sm:text-[11px] font-bold text-violet-700">
+                    <p className="text-[10px] sm:text-[11px] font-bold text-violet-700">
                       {item.cardTag}
                     </p>
                   </div>
@@ -1360,12 +1360,12 @@ export default function HomePage() {
 
               {/* Coming Soon 카드 */}
               {catalogFilter === "all" && (
-                <div className="text-left rounded-[28px] bg-[#f5f2fb] border border-dashed border-violet-200 p-3 sm:p-4 flex flex-col justify-between gap-3">
-                  <div className="relative aspect-square w-full rounded-[22px] overflow-hidden bg-white">
+                <div className="text-left rounded-[26px] bg-[#f5f2fb] border border-dashed border-violet-200 p-2.5 sm:p-3.5 flex flex-col justify-between gap-2.5">
+                  <div className="relative aspect-[3/4] w-full rounded-[20px] overflow-hidden bg-white">
                     <img
                       src="/mascot/dalto-rabbit.jpg"
                       alt="시험·합격운 준비 중"
-                      className="w-full h-full object-cover opacity-55 grayscale-[25%]"
+                      className="w-full h-full object-cover object-top opacity-55 grayscale-[25%]"
                     />
                     <span className="absolute inset-0 bg-violet-950/20 flex items-center justify-center">
                       <span className="rounded-full bg-white/95 px-3 py-1 text-[10.5px] font-black text-violet-700 shadow-xs">
@@ -1373,17 +1373,17 @@ export default function HomePage() {
                       </span>
                     </span>
                   </div>
-                  <div className="px-0.5 space-y-1.5 flex-1 flex flex-col justify-between">
+                  <div className="px-0.5 space-y-1 flex-1 flex flex-col justify-between">
                     <div className="space-y-1">
                       <div className="flex items-start justify-between gap-1.5">
-                        <h3 className="text-[15px] sm:text-lg font-black text-slate-700 leading-snug break-keep">
+                        <h3 className="text-[14px] sm:text-base font-black text-slate-700 leading-snug break-keep">
                           시험·합격운
                         </h3>
-                        <span className="shrink-0 rounded-full bg-violet-100 text-violet-700 px-2.5 py-0.5 text-[10px] font-extrabold whitespace-nowrap">
+                        <span className="shrink-0 rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-[10px] font-extrabold whitespace-nowrap">
                           12월 오픈
                         </span>
                       </div>
-                      <p className="text-xs sm:text-[13px] text-slate-500 leading-snug break-keep">
+                      <p className="text-[11.5px] sm:text-xs text-slate-500 leading-snug break-keep">
                         수능·자격증·이직 시험 합격 타이밍 스캔 준비 중
                       </p>
                     </div>
@@ -1507,7 +1507,7 @@ export default function HomePage() {
                 {
                   step: "03",
                   title: "9:16·4:5 달토 카드 소장",
-                  desc: "점수별 오늘의 카드와 오행 지수가 담긴 사주 카드를 PNG로 저장해 소장·공유하세요.",
+                  desc: "점수별 오늘의 행운카드와 오행 지수가 담긴 사주 카드를 PNG로 저장해 소장·공유하세요.",
                 },
               ].map((g) => (
                 <div
@@ -1673,7 +1673,7 @@ export default function HomePage() {
               className="flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-amber-600"
             >
               <Clover className="w-4 h-4" />
-              <span className="text-[10px] font-bold">오늘 카드</span>
+              <span className="text-[10px] font-bold">행운카드</span>
             </button>
             <button
               type="button"

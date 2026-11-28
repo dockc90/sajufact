@@ -349,11 +349,11 @@ export function ResultView({
             </div>
 
             <div className="flex items-center gap-3.5">
-              <div className="relative w-16 h-20 sm:w-20 sm:h-24 rounded-2xl overflow-hidden border-2 border-orange-200/90 shrink-0 shadow-md bg-[#fdf6f0]">
+              <div className="relative aspect-[3/4] w-16 sm:w-20 rounded-2xl overflow-hidden border-2 border-orange-200/90 shrink-0 shadow-md bg-[#fdf6f0]">
                 <img
                   src={menuImage}
                   alt={activeMenuMeta.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
                 <span className="absolute inset-x-0 bottom-0 bg-gradient-to-r from-[#5c489b]/90 to-[#d96b8a]/90 text-[9px] font-bold text-white py-0.5 text-center">
                   🐇 달토
@@ -504,7 +504,7 @@ export function ResultView({
                     <li className="flex items-center gap-2">
                       <span>🔒</span>
                       <span>
-                        달토 사주 카드 &amp; 오늘의 카드 (9:16 스토리 · 4:5 피드 PNG 저장)
+                        달토 사주 카드 &amp; 오늘의 행운카드 (9:16 스토리 · 4:5 피드 PNG 저장)
                       </span>
                     </li>
                   </ul>
