@@ -1300,7 +1300,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-3.5">
               {SAJU_CATALOG_ITEMS.filter(
                 (item) =>
                   catalogFilter === "all" || item.category === catalogFilter
@@ -1308,78 +1308,82 @@ export default function HomePage() {
                 <motion.button
                   key={item.id}
                   type="button"
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.99 }}
+                  whileHover={{ y: -3, scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => void runAnalysis(item.id)}
-                  className="text-left rounded-2xl bg-white/95 border border-violet-100 hover:border-violet-300 p-3.5 shadow-2xs hover:shadow-md transition flex items-center gap-3.5"
+                  className="text-left rounded-[24px] bg-white/95 border border-violet-100 hover:border-violet-300 p-2.5 sm:p-3 shadow-xs hover:shadow-md transition flex flex-col justify-between gap-2.5"
                 >
-                  <div className="relative w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-2xl overflow-hidden bg-violet-50 border border-violet-100 shrink-0">
+                  <div className="relative aspect-square w-full rounded-[18px] overflow-hidden bg-violet-50 border border-violet-100/80">
                     <img
                       src={item.image}
                       alt={item.title}
                       className="w-full h-full object-cover object-center"
                     />
+                    {item.badge && (
+                      <span
+                        className={`absolute top-2 left-2 rounded-full px-2 py-0.5 text-[9.5px] font-black text-white shadow-sm ${
+                          item.badge === "BEST"
+                            ? "bg-rose-500"
+                            : item.badge === "NEW"
+                            ? "bg-violet-600"
+                            : "bg-pink-500"
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
                   </div>
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex items-center justify-between gap-1.5">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <h3 className="text-sm sm:text-[15px] font-black text-slate-900 truncate">
-                          {item.title}
-                        </h3>
-                        {item.badge && (
-                          <span
-                            className={`shrink-0 rounded-full px-2 py-0.5 text-[9.5px] font-black text-white ${
-                              item.badge === "BEST"
-                                ? "bg-rose-500"
-                                : item.badge === "NEW"
-                                ? "bg-violet-600"
-                                : "bg-pink-500"
-                            }`}
-                          >
-                            {item.badge}
-                          </span>
-                        )}
-                      </div>
-                      <span className="shrink-0 rounded-full bg-orange-50 border border-orange-200 text-orange-700 px-2 py-0.5 text-[10.5px] font-black">
+                  <div className="px-0.5 space-y-1.5 flex-1 flex flex-col justify-between">
+                    <div className="space-y-0.5">
+                      <h3 className="text-[13.5px] sm:text-sm font-black text-slate-900 leading-snug break-keep">
+                        {item.title}
+                      </h3>
+                      <p className="text-[11px] text-slate-600 leading-snug break-keep line-clamp-2">
+                        {item.subtitle}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between gap-1 pt-0.5">
+                      <span className="text-[9.5px] font-bold text-violet-700 truncate">
+                        {item.cardTag}
+                      </span>
+                      <span className="shrink-0 rounded-full bg-orange-50 border border-orange-200 text-orange-700 px-2 py-0.5 text-[10px] font-black">
                         🥕 {item.coinCost} · {(item.coinCost * 990).toLocaleString()}원
                       </span>
                     </div>
-                    <p className="text-[11.5px] text-slate-600 leading-snug break-keep line-clamp-1">
-                      {item.subtitle}
-                    </p>
-                    <p className="text-[10px] font-bold text-violet-700">
-                      {item.cardTag} · 20% 무료 미리보기
-                    </p>
                   </div>
                 </motion.button>
               ))}
 
               {/* Coming Soon 카드 */}
-              <div className="text-left rounded-2xl bg-violet-50/70 border border-dashed border-violet-200 p-3.5 flex items-center gap-3.5">
-                <div className="relative w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-2xl overflow-hidden bg-white shrink-0">
-                  <img
-                    src="/mascot/dalto-rabbit.jpg"
-                    alt="시험·합격운 준비 중"
-                    className="w-full h-full object-cover opacity-55 grayscale-[25%]"
-                  />
-                  <span className="absolute inset-0 bg-violet-950/25 flex items-center justify-center text-[10px] font-black text-white">
-                    SOON
-                  </span>
-                </div>
-                <div className="min-w-0 flex-1 space-y-1">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-sm font-black text-slate-700">
-                      시험·합격운
-                    </h3>
-                    <span className="rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-[9.5px] font-extrabold">
+              {catalogFilter === "all" && (
+                <div className="text-left rounded-[24px] bg-[#f5f2fb] border border-dashed border-violet-200 p-2.5 sm:p-3 flex flex-col justify-between gap-2.5">
+                  <div className="relative aspect-square w-full rounded-[18px] overflow-hidden bg-white">
+                    <img
+                      src="/mascot/dalto-rabbit.jpg"
+                      alt="시험·합격운 준비 중"
+                      className="w-full h-full object-cover opacity-55 grayscale-[25%]"
+                    />
+                    <span className="absolute inset-0 bg-violet-950/20 flex items-center justify-center">
+                      <span className="rounded-full bg-white/95 px-2.5 py-0.5 text-[10px] font-black text-violet-700 shadow-xs">
+                        SOON
+                      </span>
+                    </span>
+                  </div>
+                  <div className="px-0.5 space-y-1 flex-1 flex flex-col justify-between">
+                    <div className="space-y-0.5">
+                      <h3 className="text-[13.5px] sm:text-sm font-black text-slate-700 leading-snug">
+                        시험·합격운
+                      </h3>
+                      <p className="text-[11px] text-slate-500 leading-snug break-keep line-clamp-2">
+                        수능·자격증·이직 시험 합격 타이밍 스캔 준비 중
+                      </p>
+                    </div>
+                    <span className="inline-block w-fit rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-[9.5px] font-extrabold">
                       12월 오픈
                     </span>
                   </div>
-                  <p className="text-[11.5px] text-slate-500">
-                    수능·자격증·이직 시험 합격 타이밍 스캔 준비 중
-                  </p>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* 궁합 상대방 입력 시트 (너와 나의 오행 궁합 선택 시 확장) */}
