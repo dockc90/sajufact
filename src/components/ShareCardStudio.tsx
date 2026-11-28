@@ -25,6 +25,7 @@ export interface TierCardTheme {
   tabLabel: string;
   sampleBadge: string;
   image: string;
+  image916: string;
   bg: string;
   panelBg: string;
   accentPill: string;
@@ -38,6 +39,7 @@ export const TIER_CARD_THEMES: Record<CardTierKey, TierCardTheme> = {
     tabLabel: "👑 SSR",
     sampleBadge: "TIER: SSR · 상위 3%",
     image: "/cards/tier-ssr.jpg",
+    image916: "/cards/tier-ssr-916.jpg",
     bg: "from-[#fef3c7] via-[#fff5eb] to-[#f3e8ff]",
     panelBg: "bg-gradient-to-b from-[#fffaf0] via-[#fff6ec] to-[#faf5ff]",
     accentPill:
@@ -50,6 +52,7 @@ export const TIER_CARD_THEMES: Record<CardTierKey, TierCardTheme> = {
     tabLabel: "💎 SR",
     sampleBadge: "TIER: SR · 상위 8%",
     image: "/cards/tier-sr.jpg",
+    image916: "/cards/tier-sr-916.jpg",
     bg: "from-[#ede9fe] via-[#fdf2f8] to-[#fff7ed]",
     panelBg: "bg-gradient-to-b from-[#faf7ff] via-[#fdf5fb] to-[#fff9f3]",
     accentPill:
@@ -62,6 +65,7 @@ export const TIER_CARD_THEMES: Record<CardTierKey, TierCardTheme> = {
     tabLabel: "🎀 S",
     sampleBadge: "TIER: S · 상위 18%",
     image: "/cards/tier-s.jpg",
+    image916: "/cards/tier-s-916.jpg",
     bg: "from-[#fce7f3] via-[#fff2ea] to-[#f4ecff]",
     panelBg: "bg-gradient-to-b from-[#fff8fc] via-[#fff5fa] to-[#fdf6ff]",
     accentPill: "bg-gradient-to-r from-[#ec4899] to-[#f97316] text-white",
@@ -73,6 +77,7 @@ export const TIER_CARD_THEMES: Record<CardTierKey, TierCardTheme> = {
     tabLabel: "🌙 A",
     sampleBadge: "TIER: A · 상위 32%",
     image: "/cards/tier-a.jpg",
+    image916: "/cards/tier-a-916.jpg",
     bg: "from-[#e0e7ff] via-[#f5f3ff] to-[#fff7ed]",
     panelBg: "bg-gradient-to-b from-[#f8f9ff] via-[#faf6ff] to-[#fffaf4]",
     accentPill: "bg-gradient-to-r from-[#4f46e5] to-[#8b5cf6] text-white",
@@ -268,7 +273,7 @@ export function ShareCardStudio({
               {/* 상단 풀블리드 행운지수 점수별 달토 일러스트 */}
               <div className="relative flex-1 min-h-0 overflow-hidden">
                 <img
-                  src={todayTierTheme.image}
+                  src={ratio === "9:16" ? todayTierTheme.image916 : todayTierTheme.image}
                   alt={`오늘의 행운지수 ${todayStory.score}점 달토 카드`}
                   className="w-full h-full object-cover object-center"
                 />
@@ -290,7 +295,7 @@ export function ShareCardStudio({
 
               {/* 하단 오늘의 일진 스토리텔링 & 체크/주의 패널 */}
               <div
-                className={`shrink-0 px-3.5 py-2.5 space-y-1.5 border-t border-white/90 ${todayTierTheme.panelBg}`}
+                className={`shrink-0 px-3.5 py-2 space-y-1.5 border-t border-white/90 ${todayTierTheme.panelBg}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className={`text-[10px] font-extrabold ${todayTierTheme.accentText}`}>
@@ -436,7 +441,7 @@ export function ShareCardStudio({
               {/* 1) 상단 풀블리드 티어 전용 달토 사진 */}
               <div className="relative flex-1 min-h-0 overflow-hidden">
                 <img
-                  src={tierTheme.image}
+                  src={ratio === "9:16" ? tierTheme.image916 : tierTheme.image}
                   alt={`${cardTier} 티어 달토 카드`}
                   className="w-full h-full object-cover object-center"
                 />
@@ -459,7 +464,7 @@ export function ShareCardStudio({
 
               {/* 2) 하단 컴팩트 사주 물상 & 오행 지수 패널 */}
               <div
-                className={`shrink-0 px-3.5 py-2.5 space-y-1.5 border-t border-white/90 ${tierTheme.panelBg}`}
+                className={`shrink-0 px-3.5 py-2 space-y-1.5 border-t border-white/90 ${tierTheme.panelBg}`}
               >
                 {/* 이름 + 일주 + 주된 기운 */}
                 <div className="flex items-center justify-between gap-2">

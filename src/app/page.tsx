@@ -1420,7 +1420,7 @@ export default function HomePage() {
                     {/* 상단 풀블리드 티어별 달토 사진 */}
                     <div className="relative flex-1 min-h-0 overflow-hidden">
                       <img
-                        src={previewTheme.image}
+                        src={showcaseRatio === "9:16" ? previewTheme.image916 : previewTheme.image}
                         alt={`${showcaseTier} 티어 달토 카드`}
                         className="w-full h-full object-cover object-center"
                       />
