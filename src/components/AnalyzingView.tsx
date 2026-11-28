@@ -16,8 +16,8 @@ const STAGES = [
   },
   {
     step: "03",
-    title: "달토의 뼈 때리는 채찍 + 따뜻한 처방전 완성! 🐇✨",
-    sub: "결과 리포트와 파스텔 오라 인스타 카드를 예쁘게 포장하고 있어요",
+    title: "달토의 핵심 풀이 + 따뜻한 처방전 완성! 🐇✨",
+    sub: "결과 리포트와 달토 사주 카드를 예쁘게 포장하고 있어요",
   },
 ];
 
@@ -57,7 +57,10 @@ export function AnalyzingView({ userName }: { userName: string }) {
           🌕
         </motion.span>
 
-        <div className="relative z-10 w-full max-w-xl sm:max-w-2xl aspect-video rounded-3xl overflow-hidden shadow-[0_22px_60px_rgba(92,72,155,0.22)] bg-[#fdf6f0]">
+        <div
+          style={{ WebkitMaskImage: "-webkit-radial-gradient(white, black)" }}
+          className="relative z-10 isolate w-full max-w-xl sm:max-w-2xl aspect-video rounded-3xl overflow-hidden shadow-[0_22px_60px_rgba(92,72,155,0.22)] bg-[#f3e6d6]"
+        >
           <video
             src="/mascot/dalto-mortar-loop.mp4"
             poster="/mascot/dalto-mortar.jpg"
@@ -67,7 +70,7 @@ export function AnalyzingView({ userName }: { userName: string }) {
             playsInline
             preload="auto"
             aria-label="절구 찧는 달토끼 달토 애니메이션"
-            className="w-full h-full object-cover"
+            className="block w-full h-full object-cover object-center scale-[1.06] transform-gpu"
           />
         </div>
 
