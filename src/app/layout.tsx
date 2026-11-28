@@ -17,14 +17,14 @@ const notoSerifKr = Noto_Serif_KR({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sajufact.kr"),
-  title: "사주팩트 (SajuFact) | 달토끼 달토 AI 사주 · 파스텔 오라 카드",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://daltosaju.com"),
+  title: "달토사주 (DaltoSaju) | 달토끼 달토 AI 사주 · 사주 카드",
   description:
-    "2027 정미년 신년운세, 평생 사주 원국 풀이, 재물·이직운, 연애·궁합 스캔, 오늘의 무료 타로까지. 달토끼 달토의 솔직한 조언·따뜻한 처방전과 파스텔 오라 카드를 소장하세요.",
+    "2027 정미년 신년운세, 평생 사주 원국 풀이, 재물·이직운, 연애·궁합 스캔, 오늘의 무료 타로까지. 달토끼 달토의 솔직한 조언·따뜻한 처방전과 달토 사주 카드를 소장하세요.",
   openGraph: {
-    title: "사주팩트 (SajuFact) — 달토끼 달토 AI 사주 · 파스텔 오라",
-    description: "달토가 짚어주는 정밀 사주 풀이와 파스텔 오라 인스타그램 공유 카드",
-    siteName: "사주팩트 (SajuFact)",
+    title: "달토사주 (DaltoSaju) — 달토끼 달토 AI 사주 · 달토 사주 카드",
+    description: "달토가 짚어주는 정밀 사주 풀이와 달토 사주 카드",
+    siteName: "달토사주 (DaltoSaju)",
   },
 };
 

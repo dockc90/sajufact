@@ -239,7 +239,7 @@ export function ResultView({
 
   const handleCopyInviteLink = async () => {
     const base =
-      typeof window !== "undefined" ? window.location.origin : "https://sajufact.kr";
+      typeof window !== "undefined" ? window.location.origin : "https://daltosaju.com";
     const url = `${base}/?inviter=${encodeURIComponent(
       report.input.name
     )}&inviterBirth=${encodeURIComponent(report.input.birthDate)}`;
@@ -253,7 +253,7 @@ export function ResultView({
 
   const handleCopyPermanentUrl = async () => {
     const base =
-      typeof window !== "undefined" ? window.location.origin : "https://sajufact.kr";
+      typeof window !== "undefined" ? window.location.origin : "https://daltosaju.com";
     const url = `${base}/?saved=${encodeURIComponent(report.id)}`;
     try {
       await navigator.clipboard.writeText(url);

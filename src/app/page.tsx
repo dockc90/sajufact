@@ -140,7 +140,7 @@ const CHUNKY_MENU_CARDS: Array<{
 const HOME_FAQ_ITEMS = [
   {
     q: "정말 당근 1개(990원)인가요?",
-    a: "네! 사주팩트는 당근 1개(990원)부터 필요한 사주 테마만 골라서 부담 없이 열어볼 수 있으며, 당근 한 다발/바구니/농장 패키지로 충전 시 보너스 당근까지 지급됩니다.",
+    a: "네! 달토사주는 당근 1개(990원)부터 필요한 사주 테마만 골라서 부담 없이 열어볼 수 있으며, 당근 한 다발/바구니/농장 패키지로 충전 시 보너스 당근까지 지급됩니다.",
   },
   {
     q: "태어난 시간을 몰라도 볼 수 있나요?",
@@ -152,7 +152,7 @@ const HOME_FAQ_ITEMS = [
   },
   {
     q: "환불 규정은 어떻게 되나요?",
-    a: "사용하지 않은 미사용 당근 패키지는 결제일로부터 7일 이내 고객센터(help@sajufact.kr)로 요청 시 전액 환불 가능합니다. 이미 당근을 사용해 열람한 디지털 사주 리포트는 콘텐츠 특성상 환불이 제한됩니다.",
+    a: "사용하지 않은 미사용 당근 패키지는 결제일로부터 7일 이내 고객센터(dawn-corp@naver.com / 070-4519-8604)로 요청 시 전액 환불 가능합니다. 이미 당근을 사용해 열람한 디지털 사주 리포트는 콘텐츠 특성상 환불이 제한됩니다.",
   },
 ];
 
@@ -1559,14 +1559,17 @@ export default function HomePage() {
             </div>
             <div className="text-[10.5px] text-slate-400 leading-relaxed space-y-0.5 max-w-xl mx-auto">
               <p>
-                상호명: 주식회사 사주팩트 | 대표자: 홍길동 | 사업자등록번호: 000-00-00000
+                상호명: 주식회사 새벽시간 | 대표자: 김갑수 | 사업자등록번호: 826-81-02447
               </p>
               <p>
-                통신판매업신고번호: 제 2026-서울강남-00000호 | 고객센터: help@sajufact.kr
+                사업장 소재지: 경기도 남양주시 진접읍 해밀예당1로 50-47, 506호 에이59(리첸타워)
+              </p>
+              <p>
+                고객센터: 070-4519-8604 | 이메일: dawn-corp@naver.com
               </p>
             </div>
             <p className="font-serif tracking-widest text-violet-700 font-bold">
-              🐇 sajufact.kr · © SajuFact All rights reserved.
+              🐇 daltosaju.com · © 주식회사 새벽시간 All rights reserved.
             </p>
           </footer>
 
@@ -1845,7 +1848,7 @@ export default function HomePage() {
           <div className="w-full max-w-md rounded-3xl bg-white p-5 sm:p-6 shadow-2xl border border-violet-100 space-y-3 text-left">
             <div className="flex items-center justify-between">
               <h3 className="font-serif text-base font-black text-slate-900">
-                {policyModal === "terms" ? "사주팩트 이용약관" : "개인정보처리방침"}
+                {policyModal === "terms" ? "달토사주 이용약관" : "개인정보처리방침"}
               </h3>
               <button
                 type="button"
@@ -1859,13 +1862,13 @@ export default function HomePage() {
               {policyModal === "terms" ? (
                 <>
                   <p>
-                    1. 본 서비스(사주팩트)는 입력하신 생년월일시를 바탕으로 만세력 명리 분석 리포트 및 AI 사주 상담을 제공합니다.
+                    1. 본 서비스(달토사주, 운영사: 주식회사 새벽시간)는 입력하신 생년월일시를 바탕으로 만세력 명리 분석 리포트 및 AI 사주 상담을 제공합니다.
                   </p>
                   <p>
                     2. 유료 재화(당근)는 구매일로부터 7일 이내 미사용 잔여 수량에 한해 전액 환불 가능하며, 이미 당근을 사용하여 열람한 디지털 콘텐츠는 청약철회가 제한됩니다.
                   </p>
                   <p>
-                    3. 고객센터 문의: help@sajufact.kr
+                    3. 고객센터 문의: dawn-corp@naver.com / 070-4519-8604
                   </p>
                 </>
               ) : (
@@ -1878,6 +1881,9 @@ export default function HomePage() {
                   </p>
                   <p>
                     3. 보관 및 파기: 이용자의 삭제 요청 또는 서비스 종료 시 지체 없이 파기합니다.
+                  </p>
+                  <p>
+                    4. 개인정보 보호책임자: 김갑수 (문의: dawn-corp@naver.com / 070-4519-8604)
                   </p>
                 </>
               )}
