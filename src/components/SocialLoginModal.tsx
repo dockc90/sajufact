@@ -39,7 +39,7 @@ export function SocialLoginModal({
                 3초 간편 로그인
               </span>
               <h3 className="text-base sm:text-lg font-black text-slate-900 leading-tight">
-                달토 포춘 캐처 켜기 🐇✨
+                달토사주 보름달 켜기 🐇✨
               </h3>
             </div>
           </div>
@@ -87,7 +87,7 @@ export function SocialLoginModal({
         </div>
 
         <p className="text-[10.5px] text-slate-400 text-center">
-          로그인 즉시 오늘의 행운점수 뽑기 & 매일 밤 11시 무료 수다권 1장이 제공됩니다.
+          로그인 즉시 오늘의 달빛 지수 &amp; 매일 자정 달빛 톡권 1장이 제공됩니다.
         </p>
       </motion.div>
     </div>

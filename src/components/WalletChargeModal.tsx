@@ -111,7 +111,7 @@ export function WalletChargeModal({
           storeId: portoneStoreId,
           channelKey: portoneChannelKey,
           paymentId: `sf-carrot-${Date.now()}`,
-          orderName: `사주팩트 ${selectedPack.name}`,
+          orderName: `달토사주 ${selectedPack.name}`,
           totalAmount: selectedPack.price,
           currency: "KRW",
           payMethod: "EASY_PAY",

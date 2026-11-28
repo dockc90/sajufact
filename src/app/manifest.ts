@@ -2,14 +2,14 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "사주팩트 (SajuFact) — 달토끼 달토 AI 사주 · 파스텔 오라",
-    short_name: "사주팩트",
+    name: "달토사주 (DaltoSaju) — 오행 물상 사주 · 달토 사주 카드",
+    short_name: "달토사주",
     description:
-      "달토끼 달토가 짚어주는 AI 사주 상담 & 파스텔 오라 인스타그램 공유 카드",
+      "내 사주 오행 물상 풀이와 오늘의 카드·사주 카드를 소장하는 달토사주",
     start_url: "/",
     display: "standalone",
-    background_color: "#fdf6f0",
-    theme_color: "#8b5cf6",
+    background_color: "#faf8ff",
+    theme_color: "#2a1d4f",
     lang: "ko",
   };
 }

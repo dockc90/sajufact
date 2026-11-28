@@ -74,10 +74,10 @@ export function PaymentModal({
           channelKey: portoneChannelKey,
           paymentId: `sf-${Date.now()}`,
           orderName: isUpgradeFromSingle
-            ? "사주팩트 올인원 업그레이드 (차액 결제)"
+            ? "달토사주 올인원 업그레이드 (차액 결제)"
             : resolvedPlan === "allinone"
-            ? "사주팩트 올인원 패키지"
-            : "사주팩트 단건 테마 리포트",
+            ? "달토사주 올인원 패키지"
+            : "달토사주 단건 테마 리포트",
           totalAmount: amount,
           currency: "KRW",
           payMethod: "EASY_PAY",
@@ -112,7 +112,7 @@ export function PaymentModal({
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4 text-rose-500" />
             <h3 className="text-lg font-extrabold text-slate-900">
-              전체 팩트 리포트 잠금 해제
+              달토 정밀 리포트 잠금 해제
             </h3>
           </div>
           <button

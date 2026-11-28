@@ -71,11 +71,11 @@ export function FortuneCatcherModal({
 
   const handleShare = async () => {
     if (!draw) return;
-    const text = `[사주팩트 달토 포춘캐처] ${profile.name}님의 ${draw.dateDisplay} 행운점수 ${draw.score}점! "${draw.quote}" (#${draw.luckyNumber} / ${draw.luckyColor} / ${draw.luckyItem})`;
+    const text = `[달토사주 오늘의 달빛 운세] ${profile.name}님의 ${draw.dateDisplay} 행운지수 ${draw.score}점! "${draw.quote}" (#${draw.luckyNumber} / ${draw.luckyColor} / ${draw.luckyItem})`;
     try {
       if (navigator.share) {
         await navigator.share({
-          title: "달토 포춘 캐처 오늘의 행운점수",
+          title: "달토사주 오늘의 달빛 행운지수",
           text,
           url: window.location.origin,
         });
@@ -93,7 +93,7 @@ export function FortuneCatcherModal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 gingham-pastel-bg flex flex-col items-center justify-center px-5 py-8 overflow-y-auto"
+      className="fixed inset-0 z-50 moonlight-atelier-bg text-white flex flex-col items-center justify-center px-5 py-8 overflow-y-auto"
     >
       {/* 장식용 파스텔 별들 */}
       <span className="fixed top-12 left-8 text-2xl opacity-75 pointer-events-none select-none">
@@ -114,7 +114,7 @@ export function FortuneCatcherModal({
         type="button"
         onClick={onClose}
         aria-label="닫기"
-        className="fixed top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/95 border border-amber-200/70 shadow-md flex items-center justify-center text-slate-700 hover:bg-white transition"
+        className="fixed top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/15 backdrop-blur-md border border-white/25 shadow-md flex items-center justify-center text-white hover:bg-white/25 transition"
       >
         <X className="w-5 h-5" />
       </button>
@@ -122,13 +122,13 @@ export function FortuneCatcherModal({
       <div className="w-full max-w-sm flex flex-col items-center text-center space-y-5 relative z-10">
         {stage === "ready" && (
           <>
-            <div className="space-y-1">
-              <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-[11px] font-extrabold text-rose-600 shadow-2xs">
+            <div className="space-y-1.5">
+              <span className="inline-flex items-center gap-1 rounded-full bg-white/15 border border-white/25 px-3 py-1 text-[11px] font-extrabold text-amber-200 shadow-2xs">
                 <Sparkles className="w-3 h-3" />
                 {profile.name}님의 오늘 운세
               </span>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900">
-                오늘의 운세를 뽑아보라토! 🐇
+              <h2 className="font-serif text-xl sm:text-2xl font-black text-white">
+                오늘의 달빛 운세를 열어볼까요? 🐇
               </h2>
             </div>
 
@@ -137,28 +137,28 @@ export function FortuneCatcherModal({
             <button
               type="button"
               onClick={startDraw}
-              className="rounded-full bg-gradient-to-r from-[#ff6a7b] to-[#ec4899] text-white px-7 py-3 text-sm font-black shadow-lg hover:brightness-105 transition"
+              className="rounded-full bg-gradient-to-r from-[#ff7a90] to-[#a855f7] text-white px-7 py-3 text-sm font-black shadow-lg hover:brightness-105 transition"
             >
-              버튼 눌러서 운세 뽑기! ✨
+              달빛 행운지수 열기 ✨
             </button>
           </>
         )}
 
         {stage === "loading" && (
           <>
-            <div className="space-y-1">
-              <span className="inline-block rounded-full bg-white/90 px-3 py-1 text-[11px] font-extrabold text-violet-700 shadow-2xs">
+            <div className="space-y-1.5">
+              <span className="inline-block rounded-full bg-white/15 border border-white/25 px-3 py-1 text-[11px] font-extrabold text-amber-200 shadow-2xs">
                 만세력 오늘 일진 매칭 중
               </span>
-              <h2 className="text-xl font-black text-slate-900">
-                달토가 오늘 기운을 뽑는 중... 🐇✨
+              <h2 className="font-serif text-xl font-black text-white">
+                달토가 오늘 기운을 읽는 중... 🐇✨
               </h2>
             </div>
 
             <FortuneCatcherDevice mode="loading" size="lg" />
 
             {/* 로딩 게이지 바 */}
-            <div className="w-full max-w-[270px] space-y-2 bg-white/90 rounded-2xl p-3.5 shadow-sm border border-white">
+            <div className="w-full max-w-[270px] space-y-2 bg-white/95 rounded-2xl p-3.5 shadow-sm border border-white text-slate-900">
               <div className="h-3.5 w-full rounded-full bg-rose-100 overflow-hidden p-0.5">
                 <motion.div
                   style={{ width: `${progress}%` }}
@@ -166,7 +166,7 @@ export function FortuneCatcherModal({
                 />
               </div>
               <p className="text-xs font-black text-[#5c3c88]">
-                행운점수 &amp; 오늘의 키워드 추출 중 {progress}%
+                행운지수 &amp; 오늘의 키워드 추출 중 {progress}%
               </p>
             </div>
           </>
@@ -179,13 +179,13 @@ export function FortuneCatcherModal({
               animate={{ opacity: 1, y: 0 }}
               className="space-y-1"
             >
-              <p className="text-xs font-extrabold text-emerald-700">
+              <p className="text-xs font-extrabold text-emerald-300">
                 🍀 {draw.dateDisplay} · {profile.name}님
               </p>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug break-keep text-balance">
+              <h2 className="font-serif text-xl sm:text-2xl font-black text-white leading-snug break-keep text-balance">
                 “{draw.quote}”
               </h2>
-              <p className="text-xs font-bold text-slate-500">— {draw.quoteSub}</p>
+              <p className="text-xs font-bold text-violet-200">— {draw.quoteSub}</p>
             </motion.div>
 
             <motion.div
@@ -203,7 +203,7 @@ export function FortuneCatcherModal({
 
             {/* 행운 숫자 / 행운 컬러 / 행운 아이템 3칸 */}
             <div className="w-full space-y-1.5">
-              <p className="text-[11px] font-extrabold text-[#5c489b]">
+              <p className="text-[11px] font-extrabold text-amber-200">
                 ✨ 내 사주의 부족한 기운을 채워주는 오늘의 행운 처방
               </p>
               <div className="w-full grid grid-cols-[0.75fr_1.1fr_1.15fr] items-center rounded-2xl bg-white/95 border border-amber-200/70 shadow-sm divide-x divide-amber-100 py-3 px-1">

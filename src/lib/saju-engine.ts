@@ -147,57 +147,49 @@ export const CORE_SEVEN_MENUS: MenuCategory[] = [
 export const BENCHMARK_REVIEWS = [
   {
     user: "김*연 · 28세 직장인",
-    tag: "2027 신년운세 + 달토 수다방",
-    text: "빈말 없이 4월 계약서 조심하라고 뼈 때려주고 바로 따뜻한 처방전 주는 거 진짜 눈물 남… 달토랑 톡하다 시간 순삭됐어요 🐇",
+    tag: "2027 신년운세 + 오늘의 카드",
+    text: "큰 소나무 사주인데 오늘 수(水)의 날이라 쑥쑥 자란다고 스토리텔링된 오늘의 카드 보고 기분 좋게 출근했어요 🐇",
   },
   {
     user: "박*준 · 32세 마케터",
-    tag: "10년 대운 + 파스텔 오라 카드",
-    text: "당근 바구니 하나 충전해 두니 궁금할 때마다 1클릭으로 열리고, 라벤더 피치 9:16 오라 카드 인스타 스토리 올리자마자 DM 폭주함ㅋㅋ",
+    tag: "달토 사주 카드 9:16",
+    text: "부족한 물 기운 채우는 네이비 컬러랑 유리 물병까지 사주 카드 한 장에 다 정리돼서 배경화면으로 저장했어요.",
   },
   {
     user: "이*은 · 26세 프리랜서",
-    tag: "연애·궁합 스캔",
-    text: "썸남이랑 궁합 봤는데 누가 을인지 1초 만에 짚어줌ㅋㅋ 밤 11시마다 무료수다권 들어와서 자기 전에 달토 만나러 매일 와요.",
+    tag: "연애·궁합 + 달토 1:1 상담실",
+    text: "오행 상생·상극 궁합이 직관적이고, 매일 자정마다 달빛 톡권 1장씩 충전돼서 궁금한 날 바로 물어보기 좋아요.",
   },
   {
     user: "최*훈 · 34세 개발자",
-    tag: "계약·이직 택일",
-    text: "기계적인 복붙 답장이 아니라 내 원국이랑 십성 비율 짚어가면서 연봉 협상 날짜까지 딱 찍어주니까 신뢰도가 다름.",
+    tag: "계약·이직 길일 택일",
+    text: "기계적인 복붙 답장이 아니라 내 원국과 오행 비율 짚어가면서 연봉 협상 날짜까지 딱 찍어주니까 신뢰도가 다릅니다.",
   },
   {
     user: "정*아 · 30세 디자이너",
-    tag: "기본 사주 + 4:5 오라 피드",
-    text: "파스텔 톤 몽글몽글해서 UI가 너무 귀엽고, 달토 채찍 맞고도 기분 좋아지는 현실 처방전이라 4:5 오라 카드 바로 저장했어요 🥕✨",
+    tag: "내 사주 원국 + 4:5 사주 카드",
+    text: "내 오행 5가지 지수랑 행운 사물이 깔끔한 카드에 담겨 나와서 4:5 피드용 PNG로 바로 저장해 친구들이랑 공유했어요 🥕✨",
   },
 ];
 
-// 매일 밤 11시(23:00 KST) 기준 리셋 사이클 키 반환
+// 매일 자정(00:00 KST, 새로운 일진이 시작되는 자시) 기준 리셋 사이클 키 반환
 export function getKst23ResetCycleKey(now = new Date()): string {
   const kstMs = now.getTime() + 9 * 60 * 60 * 1000;
   const kst = new Date(kstMs);
-  // 23시(밤 11시) 이전이면 전날 밤 11시 사이클에 속함
-  if (kst.getUTCHours() < 23) {
-    kst.setUTCDate(kst.getUTCDate() - 1);
-  }
   const y = kst.getUTCFullYear();
   const m = String(kst.getUTCMonth() + 1).padStart(2, "0");
   const d = String(kst.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${d}-23h`;
+  return `${y}-${m}-${d}-00h`;
 }
 
 export function getNext23KstCountdown(now = new Date()): string {
   const kstNowMs = now.getTime() + 9 * 60 * 60 * 1000;
-  const kst = new Date(kstNowMs);
   const next = new Date(kstNowMs);
-  next.setUTCHours(23, 0, 0, 0);
-  if (kst.getUTCHours() >= 23) {
-    next.setUTCDate(next.getUTCDate() + 1);
-  }
+  next.setUTCHours(24, 0, 0, 0);
   const diffMin = Math.max(1, Math.floor((next.getTime() - kstNowMs) / 60000));
   const h = Math.floor(diffMin / 60);
   const m = diffMin % 60;
-  return `${h}시간 ${m}분 후 밤 11시 충전`;
+  return `${h}시간 ${m}분 후 자정 충전`;
 }
 
 export const BIRTH_HOUR_OPTIONS: Array<{ value: string; label: string }> = [

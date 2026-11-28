@@ -137,7 +137,7 @@ export function SajuChatDrawer({
       baseMessages?: ChatMessage[];
     };
   } | null>(null);
-  const [countdownLabel, setCountdownLabel] = useState("매일 밤 11시 충전");
+  const [countdownLabel, setCountdownLabel] = useState("매일 자정(00시) 충전");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const activePersona = getChatPersona(selectedPersonaId);
@@ -398,7 +398,7 @@ export function SajuChatDrawer({
               <div className="flex items-center gap-1.5 flex-wrap">
                 <h3 className="text-sm font-black text-slate-900 break-keep">
                   {step === "select-model"
-                    ? "🐇 달토 사주 수다방"
+                    ? "🐇 달토 1:1 상담실"
                     : activePersona.name}
                 </h3>
                 <span
@@ -450,7 +450,7 @@ export function SajuChatDrawer({
             )}
             <span className="inline-flex items-center gap-1 font-extrabold text-rose-700 bg-white px-2.5 py-1 rounded-full border border-rose-200/80 shadow-2xs">
               <Ticket className="w-3 h-3" />
-              무료수다권 {freeChatTickets}장
+              달빛 톡권 {freeChatTickets}장
             </span>
             <span className="inline-flex items-center gap-1 font-extrabold text-orange-800 bg-white px-2.5 py-1 rounded-full border border-orange-200/80 shadow-2xs">
               🥕 당근 {coins}개
@@ -468,7 +468,7 @@ export function SajuChatDrawer({
 
         {/* 당근 1개 = 꼬리질문 3개 안내 칸 */}
         <div className="bg-white/90 border-b border-violet-100/80 px-4 py-1.5 text-[11px] font-bold text-[#4c3787] flex items-center justify-center gap-1.5 text-center break-keep shrink-0">
-          <span>🥕 당근 1개(또는 무료수다권 1장)</span>
+          <span>🥕 당근 1개(또는 달빛 톡권 1장)</span>
           <span className="text-slate-400">=</span>
           <span className="text-rose-600 font-extrabold">
             꼬리질문 3개
@@ -483,7 +483,7 @@ export function SajuChatDrawer({
                 STEP 1 / 2 · 상담 스타일 선택
               </span>
               <h4 className="font-serif text-base sm:text-lg font-black text-slate-900 break-keep text-balance">
-                오늘 어떤 달토 상담사와 수다를 나눠볼까요?
+                오늘 어떤 달토 상담사에게 물어볼까요?
               </h4>
               <p className="text-xs text-slate-600 leading-relaxed break-keep">
                 선택한 상담사의 톤앤매너로 {profile.name}님의 만세력 원국을 풀어드려요.
@@ -695,7 +695,7 @@ export function SajuChatDrawer({
                   {followUpCredits > 0
                     ? `꼬리질문 ${followUpCredits}개 남음`
                     : freeChatTickets > 0
-                    ? "무료수다권 1장 · 3회 질문"
+                    ? "달빛 톡권 1장 · 3회 질문"
                     : coins > 0
                     ? "당근 1개 · 3회 질문"
                     : "당근 충전"}
@@ -809,10 +809,10 @@ export function SajuChatDrawer({
                   followUpCredits > 0
                     ? `꼬리질문 ${followUpCredits}개 남음 · 더 구체적으로 물어보세요`
                     : freeChatTickets > 0
-                    ? `무료수다권 1장(꼬리질문 3개) · ${activePersona.shortName}에게 질문하기`
+                    ? `달빛 톡권 1장(꼬리질문 3개) · ${activePersona.shortName}에게 질문하기`
                     : coins > 0
                     ? `당근 1개(꼬리질문 3개) · ${activePersona.shortName}에게 질문하기`
-                    : "무료수다권 또는 당근을 충전하고 물어보세요"
+                    : "달빛 톡권 또는 당근을 충전하고 물어보세요"
                 }
                 className="flex-1 rounded-2xl bg-[#fdf6f0] border border-violet-100 px-3.5 py-2.5 text-xs sm:text-sm font-medium text-slate-900 outline-none focus:border-violet-400 focus:bg-white"
               />

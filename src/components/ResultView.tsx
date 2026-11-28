@@ -183,7 +183,7 @@ export function ResultView({
         report,
       }),
     }).catch(() => {});
-    showToast(`🥕 당근 ${coinCost}개로 전체 리포트 & 파스텔 오라 카드가 열렸습니다!`);
+    showToast(`🥕 당근 ${coinCost}개로 전체 리포트 & 달토 사주 카드가 열렸습니다!`);
   };
 
   const handlePaymentComplete = (
@@ -426,13 +426,13 @@ export function ResultView({
                       🐇 달토에게 이 결과로 꼬리 질문하기
                     </p>
                     <p className="text-[10.5px] text-slate-600 leading-snug break-keep">
-                      내 원국을 기억한 채 뼈 때리는 채찍+따뜻한 처방 (무료수다권 우선 사용)
+                      내 원국과 오행 물상을 기억한 1:1 맞춤 상담 (달빛 톡권 우선 사용)
                     </p>
                   </div>
                 </div>
                 <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#5c489b] to-[#d96b8a] text-white px-2.5 py-1 text-[10px] font-extrabold whitespace-nowrap">
                   <Ticket className="w-3 h-3" />
-                  {freeChatTickets > 0 ? `무료 ${freeChatTickets}장` : "수다방"}
+                  {freeChatTickets > 0 ? `톡권 ${freeChatTickets}장` : "1:1 상담"}
                 </span>
               </button>
             )}
@@ -504,7 +504,7 @@ export function ResultView({
                     <li className="flex items-center gap-2">
                       <span>🔒</span>
                       <span>
-                        파스텔 오라 인스타그램 공유 카드 (9:16 스토리 · 4:5 피드 PNG 저장)
+                        달토 사주 카드 &amp; 오늘의 카드 (9:16 스토리 · 4:5 피드 PNG 저장)
                       </span>
                     </li>
                   </ul>
