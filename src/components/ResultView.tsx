@@ -7,7 +7,6 @@ import {
   AlertTriangle,
   ArrowLeft,
   CalendarCheck,
-  Camera,
   Check,
   Clock,
   Coins,
@@ -50,11 +49,7 @@ const MENU_COVER_IMAGE: Record<MenuCategory, string> = {
 };
 import { upsertLocalArchive } from "./ArchiveModal";
 import { PaymentModal } from "./PaymentModal";
-import {
-  ShareCardStudio,
-  TIER_CARD_THEMES,
-  resolveCardTier,
-} from "./ShareCardStudio";
+import { ShareCardStudio } from "./ShareCardStudio";
 import {
   FiveElementRadarSvg,
   TalismanSealSvg,
@@ -295,61 +290,6 @@ export function ResultView({
       : report.input.menu === "love" && report.loveReport
       ? report.loveReport.patternTitle
       : report.criticalMistake2027.detail.slice(0, 75) + "…";
-
-  const renderTeaserCard = (mobileVisible = false) => {
-    const tierKey = resolveCardTier(report.tierBadge);
-    const tierVisual = TIER_CARD_THEMES[tierKey];
-    return (
-      <section
-        className={`${
-          mobileVisible ? "block" : "hidden lg:block"
-        } glass-card rounded-3xl p-4 sm:p-5 space-y-3 border border-white/90`}
-      >
-        <div className="flex items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-violet-700 bg-violet-100/80 px-2.5 py-0.5 rounded-full whitespace-nowrap">
-            <Camera className="w-3 h-3" />
-            달토 사주 카드
-          </span>
-          <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">
-            9:16 · 4:5 PNG
-          </span>
-        </div>
-
-        <div className="rounded-3xl overflow-hidden border-2 border-white bg-gradient-to-br from-[#fce7f3] via-[#fff2ea] to-[#f4ecff] text-[#2b2242] shadow-lg">
-          <div className="relative h-56 overflow-hidden">
-            <img
-              src={tierVisual.image}
-              alt={`${tierKey} 티어 달토 카드`}
-              className="w-full h-full object-cover blur-[2.5px] scale-105 opacity-90"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-violet-950/25 via-violet-950/35 to-[#fff8fc]/90 flex flex-col items-center justify-center p-4 text-center">
-              <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-[10.5px] font-extrabold text-violet-700 mb-1.5 shadow">
-                <Lock className="w-3 h-3" />
-                {tierKey} 티어 달토 사주 카드 잠금됨
-              </span>
-              <p className="font-serif text-sm font-black text-white drop-shadow">
-                {report.input.name}님 · {report.tierBadge}
-              </p>
-            </div>
-          </div>
-          <div className="p-3.5 bg-white/90 backdrop-blur-sm border-t border-white text-center space-y-2.5">
-            <p className="text-xs text-slate-600 font-semibold break-keep">
-              👑 SSR · 💎 SR · 🎀 S · 🌙 A 티어별 전용 달토 사주 카드 (9:16 & 4:5 저장)
-            </p>
-            <button
-              type="button"
-              onClick={handleUnlockByCoins}
-              className="w-full py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 via-rose-500 to-violet-500 text-white text-xs font-extrabold hover:brightness-105 transition shadow"
-            >
-              {walletCoins >= coinCost
-                ? `🥕 당근 ${coinCost}개로 바로 열기 (보유 ${walletCoins}개)`
-                : `🥕 당근 충전하고 달토 사주 카드 저장하기`}
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  };
 
   return (
     <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4 lg:pt-7 pb-16 space-y-4">
@@ -1321,11 +1261,14 @@ export function ResultView({
 
           {activeTab === "card" && (
             <div>
-              {paidPlan ? (
-                <ShareCardStudio report={report} />
-              ) : (
-                renderTeaserCard(true)
-              )}
+              <ShareCardStudio
+                report={report}
+                liveToday={liveToday}
+                isSajuCardLocked={!paidPlan}
+                walletCoins={walletCoins}
+                coinCost={coinCost}
+                onUnlockSajuCard={handleUnlockByCoins}
+              />
             </div>
           )}
         </div>
@@ -1333,11 +1276,14 @@ export function ResultView({
         {/* 우측 스티키 컬럼 */}
         <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-4">
           <div className="hidden lg:block">
-            {paidPlan ? (
-              <ShareCardStudio report={report} />
-            ) : (
-              renderTeaserCard(false)
-            )}
+            <ShareCardStudio
+              report={report}
+              liveToday={liveToday}
+              isSajuCardLocked={!paidPlan}
+              walletCoins={walletCoins}
+              coinCost={coinCost}
+              onUnlockSajuCard={handleUnlockByCoins}
+            />
           </div>
 
           <section className="glass-card rounded-3xl p-4 sm:p-5 space-y-3 text-left">

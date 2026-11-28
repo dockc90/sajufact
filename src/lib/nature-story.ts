@@ -1,4 +1,4 @@
-import type { ElementKey, PillarInfo, SajuReport } from "./saju-types";
+import type { ElementKey, PillarInfo, SajuReport, TodayFortuneReport } from "./saju-types";
 
 export interface StemNatureMeta {
   emoji: string;
@@ -413,5 +413,258 @@ export function buildNatureStory(report: SajuReport): NatureStoryProfile {
     carryAdviceOneLine,
     carryAdviceLong,
     pillarReadings: report.pillars.map(buildPillarReading),
+  };
+}
+
+export type TodayScoreTierKey = "SSR" | "SR" | "S" | "A";
+
+export function resolveTodayScoreTier(score: number): TodayScoreTierKey {
+  if (score >= 88) return "SSR";
+  if (score >= 78) return "SR";
+  if (score >= 66) return "S";
+  return "A";
+}
+
+const STEM_TO_ELEMENT: Record<string, ElementKey> = {
+  甲: "wood",
+  乙: "wood",
+  丙: "fire",
+  丁: "fire",
+  戊: "earth",
+  己: "earth",
+  庚: "metal",
+  辛: "metal",
+  壬: "water",
+  癸: "water",
+};
+
+interface TodayPairStoryMeta {
+  titleSuffix: string;
+  growthLine: string;
+  checkTip: string;
+  cautionTip: string;
+}
+
+const TODAY_PAIR_STORIES: Record<`${ElementKey}_${ElementKey}`, TodayPairStoryMeta> = {
+  wood_water: {
+    titleSuffix: "맑은 물을 만나 쑥쑥 자라는 날",
+    growthLine: "뿌리까지 단비가 스며들어 막힘없이 쑥쑥 자랄 수 있는 날이에요!",
+    checkTip: "오전 중 미뤄둔 기획·제안 먼저 던지기",
+    cautionTip: "욕심내서 일만 벌리고 휴식 거르지 않기",
+  },
+  wood_wood: {
+    titleSuffix: "숲을 이루며 속도가 붙는 날",
+    growthLine: "비슷한 결의 지원군이 모여 추진력이 2배로 살아나는 날이에요.",
+    checkTip: "함께 일할 동료·지인과 아이디어 나누기",
+    cautionTip: "내 방식만 고집하다 주변과 부딪히지 않기",
+  },
+  wood_fire: {
+    titleSuffix: "햇빛을 받아 꽃피우는 날",
+    growthLine: "안에 품었던 재능과 아이디어가 밖으로 환하게 드러나는 날이에요.",
+    checkTip: "회의·SNS·대면 자리에서 존재감 드러내기",
+    cautionTip: "텐션 올라 말실수·충동 결제 조심하기",
+  },
+  wood_earth: {
+    titleSuffix: "깊은 땅에 뿌리를 단단히 내리는 날",
+    growthLine: "흔들리던 계획과 자금이 차분하게 제자리를 찾아 굳어지는 날이에요.",
+    checkTip: "재정 정리·계약 조건·체크리스트 점검하기",
+    cautionTip: "너무 신중하게 재다가 좋은 타이밍 놓치지 않기",
+  },
+  wood_metal: {
+    titleSuffix: "가지치기 후 더 단단해지는 날",
+    growthLine: "불필요한 잡음을 쳐내고 진짜 핵심만 남기면 크게 성장하는 날이에요.",
+    checkTip: "우선순위 낮은 일 과감히 정리·거절하기",
+    cautionTip: "날 선 말이나 깐깐한 지적에 예민해지지 않기",
+  },
+  fire_wood: {
+    titleSuffix: "땔감을 얻어 환하게 타오르는 날",
+    growthLine: "마음속 열정이 다시 불붙으며 새로운 기회와 영감이 밀려오는 날이에요.",
+    checkTip: "새 프로젝트 시작·연락 망설이던 곳 톡하기",
+    cautionTip: "초반에 에너지 다 써서 오후에 방전되지 않기",
+  },
+  fire_fire: {
+    titleSuffix: "태양처럼 스포트라이트 받는 날",
+    growthLine: "존재감과 매력이 최고치에 달해 주변 시선이 나에게 모이는 날이에요.",
+    checkTip: "주목받는 발표·만남·셀프 브랜딩 실행하기",
+    cautionTip: "과열된 감정으로 욱하거나 지갑 열지 않기",
+  },
+  fire_earth: {
+    titleSuffix: "뜨거운 열기를 결실로 굳히는 날",
+    growthLine: "바쁘게 뛴 노력이 실제 수익과 평판으로 차곡차곡 쌓이는 날이에요.",
+    checkTip: "정산·문서 마감·수익화 작업 끝맺기",
+    cautionTip: "속으로 참다 소화기·피로 신호 놓치지 않기",
+  },
+  fire_metal: {
+    titleSuffix: "빛으로 보석을 세공해 빛나는 날",
+    growthLine: "날카로운 실속과 꼼꼼한 검증이 더해져 승부수가 완성되는 날이에요.",
+    checkTip: "숫자·계약서·디테일 한 번 더 검수하기",
+    cautionTip: "자존심 싸움으로 말꼬리 잡지 않기",
+  },
+  fire_water: {
+    titleSuffix: "열기를 식히고 지혜가 맑아지는 날",
+    growthLine: "지나치던 속도를 한 템포 늦추니 오히려 숨은 해법이 보이는 날이에요.",
+    checkTip: "물 챙겨 마시며 조용히 핵심 전략 세우기",
+    cautionTip: "기분 다운된다고 밤늦게 결정 내리지 않기",
+  },
+  earth_fire: {
+    titleSuffix: "따뜻한 온기를 품어 풍요로워지는 날",
+    growthLine: "주변의 지지와 온기가 모여 든든한 몫과 결실을 챙기는 날이에요.",
+    checkTip: "윗사람·귀인의 조언을 기분 좋게 받아들이기",
+    cautionTip: "미루기 습관 버리고 오후 골든타임 잡기",
+  },
+  earth_earth: {
+    titleSuffix: "태산처럼 흔들림 없이 쌓이는 날",
+    growthLine: "묵묵히 지켜온 기준이 빛을 발하며 자산과 신뢰가 단단해지는 날이에요.",
+    checkTip: "루틴 유지·저축·장기 계획 점검하기",
+    cautionTip: "남의 고민까지 떠안아 속 답답해지지 않기",
+  },
+  earth_metal: {
+    titleSuffix: "품고 있던 보석을 꺼내 보이는 날",
+    growthLine: "묵혀둔 실력과 준비가 깔끔한 결과물로 세상에 드러나는 날이에요.",
+    checkTip: "포트폴리오 공유·협상에서 단호하게 요구하기",
+    cautionTip: "완벽하려다 마감 시간 늦어지지 않기",
+  },
+  earth_water: {
+    titleSuffix: "마른 대지에 재물 물길이 열리는 날",
+    growthLine: "고여 있던 흐름이 촉촉하게 풀리며 현금과 정보 운이 도는 날이에요.",
+    checkTip: "새로운 정보 탐색·유연한 제안 수락하기",
+    cautionTip: "사소한 구독·배달 등 잔지출 새지 않게 막기",
+  },
+  earth_wood: {
+    titleSuffix: "새싹을 틔우며 답답함이 뚫리는 날",
+    growthLine: "정체됐던 일에 신선한 자극이 들어와 판이 새롭게 열리는 날이에요.",
+    checkTip: "평소와 다른 루트·새 방식 한 가지 시도하기",
+    cautionTip: "변화에 겁먹어 무조건 거절부터 하지 않기",
+  },
+  metal_earth: {
+    titleSuffix: "단단한 보호 속에 빛이 짙어지는 날",
+    growthLine: "실속과 안정감이 받쳐주어 내 가치가 한 단계 올라가는 날이에요.",
+    checkTip: "기반 다지기·신뢰할 만한 사람과 손잡기",
+    cautionTip: "작은 실수 하나에 지나치게 예민해지지 않기",
+  },
+  metal_metal: {
+    titleSuffix: "칼날처럼 예리하게 승부 가르는 날",
+    growthLine: "결단력과 집중력이 최고조로 올라 깔끔하게 결과를 따내는 날이에요.",
+    checkTip: "질질 끌던 선택 오늘 안에 마침표 찍기",
+    cautionTip: "직설적인 말투로 가까운 사람 상처 주지 않기",
+  },
+  metal_water: {
+    titleSuffix: "보석이 맑은 물에 씻겨 영롱해지는 날",
+    growthLine: "머리가 맑아지고 직관이 정확해져 한 수 앞을 내다보는 날이에요.",
+    checkTip: "아이디어 메모·조용한 분석 후 움직이기",
+    cautionTip: "생각만 너무 오래 하다 실행 늦추지 않기",
+  },
+  metal_wood: {
+    titleSuffix: "목표를 정확히 겨눠 수확하는 날",
+    growthLine: "실행력과 결단력이 맞물려 눈에 보이는 실적을 거두는 날이에요.",
+    checkTip: "수익·성과로 직결되는 핵심 업무 먼저 처리하기",
+    cautionTip: "상대 사정 안 보고 몰아붙이지 않기",
+  },
+  metal_fire: {
+    titleSuffix: "뜨거운 담금질로 완성도가 뛰는 날",
+    growthLine: "압박이 살짝 있어도 정면 돌파하면 몸값이 수직 상승하는 날이에요.",
+    checkTip: "어려운 미션일수록 데이터·팩트로 깔끔히 풀기",
+    cautionTip: "환절기 컨디션·목·어깨 긴장 풀고 쉬기",
+  },
+  water_metal: {
+    titleSuffix: "맑은 샘물이 솟아 지혜가 채워지는 날",
+    growthLine: "생각이 또렷해지고 나를 도와줄 귀한 정보와 귀인이 붙는 날이에요.",
+    checkTip: "중요한 판단·공부·문서 검토 오전 중 끝내기",
+    cautionTip: "혼자만의 기준에 갇혀 벽 세우지 않기",
+  },
+  water_water: {
+    titleSuffix: "큰 물줄기가 합쳐져 스케일이 커지는 날",
+    growthLine: "눈치와 정보력이 극대화되어 숨은 기회를 가장 먼저 잡는 날이에요.",
+    checkTip: "정보 수집·인맥 안부·플랜 B 점검하기",
+    cautionTip: "감정이 깊어져 밤늦게 불안 곱씹지 않기",
+  },
+  water_wood: {
+    titleSuffix: "흐름을 타고 뻗어 나가며 꽃피우는 날",
+    growthLine: "머릿속 아이디어가 실제 실행과 성과로 시원하게 뻗어 나가는 날이에요.",
+    checkTip: "생각만 하던 일 오늘 바로 첫 행동 옮기기",
+    cautionTip: "이것저것 손대다 집중력 흩어지지 않게 주의",
+  },
+  water_fire: {
+    titleSuffix: "어둠을 밝히며 반전 기회가 켜지는 날",
+    growthLine: "적극적으로 나설수록 막혔던 수익과 인연 운이 뜨겁게 풀리는 날이에요.",
+    checkTip: "주저하던 연락·프레젠테이션 먼저 꺼내기",
+    cautionTip: "낮과 밤 온도차에 컨디션 급방전 조심하기",
+  },
+  water_earth: {
+    titleSuffix: "물길을 모아 재물로 가두는 날",
+    growthLine: "사방으로 흩어지던 집중력과 돈이 튼튼한 그릇에 차곡차곡 모이는 날이에요.",
+    checkTip: "예산·목표 1가지만 정해 끝까지 밀고 가기",
+    cautionTip: "완벽한 타이밍 기다리다 발목 잡히지 않기",
+  },
+};
+
+export interface TodayCardStory {
+  score: number;
+  scoreTier: TodayScoreTierKey;
+  scoreGradeLabel: string;
+  todayDateShort: string;
+  todayGanZhiLabel: string;
+  todayElement: ElementKey;
+  todayElementEmoji: string;
+  todayElementNameKo: string;
+  todayElementShortKo: string;
+  todayElementTag: string;
+  myShortName: string;
+  cardTitle: string;
+  storyBody: string;
+  checkText: string;
+  cautionText: string;
+}
+
+export function buildTodayCardStory(
+  report: SajuReport,
+  today: TodayFortuneReport
+): TodayCardStory {
+  const stemMeta = getStemNatureMeta(report.dayMasterHanja);
+  const myElement = STEM_TO_ELEMENT[report.dayMasterHanja] ?? report.dominantElement;
+  const todayStemHanja = today.todayGanZhiHanja?.[0] || "壬";
+  const todayElement = STEM_TO_ELEMENT[todayStemHanja] ?? "water";
+  const todayElMeta = getElementNatureMeta(todayElement);
+
+  const score = today.score;
+  const scoreTier = resolveTodayScoreTier(score);
+  const scoreGradeLabel =
+    score >= 88
+      ? "대길 · 최상 행운일"
+      : score >= 78
+      ? "상승 · 길운 가득"
+      : score >= 66
+      ? "순항 · 잔잔한 행운"
+      : "충전 · 숨 고르는 날";
+
+  const todayDateShort = today.dateLabel.replace(/^\d{4}년\s*/, "");
+  const todayGanZhiLabel = `${today.todayGanZhiHangul}(${today.todayGanZhiHanja})일`;
+
+  const pairMeta = TODAY_PAIR_STORIES[`${myElement}_${todayElement}`];
+  const cardTitle = `${stemMeta.shortName} · ${pairMeta.titleSuffix}`;
+  const storyBody = `나는 ${stemMeta.shortName}인데 오늘은 ${todayElMeta.nameKo}의 날이에요. ${pairMeta.growthLine}`;
+
+  const shortAvoid = today.avoidAction
+    .replace(/하기$/, "")
+    .replace(/누르기$/, "누르지 않기");
+  const checkText = `${pairMeta.checkTip} (${today.luckyTime})`;
+  const cautionText = `${pairMeta.cautionTip} · ${shortAvoid}`;
+
+  return {
+    score,
+    scoreTier,
+    scoreGradeLabel,
+    todayDateShort,
+    todayGanZhiLabel,
+    todayElement,
+    todayElementEmoji: todayElMeta.emoji,
+    todayElementNameKo: todayElMeta.nameKo,
+    todayElementShortKo: todayElMeta.shortKo,
+    todayElementTag: `${todayElMeta.nameKo.charAt(0)}의날`,
+    myShortName: stemMeta.shortName,
+    cardTitle,
+    storyBody,
+    checkText,
+    cautionText,
   };
 }

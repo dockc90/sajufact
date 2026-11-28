@@ -1473,6 +1473,27 @@ export default function HomePage() {
                           <span className="font-extrabold">골드 주얼리 · 캔들</span>
                         </div>
                       </div>
+                      <div className="grid grid-cols-5 gap-1 text-center">
+                        {[
+                          { label: "목(木)", pct: "18%", cls: "bg-[#eaf9f0] border-[#a7e6c0] text-[#11643b]" },
+                          { label: "화(火)", pct: "6%", cls: "bg-[#fff0ee] border-[#ffc1b8] text-[#9b271c]" },
+                          { label: "토(土)", pct: "22%", cls: "bg-[#fff7e5] border-[#f4d794] text-[#7c5009]" },
+                          { label: "금(金)", pct: "38%", cls: "bg-[#eff5ff] border-[#bed6fb] text-[#1f4287]" },
+                          { label: "수(水)", pct: "16%", cls: "bg-[#f3efff] border-[#cfc1fb] text-[#4c2889]" },
+                        ].map((el) => (
+                          <div
+                            key={el.label}
+                            className={`rounded-md border px-0.5 py-0.5 ${el.cls}`}
+                          >
+                            <span className="block text-[7px] font-bold leading-tight">
+                              {el.label}
+                            </span>
+                            <span className="block text-[8px] font-black leading-tight">
+                              {el.pct}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                       <div className="flex items-center justify-between text-[8.5px] font-bold text-[#55447a]">
                         <span>#달토사주카드 #개운사물</span>
                         <span className="font-serif font-black tracking-wider">
